@@ -19,3 +19,7 @@ export async function getPricingPlans() {
   console.log("Getting pricing plans");
   return [{ id: "basic", name: "Basic Plan", price: 100 }];
 }
+
+export function calculateTotalPrice(items: Pricing[]): number {
+  return items.reduce((total, item) => total + item.price, 0);
+}

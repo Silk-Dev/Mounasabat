@@ -1,1 +1,1 @@
-export { default } from "@atlas/ui/postcss.config";
+export { default } from "@weddni/ui/postcss.config";

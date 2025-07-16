@@ -46,7 +46,7 @@ export default function EventsList() {
       ) : (
         <ul>
           {events.map((event) => (
-            <li key={event.id} className="mb-2 p-4 border rounded shadow-sm">
+            <li key={event.id} className="mb-2 p-4 border rounded shadow-xs">
               <Link href={`/events/${event.id}`}>
                 <h2 className="text-xl font-semibold text-blue-600 hover:underline">
                   {event.name}

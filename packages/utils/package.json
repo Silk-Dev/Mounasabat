@@ -1,5 +1,5 @@
 {
-  "name": "utils",
+  "name": "@weddni/utils",
   "version": "0.1.0",
   "private": true,
   "main": "./index.ts",
