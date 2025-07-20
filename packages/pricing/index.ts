@@ -1,2 +1,2 @@
-import { Pricing } from "@weddni/types";
+import { Pricing } from "@mounasabet/types";
 

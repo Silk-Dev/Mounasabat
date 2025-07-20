@@ -47,7 +47,7 @@ export default function AdminEventDetail() {
   return (
     <div>
       <Head>
-        <title>{event.name} - Weddni Admin</title>
+        <title>{event.name} - Mounasabet Admin</title>
       </Head>
       <h1 className="text-2xl font-bold mb-4">{event.name}</h1>
       <p>

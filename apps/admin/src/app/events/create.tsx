@@ -58,7 +58,7 @@ export default function AdminCreateEvent() {
   return (
     <div>
       <Head>
-        <title>Create Event - Weddni Admin</title>
+        <title>Create Event - Mounasabet Admin</title>
       </Head>
       <h1 className="text-2xl font-bold mb-4">Create New Event</h1>
       <form onSubmit={handleSubmit} className="space-y-4">

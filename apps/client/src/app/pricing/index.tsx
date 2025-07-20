@@ -36,7 +36,7 @@ export default function PricingPlans() {
   return (
     <div>
       <Head>
-        <title>Pricing Plans - Weddni</title>
+        <title>Pricing Plans - Mounasabet</title>
       </Head>
       <h1 className="text-2xl font-bold mb-4">Our Pricing Plans</h1>
       {plans.length === 0 ? (

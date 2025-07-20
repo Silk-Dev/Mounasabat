@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@weddni/database/src/auth";
+import { auth } from "@mounasabet/database/src/auth";
 
 export async function middleware(request: NextRequest) {
-  const session = await auth.getSession({ headers: request.headers });
+  const session = await auth.api.getSession({ headers: request.headers });
   const { pathname } = request.nextUrl;
 
   // Allow access to the sign-in page without authentication

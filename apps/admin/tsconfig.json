@@ -1,5 +1,5 @@
 {
-  "extends": "@weddni/tsconfig/next.json",
+  "extends": "@mounasabet/tsconfig/next.json",
   "compilerOptions": {
     "plugins": [
       {
@@ -8,7 +8,12 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@mounasabet/events": ["../../packages/events/src"],
+      "@mounasabet/pricing": ["../../packages/pricing/src"],
+      "@mounasabet/database": ["../../packages/database/src"],
+      "@mounasabet/notifications": ["../../packages/notifications/src"],
+      "@mounasabet/calendar": ["../../packages/calendar/src"]
     },
     "allowJs": true,
     "jsx": "preserve"

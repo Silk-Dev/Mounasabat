@@ -11,8 +11,8 @@ jest.mock("packages/events/src", () => ({
   deleteEvent: jest.fn(),
 }));
 
-// Mock '@weddni/database/src/auth'
-jest.mock("@weddni/database/src/auth", () => ({
+// Mock '@mounasabet/database/src/auth'
+jest.mock("@mounasabet/database/src/auth", () => ({
   auth: {
     getSession: jest.fn(),
   },
@@ -26,7 +26,7 @@ import {
   updateEvent,
   deleteEvent,
 } from "packages/events/src";
-import { auth } from "@weddni/database/src/auth";
+import { auth } from "@mounasabet/database/src/auth";
 
 describe("Event API", () => {
   let server: http.Server;
@@ -46,7 +46,7 @@ describe("Event API", () => {
     });
 
     // Mock authentication to always return a session for testing authenticated routes
-    (auth.getSession as jest.Mock).mockResolvedValue({
+    (auth.api.getSession as jest.Mock).mockResolvedValue({
       user: { id: "test-user" },
     });
   });

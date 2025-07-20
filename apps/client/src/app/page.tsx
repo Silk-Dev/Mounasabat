@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@weddni/ui";
-import { Event, Pricing, User } from "@weddni/database/types";
-import { formatCurrency, formatDate } from "@weddni/utils";
-import { calculateTotalPrice } from "@weddni/pricing";
-import { getUpcomingEvents } from "@weddni/events";
+import { Button } from "@mounasabet/ui";
+import { Event, Pricing, User } from "@mounasabet/database/types";
+import { formatCurrency, formatDate } from "@mounasabet/utils";
+import { calculateTotalPrice } from "@mounasabet/pricing";
+import { getUpcomingEvents } from "@mounasabet/events";
 import { useAuth } from "better-auth/react";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
@@ -63,7 +63,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col items-center justify-center py-2">
       <main className="flex flex-col items-center justify-center flex-1 px-20 text-center">
         <h1 className="text-6xl font-bold mb-8">
-          Welcome to the <span className="text-blue-600">Weddni</span> Client
+          Welcome to the <span className="text-blue-600">Mounasabet</span> Client
           Application!
         </h1>
         <Button className="mt-4">Click Me</Button>

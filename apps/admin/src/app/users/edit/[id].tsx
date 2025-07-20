@@ -77,7 +77,7 @@ export default function EditUser() {
   return (
     <div>
       <Head>
-        <title>Edit User - Weddni Admin</title>
+        <title>Edit User - Mounasabet Admin</title>
       </Head>
       <h1 className="text-2xl font-bold mb-4">Edit User</h1>
       <form onSubmit={handleSubmit} className="space-y-4">

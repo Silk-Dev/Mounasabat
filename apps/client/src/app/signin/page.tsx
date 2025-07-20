@@ -1,8 +1,8 @@
 import { useState } from "react";
-import {  } from "better-auth/react";
+import { useAuth } from "better-auth/react";
 import { useRouter } from "next/navigation";
 import Head from "next/head";
-import { Button } from "@weddni/ui";
+import { Button } from "@mounasabet/ui";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");

@@ -5,6 +5,6 @@ module.exports = {
   testMatch: ["<rootDir>/pages/api/**/*.test.ts"],
   moduleNameMapper: {
     "packages/events/src": "<rootDir>/../../packages/events/src",
-    "@weddni/database/src/auth": "<rootDir>/../../@weddni/database/src/auth",
+    "@mounasabet/database/src/auth": "<rootDir>/../../@mounasabet/database/src/auth",
   },
 };

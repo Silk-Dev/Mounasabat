@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { getUsers, getUser, updateUser, deleteUser } from "packages/users/src";
-import { auth } from "@weddni/database/src/auth";
+import { auth } from "@mounasabet/database/src/auth";
 
 export async function GET(request: Request) {
-  const session = await auth.getSession({ headers: request.headers });
+  const session = await auth.api.getSession({ headers: request.headers });
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const session = await auth.getSession({ headers: request.headers });
+  const session = await auth.api.getSession({ headers: request.headers });
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -53,7 +53,7 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const session = await auth.getSession({ headers: request.headers });
+  const session = await auth.api.getSession({ headers: request.headers });
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

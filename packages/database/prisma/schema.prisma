@@ -18,6 +18,7 @@ model Event {
   endDate     DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  bookings    Booking[]
 }
 
 model User {
@@ -30,6 +31,10 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+  bookings      Booking[]
+  provider      Provider? // Optional, as not all users will be providers
+  reportedIssues Issue[] @relation(name: "ReportedIssues")
+  assignedIssues Issue[] @relation(name: "AssignedIssues")
 
   @@unique([email])
   @@map("user")
@@ -78,4 +83,49 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Provider {
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id])
+  name          String
+  description   String?
+  contactEmail  String?
+  phoneNumber   String?
+  address       String?
+  website       String?
+  services      String[]  // Array of strings, e.g., ["Wedding Planning", "Catering"]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Booking {
+  id          String    @id @default(uuid())
+  eventId     String
+  event       Event     @relation(fields: [eventId], references: [id])
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  providerId  String
+  startTime   DateTime
+  endTime     DateTime
+  status          String    @default("pending") // 'pending', 'confirmed', 'cancelled', 'paid', 'delivered'
+  paymentIntentId String?   @unique
+  paymentStatus   String?   @default("unpaid") // 'unpaid', 'paid', 'failed'
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Issue {
+  id               String    @id @default(uuid())
+  title            String
+  description      String?
+  status           String    @default("open") // 'open', 'in_progress', 'resolved', 'closed'
+  priority         String    @default("medium") // 'low', 'medium', 'high', 'critical'
+  reportedByUserId String?
+  reportedByUser   User?     @relation(name: "ReportedIssues", fields: [reportedByUserId], references: [id])
+  assignedToUserId String?
+  assignedToUser   User?     @relation(name: "AssignedIssues", fields: [assignedToUserId], references: [id])
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }

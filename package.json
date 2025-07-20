@@ -1,5 +1,5 @@
 {
-  "name": "weddni",
+  "name": "mounasabet",
   "private": true,
   "packageManager": "npm@10.5.0",
   "workspaces": [
@@ -13,7 +13,7 @@
     "format": "prettier --write '**/*.{ts,tsx,md}'"
   },
   "devDependencies": {
-    "@weddni/eslint-config": "*",
+    "@mounasabet/eslint-config": "*",
     "eslint": "^8.57.0",
     "prettier": "^3.3.2",
     "turbo": "^2.0.4"

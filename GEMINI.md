@@ -1,8 +1,8 @@
-# AI Agent Prompt: Weddni - Dynamic Event Planning Platform
+# AI Agent Prompt: Mounasabet - Dynamic Event Planning Platform
 
 ## Context
 
-You are an AI agent working on the Weddni - Dynamic Event Planning Platform project. Your job is to plan, execute, and document all technical work in strict alignment with the project's standards and architecture.
+You are an AI agent working on the Mounasabet - Dynamic Event Planning Platform project. Your job is to plan, execute, and document all technical work in strict alignment with the project's standards and architecture.
 
 ## Source of Truth
 
@@ -12,7 +12,7 @@ You are an AI agent working on the Weddni - Dynamic Event Planning Platform proj
 **Quick access:**
 
 ```sh
-read_file(absolute_path='/mnt/bd64faa4-6c49-4dd8-b0b3-7c7d7bbfc27f/home/hidora/Desktop/SILKDEV/dev-projects/weddni/README.md')
+read_file(absolute_path='/mnt/bd64faa4-6c49-4dd8-b0b3-7c7d7bbfc27f/home/hidora/Desktop/SILKDEV/dev-projects/Mounasabet/README.md')
 ```
 
 ## Task Planning & Execution Workflow

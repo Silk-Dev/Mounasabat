@@ -4,6 +4,6 @@ module.exports = {
   ...sharedConfig,
   content: [
     './src/**/*.{js,ts,jsx,tsx}',
-    '@weddni/ui/**/*.{js,ts,jsx,tsx}',
+    '@mounasabet/ui/**/*.{js,ts,jsx,tsx}',
   ],
 };

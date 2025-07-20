@@ -1,0 +1,15 @@
+{
+  "name": "@mounasabet/notifications",
+  "version": "1.0.0",
+  "description": "Notification service for Mounasabet.",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "nodemailer": "^6.9.13"
+  }
+}

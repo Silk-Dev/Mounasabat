@@ -59,7 +59,7 @@ export default function UserProfile() {
   return (
     <div>
       <Head>
-        <title>User Profile - Weddni</title>
+        <title>User Profile - Mounasabet</title>
       </Head>
       <h1 className="text-2xl font-bold mb-4">User Profile</h1>
       <form onSubmit={handleUpdateProfile} className="space-y-4">

@@ -1,5 +1,5 @@
 {
-  "name": "admin",
+  "name": "@mounasabet/admin",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,13 +13,13 @@
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
-    "@weddni/utils": "*"
+    "@mounasabet/utils": "*"
   },
   "devDependencies": {
-    "@weddni/eslint-config": "*",
-    "@weddni/tsconfig": "*",
-    "@weddni/database" : "*",
-    "@weddni/ui": "*",
+    "@mounasabet/eslint-config": "*",
+    "@mounasabet/tsconfig": "*",
+    "@mounasabet/database" : "*",
+    "@mounasabet/ui": "*",
     "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^18",

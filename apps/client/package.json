@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "@mounasabet/client",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,21 +9,25 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@weddni/ui": "*",
-    "@weddni/utils": "*",
-    "@weddni/database": "*",
-    "@weddni/pricing": "*",
+    "@stripe/react-stripe-js": "^3.7.0",
+    "@stripe/stripe-js": "^7.5.0",
+    "@mounasabet/database": "*",
+    "@mounasabet/notifications": "*",
+    "@mounasabet/pricing": "*",
+    "@mounasabet/ui": "*",
+    "@mounasabet/utils": "*",
     "better-auth": "^1.2.12",
     "next": "14.2.3",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "stripe": "^14.24.0"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@weddni/eslint-config": "*",
-    "@weddni/tsconfig": "*",
+    "@mounasabet/eslint-config": "*",
+    "@mounasabet/tsconfig": "*",
     "eslint": "^8",
     "eslint-config-next": "14.2.3",
     "typescript": "^5"

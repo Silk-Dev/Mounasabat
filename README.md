@@ -1,8 +1,8 @@
-# Weddni - Dynamic Event Planning Platform (Turborepo Edition)
+# Mounasabet - Dynamic Event Planning Platform (Turborepo Edition)
 
-![Weddni Platform Screenshot](https://via.placeholder.com/1200x600/9ca3af/ffffff?text=Weddni+Event+Platform)
+![Mounasabet Platform Screenshot](https://via.placeholder.com/1200x600/9ca3af/ffffff?text=Mounasabet+Event+Platform)
 
-Weddni is a flexible SaaS platform built with Turborepo that connects event organizers with service providers for any celebration type. Featuring dynamic event management and flexible pricing models, all powered by a modern monorepo architecture.
+Mounasabet is a flexible SaaS platform built with Turborepo that connects event organizers with service providers for any celebration type. Featuring dynamic event management and flexible pricing models, all powered by a modern monorepo architecture.
 
 ## Technology Stack
 
@@ -38,7 +38,7 @@ Weddni is a flexible SaaS platform built with Turborepo that connects event orga
 ## Monorepo Structure with Turborepo
 
 ```
-weddni/
+Mounasabet/
 ├── apps/
 │   ├── client/              # Main Next.js application
 │   ├── admin/               # Admin dashboard (Next.js)
@@ -255,7 +255,7 @@ Use managed PostgreSQL (AWS RDS, Supabase, Neon) with connection pooling
 ### CI/CD Pipeline (GitHub Actions)
 
 ```yaml
-name: Weddni CI
+name: Mounasabet CI
 
 on: [push]
 
@@ -283,7 +283,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          scope: weddni
+          scope: Mounasabet
 ```
 
 ## Contributing
@@ -304,12 +304,12 @@ npm test       # Run all tests
 
 ## License
 
-Weddni is [MIT licensed](LICENSE).
+Mounasabet is [MIT licensed](LICENSE).
 
 ---
 
-**Weddni Team**  
+**Mounasabet Team**  
 Event planning reimagined with Turborepo power  
-contact@weddni.app
+contact@mounasabet.app
 
 > "From concept to celebration - all in one monorepo"

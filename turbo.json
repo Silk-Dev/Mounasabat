@@ -9,13 +9,13 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "env": ["AUTH_SECRET"]
+      "env": ["AUTH_SECRET", "NEXTAUTH_SECRET", "NEXTAUTH_URL", "STRIPE_SECRET_KEY"]
     },
-    "@weddni/ui#build": {
+    "@mounasabet/ui#build": {
       "outputs": ["dist/**"]
     },
-    "@weddni/client#build": {
-      "dependsOn": ["@weddni/ui#build"],
+    "@mounasabet/client#build": {
+      "dependsOn": ["@mounasabet/ui#build"],
       "outputs": ["dist/**"]
     }
   }

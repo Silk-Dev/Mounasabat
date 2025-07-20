@@ -1,4 +1,4 @@
-import { Event } from "@weddni/types";
+import { Event } from "@mounasabet/types";
 
 export function getUpcomingEvents(events: Event[]): Event[] {
   const now = new Date();

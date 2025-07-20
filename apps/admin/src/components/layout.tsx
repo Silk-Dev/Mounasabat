@@ -8,7 +8,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Weddni Admin</h1>
+        <h1 className="text-xl font-bold">Mounasabet Admin</h1>
         <nav>{/* Admin navigation items */}</nav>
       </header>
       <div className="flex flex-1">

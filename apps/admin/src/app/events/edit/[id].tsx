@@ -101,7 +101,7 @@ export default function AdminEditEvent() {
   return (
     <div>
       <Head>
-        <title>Edit Event - Weddni Admin</title>
+        <title>Edit Event - Mounasabet Admin</title>
       </Head>
       <h1 className="text-2xl font-bold mb-4">Edit Event</h1>
       <form onSubmit={handleSubmit} className="space-y-4">

@@ -1,4 +1,4 @@
-import "@weddni/ui/styles.css";
+import "@mounasabet/ui/styles.css";
 import React from "react";
 import Head from "next/head";
 import Link from "next/link";
@@ -13,12 +13,12 @@ export default function RootLayout({
       <body>
         <div className="min-h-screen flex flex-col">
           <Head>
-            <title>Weddni Admin</title>
-            <meta name="description" content="Weddni Admin Dashboard" />
+            <title>Mounasabet Admin</title>
+            <meta name="description" content="Mounasabet Admin Dashboard" />
             <link rel="icon" href="/favicon.ico" />
           </Head>
           <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
-            <h1 className="text-xl font-bold">Weddni Admin</h1>
+            <h1 className="text-xl font-bold">Mounasabet Admin</h1>
             <nav>{/* Admin navigation items */}</nav>
           </header>
           <div className="flex flex-1">

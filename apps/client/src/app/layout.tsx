@@ -1,4 +1,4 @@
-import "@weddni/ui/styles.css";
+import "@mounasabet/ui/styles.css";
 import { AuthProvider, createAuthClient } from "better-auth/react";
 
 const authClient = createAuthClient({
