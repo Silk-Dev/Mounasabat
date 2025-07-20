@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import {prisma} from '@mounasabet/database/src/prisma';
 
 export async function createBooking(data: any) {
   // Placeholder for booking creation logic

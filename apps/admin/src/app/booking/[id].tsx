@@ -3,21 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-
-interface Booking {
-  id: string;
-  event: {
-    name: string;
-    description: string;
-  };
-  user: {
-    name: string;
-    email: string;
-  };
-  startTime: string;
-  endTime: string;
-  status: string;
-}
+import { Booking, BookingStatus, Prisma } from '@mounasabet/database/src/generated/client'; 
 
 export default function AdminBookingDetailsPage() {
   const params = useParams();
@@ -49,8 +35,7 @@ export default function AdminBookingDetailsPage() {
     }
   }, [id]);
 
-  const handleStatusUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleStatusUpdate = async (newStatus: BookingStatus) => {
     try {
       const response = await fetch(`/api/booking/${id}`,
         {
@@ -58,7 +43,7 @@ export default function AdminBookingDetailsPage() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ status }),
+          body: JSON.stringify({ status: newStatus }),
         }
       );
 
@@ -90,7 +75,7 @@ export default function AdminBookingDetailsPage() {
       <Link href="/booking" className="text-indigo-600 hover:underline mb-4 block">
         &larr; Back to Bookings
       </Link>
-      <h1 className="text-3xl font-bold mb-4">{booking.event.name}</h1>
+      <h1 className="text-3xl font-bold mb-4">{booking?.event?.name}</h1>
       <div className="space-y-4">
         <div>
           <h2 className="text-xl font-semibold">Event Details</h2>
