@@ -2,7 +2,18 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import React from "react";
+import Link from "next/link";
 import { LogIn } from "lucide-react";
+import Footer from "./components/Footer";
+import LegalModal from "./components/LegalModal";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "ui";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,40 +32,63 @@ export const metadata: Metadata = {
 
 function Header() {
   return (
-    <header className="bg-white/90 shadow-sm sticky top-0 z-50">
-      <nav className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
+    <header className="bg-transparent fixed top-0 left-0 w-full z-50">
+      <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <img src="/logoo.png" alt="Monasabet Logo" className="h-16 w-auto" />
-        
+          <Link href="/">
+            <img src="/logoo.png" alt="Monasabet Logo" className="h-16 w-auto cursor-pointer" />
+          </Link>
         </div>
+
         {/* Navigation */}
-        <ul className="flex gap-8 text-base font-semibold text-[#3A3A3A] mb-2 md:mb-0">
-          <li><a href="/" className="hover:text-[#1CCFC9] transition">Accueil</a></li>
-          <li><a href="/evenement" className="hover:text-[#1CCFC9] transition">Événements</a></li>
-          <li><a href="#" className="hover:text-[#1CCFC9] transition">Lieux</a></li>
-          <li><a href="#" className="hover:text-[#1CCFC9] transition">Services</a></li>
-          <li><a href="#" className="hover:text-[#1CCFC9] transition">À propos</a></li>
-          <li><a href="#" className="hover:text-[#1CCFC9] transition">Contact</a></li>
+        <ul className="flex gap-8 text-base font-semibold text-white mb-2 md:mb-0">
+          <li>
+            <a href="/" className="hover:text-[#1CCFC9] transition">
+              Accueil
+            </a>
+          </li>
+          <li className="relative group">
+            <a
+              href="#"
+              className="hover:text-[#1CCFC9] transition flex items-center"
+            >
+              Organiser un événement ▼
+            </a>
+            <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
+              <a
+                href="/lieux"
+                className="block px-4 py-2 text-[#3A3A3A] hover:bg-[#1CCFC9] hover:text-white"
+              >
+                Lieux de réception
+              </a>
+              <a
+                href="/prestataires"
+                className="block px-4 py-2 text-[#3A3A3A] hover:bg-[#1CCFC9] hover:text-white"
+              >
+                 Prestataires de services
+              </a>
+            </div>
+          </li>
+          <li>
+            <a href="/idees-conseils" className="hover:text-[#1CCFC9] transition">Idées & Conseils</a>
+          </li>
+          <li>
+            <a href="/a-propos" className="hover:text-[#1CCFC9] transition">À propos</a>
+          </li>
+          <li>
+            <a href="/contact" className="hover:text-[#1CCFC9] transition">Contact</a>
+          </li>
         </ul>
-        {/* Se connecter */}
+
+        {/* Connexion */}
         <a
-          href="#"
+          href="/connexion"
           className="ml-4 flex items-center gap-2 bg-[#F45B5B] text-white px-6 py-4 rounded-full font-bold shadow hover:bg-[#d63d3d] transition"
         >
-          Se connecter
+          Connexion
         </a>
       </nav>
-      {/* Mobile nav (optionnel) */}
-      <div className="md:hidden flex flex-wrap justify-center gap-4 pb-2">
-        <a href="#" className="text-[#3A3A3A] font-semibold hover:text-[#1CCFC9]">Accueil</a>
-        <a href="#" className="text-[#3A3A3A] font-semibold hover:text-[#1CCFC9]">Événements</a>
-        <a href="#" className="text-[#3A3A3A] font-semibold hover:text-[#1CCFC9]">Lieux</a>
-        <a href="#" className="text-[#3A3A3A] font-semibold hover:text-[#1CCFC9]">Services</a>
-        <a href="#" className="text-[#3A3A3A] font-semibold hover:text-[#1CCFC9]">À propos</a>
-        <a href="#" className="text-[#3A3A3A] font-semibold hover:text-[#1CCFC9]">Contact</a>
-        <a href="#" className="bg-[#F45B5B] text-white px-4 py-2 rounded-full font-bold shadow hover:bg-[#d63d3d] transition">Se connecter</a>
-      </div>
     </header>
   );
 }
@@ -67,10 +101,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
+        <LegalModal />
         <Header />
+        <main className="flex-1">
         {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );

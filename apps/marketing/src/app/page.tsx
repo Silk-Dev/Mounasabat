@@ -1,169 +1,244 @@
 "use client";
 
+import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@weddni/ui";
-import { Sparkles, CalendarHeart, MapPin, Gift, Handshake, Heart } from "lucide-react";
-import BlurText from "./BlurText";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image";
+import { Tilt } from "react-tilt"; // Pour l'effet de carte 3D
+import { Swiper, SwiperSlide } from "swiper/react"; // Pour la galerie 3D
+import "swiper/css"; // Styles nécessaires pour Swiper
+import "swiper/css/effect-cube";
+import EffectCube from "swiper";
+import { useRouter } from "next/navigation";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
+  const scrollContainerRef = useRef<HTMLElement | null>(null);
+  const backgroundRef = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
+  const [selectedCategory, setSelectedCategory] = useState<null | 'etablissement' | 'materiel' | 'service'>(null);
+
+  useEffect(() => {
+    if (backgroundRef.current) {
+      gsap.to(backgroundRef.current, {
+        yPercent: -20,
+        ease: "power1.out",
+        scrollTrigger: {
+          trigger: backgroundRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    }
+  }, []);
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.target;
+    const type = form[0].value;
+    const ville = form[1].value;
+    const date = form[2].value;
+    // Ajoute ici le champ de recherche texte si besoin
+    //router.push(`/recherche?type=${type}&ville=${ville}&date=${date}`);
+    router.push(`/recherche/eventype/${type}?ville=${ville}&date=${date}`);
+  };
+
   return (
-    <>
-      <main
-        className="min-h-screen bg-cover bg-center bg-no-repeat p-6 flex items-center justify-center bg-[#FFF6F6]"
-        style={{ backgroundImage: 'url(/image33.jpg)' }}
-      >
-        <div className="w-full max-w-3xl mx-auto bg-white/90 rounded-2xl shadow-xl p-8 flex flex-col items-center">
-          <BlurText
-            text="Planifiez l'événement parfait"
-            delay={120}
-            animateBy="words"
-            direction="top"
-            className="text-4xl md:text-5xl font-bold text-center text-[#F16462] mb-2"
-            animationFrom={undefined}
-            animationTo={undefined}
-            onAnimationComplete={undefined}
-          />
-
-          <BlurText
-            text="Mounasabet est la ressource la plus complète pour vous aider à organiser votre événement."
-            delay={60}
-            animateBy="words"
-            direction="top"
-            className="text-base md:text-lg text-[#3A3A3A] mb-1"
-            animationFrom={undefined}
-            animationTo={undefined}
-            onAnimationComplete={undefined}
-          />
-
-          <BlurText
-            text="Trouvez dès maintenant votre lieu de mariage, de fête ou de réunion."
-            delay={60}
-            animateBy="words"
-            direction="top"
-            className="text-base md:text-lg text-[#3A3A3A] mb-6"
-            animationFrom={undefined}
-            animationTo={undefined}
-            onAnimationComplete={undefined}
-          />
-
-          {/* Onglets de sélection */}
-          <div className="w-full flex rounded-t-lg overflow-hidden border-b-2 border-[#F16462]/30 mb-4">
-            <button className="flex-1 flex items-center justify-center gap-2 py-3 text-[#F16462] font-bold border-b-4 border-[#F16462] bg-white">
-              <Heart className="text-[#F16462]" size={22} />
-              Wedding
-            </button>
-            <button className="flex-1 flex items-center justify-center gap-2 py-3 text-[#3A3A3A] font-bold bg-[#1BA3A9]/90 border-b-4 border-[#1BA3A9]">
-              <Gift className="text-[#F16462]" size={22} />
-              Party
-            </button>
-            <button className="flex-1 flex items-center justify-center gap-2 py-3 text-[#3A3A3A] font-bold bg-[#1BA3A9]/90 border-b-4 border-[#1BA3A9]">
-              <Handshake className="text-[#1BA3A9]" size={22} />
-              Meeting
-            </button>
-          </div>
-
-          {/* Champ de recherche */}
-          <form className="w-full flex mb-6">
-            <input
-              type="text"
-              className="px-4 py-2 rounded border border-[#F16462]/40 focus:ring-2 focus:ring-[#F16462] placeholder-[#3A3A3A] text-[#3A3A3A]"
-              placeholder="jj/mm/aaaa"
-            />
-            <button
-              type="submit"
-              className="px-6 py-3 bg-[#1BA3A9] text-white font-bold rounded-r-md text-lg flex items-center gap-2 hover:bg-[#148b8f] transition"
+    <div style={{ backgroundColor: '#FFF1E8' }}> {/* Couleur de fond globale */}
+      <>
+        {/* Grand visuel émotionnel avec slogan */}
+        <main
+          className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center relative"
+          style={{
+            backgroundImage: 'url(/pexels-thevisionaryvows-32994494.jpg)',
+            backgroundAttachment: 'fixed',
+            backgroundColor: '#FFF1E8',
+          }}
+          ref={scrollContainerRef}
+        >
+          <div
+            ref={backgroundRef}
+            className="absolute inset-0 bg-black/70"
+          ></div>
+          <div className="relative z-10 text-center text-[#3A3A3A] px-6">
+            <motion.h1
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="font-bold text-[#F16462] text-[clamp(2rem,5vw,4rem)]"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
-              </svg>
-              Search Venues
-            </button>
-          </form>
-
-          {/* Boutons d'action */}
-          <div className="w-full flex flex-col md:flex-row justify-center gap-4 mt-2">
-            <button className="flex-1 bg-[#F16462] text-white text-lg px-6 py-4 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#d63d3d] transition">
-              <CalendarHeart className="mr-2" size={20} />
-              Réserver une date
-            </button>
-            <button className="flex-1 border-2 border-[#F16462] text-[#F16462] text-lg px-6 py-4 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-[#FFF6F6] transition">
-              <MapPin className="mr-2" size={20} />
-              Explorer les lieux
-            </button>
-          </div>
-        </div>
-
-        {/* Image décorative juste en dessous du bloc principal */}
-        <div className="w-full flex justify-center my-8">
+              Planifiez l&apos;événement parfait
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+              className="text-lg md:text-xl mt-4 text-white" // Changement de couleur en blanc
+            >
          
-        </div>
-      </main>
+            </motion.p>
 
-      {/* Find Your Venue section sur fond blanc, plus bas */}
-      <section className="w-full bg-white py-16">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-5xl font-serif font-bold text-center text-[#222] mb-12">Find Your Venue</h2>
-          <div className="flex flex-col md:flex-row gap-8 justify-center items-stretch">
-            {/* Party Venue */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              whileHover={{ y: -12, scale: 1.05, boxShadow: '0 8px 32px 0 rgba(0,0,0,0.18)' }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20, duration: 0.7, delay: 0.1 }}
-              className="flex-1 flex flex-col items-center rounded-lg overflow-hidden shadow-lg cursor-pointer"
-              style={{ background: "linear-gradient(135deg, #3A3A3A 0%, #F16462 60%, #1BA3A9 100%)" }}
-            >
-              <img src="/partyvenue.jpg" alt="Party Venue" className="w-full h-56 object-cover" />
-              <div className="flex flex-col items-center px-6 pb-8 pt-0 flex-1 w-full">
-                <div className="bg-white rounded-full shadow -mt-12 mb-4 p-4 border-4 border-white">
-                  <Gift className="text-[#D4843A]" size={48} />
-                </div>
-                <h3 className="text-3xl font-serif font-bold text-white mb-2 mt-2">Party Venue</h3>
-                <p className="text-white text-center mb-6 text-lg">Find a party venue for you anniversary, birthday party, office party, or a reunion of family and friends.</p>
-                <button className="bg-white text-[#D4843A] font-bold px-8 py-3 rounded shadow hover:bg-gray-100 transition text-lg">Find Your Venue</button>
-              </div>
-            </motion.div>
-            {/* Wedding Venue */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              whileHover={{ y: -12, scale: 1.05, boxShadow: '0 8px 32px 0 rgba(0,0,0,0.18)' }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20, duration: 0.7, delay: 0.3 }}
-              className="flex-1 flex flex-col items-center rounded-lg overflow-hidden shadow-lg cursor-pointer"
-              style={{ background: "linear-gradient(135deg, #3A3A3A 0%, #F16462 60%, #1BA3A9 100%)" }}
-            >
-              <img src="/weddingvenue.jpg" alt="Wedding Venue" className="w-full h-56 object-cover" />
-              <div className="flex flex-col items-center px-6 pb-8 pt-0 flex-1 w-full">
-                <div className="bg-white rounded-full shadow -mt-12 mb-4 p-4 border-4 border-white">
-                  <Heart className="text-[#8B6A8C]" size={48} />
-                </div>
-                <h3 className="text-3xl font-serif font-bold text-white mb-2 mt-2">Wedding Venue</h3>
-                <p className="text-white text-center mb-6 text-lg">Find a wedding venue for your reception. Banquet halls are popular, Barn weddings are a hot trend, and there are many unique venues like museums, zoos, and wineries.</p>
-                <button className="bg-white text-[#8B6A8C] font-bold px-8 py-3 rounded shadow hover:bg-gray-100 transition text-lg">Find Your Venue</button>
-              </div>
-            </motion.div>
-            {/* Meeting Venue */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              whileHover={{ y: -12, scale: 1.05, boxShadow: '0 8px 32px 0 rgba(0,0,0,0.18)' }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20, duration: 0.7, delay: 0.5 }}
-              className="flex-1 flex flex-col items-center rounded-lg overflow-hidden shadow-lg cursor-pointer"
-              style={{ background: "linear-gradient(135deg, #3A3A3A 0%, #F16462 60%, #1BA3A9 100%)" }}
-            >
-              <img src="/meetingvenue.jpg" alt="Meeting Venue" className="w-full h-56 object-cover" />
-              <div className="flex flex-col items-center px-6 pb-8 pt-0 flex-1 w-full">
-                <div className="bg-white rounded-full shadow -mt-12 mb-4 p-4 border-4 border-white">
-                  <Handshake className="text-[#8AA05B]" size={48} />
-                </div>
-                <h3 className="text-3xl font-serif font-bold text-white mb-2 mt-2">Meeting Venue</h3>
-                <p className="text-white text-center mb-6 text-lg">Find a meeting venue for any business gathering that can range from a small group in a hotel board room to a large conference at an event center.</p>
-                <button className="bg-white text-[#8AA05B] font-bold px-8 py-3 rounded shadow hover:bg-gray-100 transition text-lg">Find Your Venue</button>
-              </div>
-            </motion.div>
+            {/* Barre de sélection catégorie à la place de la barre de recherche */}
+            <div className="mt-8 flex justify-center">
+              <button
+                type="button"
+                className={`bg-white hover:bg-[#1BA3A9]/10 focus:ring-4 focus:outline-none focus:ring-[#1BA3A9]/30 font-medium rounded-full text-base px-8 py-3 text-center inline-flex items-center mx-2 mb-2 border-2 border-[#1BA3A9] transition`} style={{ color: '#1BA3A9' }}
+                onClick={() => {
+                  setSelectedCategory('etablissement');
+                  router.push('/recherche/etablissement');
+                }}
+              >
+                <span className="text-xl mr-2"></span> Établissements
+              </button>
+              <button
+                type="button"
+                className={`bg-white hover:bg-[#1BA3A9]/10 focus:ring-4 focus:outline-none focus:ring-[#1BA3A9]/30 font-medium rounded-full text-base px-8 py-3 text-center inline-flex items-center mx-2 mb-2 border-2 border-[#1BA3A9] transition`} style={{ color: '#1BA3A9' }}
+                onClick={() => {
+                  setSelectedCategory('produit');
+                  router.push('/recherche/materiel');
+                }}
+              >
+                <span className="text-xl mr-2"></span> Matériels
+              </button>
+              <button
+                type="button"
+                className={`bg-white hover:bg-[#1BA3A9]/10 focus:ring-4 focus:outline-none focus:ring-[#1BA3A9]/30 font-medium rounded-full text-base px-8 py-3 text-center inline-flex items-center mx-2 mb-2 border-2 border-[#1BA3A9] transition`} style={{ color: '#1BA3A9' }}
+                onClick={() => {
+                  setSelectedCategory('service');
+                  router.push('/recherche/service');
+                }}
+              >
+                <span className="text-xl mr-2"></span> Services
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
-    </>
+        </main>
+
+        {/* Suggestions de lieux populaires avec effet Tilt */}
+        <section className="bg-[#FFF6F6] py-16">
+          <div className="max-w-6xl mx-auto px-4">
+            <motion.h2
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="text-4xl font-bold text-center text-[#3A3A3A] mb-8"
+            >
+              Trouvez tous les prestataires dont vous avez besoin
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+              className="text-center text-lg text-[#3A3A3A] mb-12"
+            >
+              Connectez-vous avec des professionnels expérimentés pour rendre votre journée inoubliable.
+            </motion.p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
+              {/* Wedding Venues */}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer transition-transform"
+              >
+                <Image
+                  src="/venue.jpg"
+                  alt="Lieux de mariage"
+                  width={200}
+                  height={300}
+                  className="w-full h-56 object-cover"
+                />
+                <div className="p-6 text-center">
+                  <motion.h3
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="text-xl font-bold text-[#F16462] mb-2"
+                  >
+                    Lieux
+                  </motion.h3>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+                    className="text-[#3A3A3A]"
+                  >
+                    Explorez et visitez des lieux de réception pour célébrer votre amour.
+                  </motion.p>
+                </div>
+              </motion.div>
+
+              {/* Wedding Photographers */}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer transition-transform"
+              >
+                <Image
+                  src="/photographer.jpg"
+                  alt="Photographes de mariage"
+                  width={500}
+                  height={300}
+                  className="w-full h-56 object-cover"
+                />
+                <div className="p-6 text-center">
+                  <motion.h3
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="text-xl font-bold text-[#F16462] mb-2"
+                  >
+                    Photographes
+                  </motion.h3>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+                    className="text-[#3A3A3A]"
+                  >
+                    Trouvez des photographes locaux pour capturer l'essence de votre journée.
+                  </motion.p>
+                </div>
+              </motion.div>
+
+              {/* Wedding Caterers */}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer transition-transform"
+              >
+                <Image
+                  src="/food.jpg"
+                  alt="Traiteurs de mariage"
+                  width={500}
+                  height={300}
+                  className="w-full h-56 object-cover"
+                />
+                <div className="p-6 text-center">
+                  <motion.h3
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="text-xl font-bold text-[#F16462] mb-2"
+                  >
+                    Traiteurs
+                  </motion.h3>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+                    className="text-[#3A3A3A]"
+                  >
+                    Découvrez des chefs et barmans pour créer un menu inoubliable.
+                  </motion.p>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      </>
+    </div>
   );
 }
