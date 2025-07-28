@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
 
 function RechercheHeader() {
   return (
@@ -130,6 +131,7 @@ const mockMateriels: Materiel[] = [
 ];
 
 export default function MaterielPage() {
+  const router = useRouter();
   const [evenement, setEvenement] = useState<string>("");
 
   const materielsFiltres = evenement

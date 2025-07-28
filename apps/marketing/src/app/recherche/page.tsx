@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import TabsWithStar from "../../../components/TabsWithStar";
 
 function RechercheHeader() {
   return (
@@ -162,8 +163,10 @@ export default function Recherche() {
       <div className="bg-white pt-24 pb-8">
         <div className="max-w-6xl mx-auto px-6">
           <div className="max-w-4xl mx-auto">
+            {/* Onglets personnalisés */}
+            <TabsWithStar />
             {/* Barre de recherche */}
-            <div className="bg-white shadow-lg rounded-lg p-4 border border-gray-300">
+            <div className="bg-white shadow-lg rounded-lg p-4 border border-gray-300 mt-4">
               <form className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <select className="px-4 py-3 border border-gray-300 rounded focus:ring-2 focus:ring-[#F16462] text-gray-600 placeholder-gray-500">
                   <option value="" disabled>Type d'événement</option>
@@ -247,6 +250,14 @@ export default function Recherche() {
                 <span className="text-sm text-[#3A3A3A]">DJ</span>
               </label>
             </div>
+          </div>
+          {/* Barre de recherche prestataire */}
+          <div className="mb-6">
+            <input
+              type="text"
+              placeholder="Rechercher un prestataire..."
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[#F16462] text-gray-600 placeholder-gray-500"
+            />
           </div>
 
           {/* Prix */}
