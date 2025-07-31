@@ -1,0 +1,273 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import { FiArrowRight } from 'react-icons/fi';
+
+// Data
+const features = [
+  {
+    title: 'Expérience Inégalée',
+    description: 'Une expertise reconnue dans la création d\'événements exceptionnels',
+    icon: '💡',
+    image: '/pexels-milan-3053700-4639393.jpg'
+  },
+  {
+    title: 'Service Sur Mesure',
+    description: 'Une approche personnalisée pour chaque événement unique',
+    icon: '✨',
+    image: '/pexels-thevisionaryvows-32994494.jpg'
+  },
+  {
+    title: 'Excellence Garantie',
+    description: 'Un réseau de prestataires triés sur le volet pour une qualité optimale',
+    icon: '🏆',
+    image: '/pexels-fonok-403495.jpg'
+  }
+];
+
+const stats = [
+  { value: '1000+', label: 'Événements organisés' },
+  { value: '500+', label: 'Prestataires partenaires' },
+  { value: '20+', label: 'Villes couvertes' },
+  { value: '98%', label: 'Clients satisfaits' }
+];
+
+const values = [
+  {
+    title: 'Fiabilité',
+    description: 'Des prestataires vérifiés et de confiance',
+    icon: '🤝'
+  },
+  {
+    title: 'Transparence',
+    description: 'Pas de frais cachés, tout est clair dès le début',
+    icon: '🔍'
+  },
+  {
+    title: 'Passion',
+    description: 'Chaque événement est unique et mérite le meilleur',
+    icon: '❤️'
+  },
+  {
+    title: 'Innovation',
+    description: 'Des solutions créatives pour des événements mémorables',
+    icon: '💡'
+  }
+];
+
+export default function APropos() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/pexels-milan-3053700-4639393.jpg"
+            alt="Événement de mariage"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 text-center text-white relative z-10">
+          <motion.h1 
+            className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            Votre Événement, Notre Passion
+          </motion.h1>
+          <motion.p 
+            className="text-xl md:text-2xl text-gray-200 mb-12 max-w-4xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            Découvrez l'excellence dans l'organisation d'événements en Tunisie
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+          >
+            <Link 
+              href="/contact" 
+              className="inline-flex items-center justify-center bg-white text-gray-900 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-colors text-lg"
+            >
+              Nous contacter <FiArrowRight className="ml-2" />
+            </Link>
+            <Link 
+              href="/prestataires" 
+              className="inline-flex items-center justify-center border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:bg-opacity-10 transition-colors text-lg"
+            >
+              Découvrir nos prestataires
+            </Link>
+          </motion.div>
+        </div>
+        
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
+            <div className="w-1 h-2 bg-white rounded-full mt-2"></div>
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center mb-16">
+            <span className="text-lg font-semibold text-indigo-600 mb-4 inline-block">
+              À PROPOS DE NOUS
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">Une Expérience Unique</h2>
+            <p className="text-xl text-gray-600 leading-relaxed">
+              Monasabet révolutionne l'organisation d'événements en Tunisie en offrant une plateforme complète 
+              qui vous accompagne de l'inspiration à la réalisation de votre événement de rêve.
+            </p>
+          </div>
+
+          {/* Features Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                className="bg-white rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <div className="relative h-64">
+                  <Image
+                    src={feature.image}
+                    alt={feature.title}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                    <span className="text-5xl">{feature.icon}</span>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Values Section */}
+          <div className="bg-gray-50 rounded-3xl p-8 md:p-12">
+            <div className="max-w-3xl mx-auto text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">Nos Valeurs</h2>
+              <p className="text-xl text-gray-600">
+                Ces principes guident chacune de nos actions et décisions
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {values.map((value, index) => (
+                <motion.div
+                  key={index}
+                  className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <div className="text-4xl mb-4">{value.icon}</div>
+                  <h3 className="text-xl font-bold mb-2">{value.title}</h3>
+                  <p className="text-gray-600">{value.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-20 bg-indigo-600 text-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <div className="text-4xl md:text-5xl font-bold mb-2">{stat.value}</div>
+                <div className="text-lg text-indigo-100">{stat.label}</div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="relative py-32 overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/pexels-thevisionaryvows-32994494.jpg"
+            alt="Couple heureux"
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-indigo-900 bg-opacity-80"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <motion.h2 
+            className="text-4xl md:text-5xl font-bold mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            Prêt à créer des souvenirs inoubliables ?
+          </motion.h2>
+          <motion.p 
+            className="text-xl mb-8 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+          >
+            Contactez-nous dès aujourd'hui pour discuter de votre projet et découvrir comment nous pouvons le rendre exceptionnel.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <Link 
+              href="/contact" 
+              className="inline-flex items-center justify-center bg-white text-indigo-900 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-colors text-lg"
+            >
+              Parler à un expert <FiArrowRight className="ml-2" />
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+    </div>
+  );
+}

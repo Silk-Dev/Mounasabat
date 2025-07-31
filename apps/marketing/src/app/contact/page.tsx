@@ -170,21 +170,21 @@ export default function Contact() {
                 <motion.div 
                   whileHover={{ scale: 1.02, y: -5 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className="group relative bg-gradient-to-br from-purple-500/10 to-purple-500/5 p-6 rounded-2xl border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20"
+                  className="group relative bg-gradient-to-br from-[#F16462]/10 to-[#F16462]/5 p-6 rounded-2xl border border-[#F16462]/20 hover:border-[#F16462]/40 transition-all duration-300 hover:shadow-xl hover:shadow-[#F16462]/20"
                 >
                   <div className="flex items-center space-x-4">
                     <motion.div 
                       whileHover={{ rotate: 15, scale: 1.1 }}
-                      className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-500/80 rounded-2xl flex items-center justify-center shadow-lg"
+                      className="w-14 h-14 bg-gradient-to-br from-[#F16462] to-[#F16462]/80 rounded-2xl flex items-center justify-center shadow-lg"
                     >
                       <FiMapPin className="text-white text-xl" />
                     </motion.div>
                     <div>
-                      <h3 className="font-bold text-[#3A3A3A] text-lg group-hover:text-purple-500 transition-colors">Adresse</h3>
+                      <h3 className="font-bold text-[#3A3A3A] text-lg group-hover:text-[#F16462] transition-colors">Adresse</h3>
                       <p className="text-gray-600 font-medium">Tunis, Tunisie</p>
                     </div>
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#F16462]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
                 </motion.div>
               </div>
 
