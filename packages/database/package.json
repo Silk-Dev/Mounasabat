@@ -7,7 +7,13 @@
   "scripts": {
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "db:seed:test": "tsx ./prisma/seed-test.ts",
+    "db:reset": "prisma migrate reset --force",
+    "db:studio": "prisma studio",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@prisma/client": "5.8.0",
@@ -15,10 +21,12 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.12",
+    "@vitest/coverage-v8": "^1.0.0",
     "prisma": "5.8.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^1.6.1"
   },
   "prisma": {
     "seed": "tsx ./prisma/seed.ts"

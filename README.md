@@ -26,7 +26,6 @@ Mounasabet is a flexible SaaS platform built with Turborepo that connects event 
 - **Prisma ORM** (v5.8.0)
 - **PostgreSQL** database
 - **better-auth** for authentication
-- **better-auth** for authentication
 - **Redis** for caching/real-time
 
 ### Infrastructure
@@ -203,7 +202,7 @@ services:
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: weddnidb
+      POSTGRES_DB: mounasabet
     ports:
       - "5432:5432"
     volumes:
@@ -285,26 +284,6 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           scope: Mounasabet
 ```
-
-## Contributing
-
-1. Fork the repository
-2. Create feature branch: `git checkout -b feat/new-component`
-3. Commit changes: `git commit -am 'Add new pricing model'`
-4. Push branch: `git push origin feat/new-component`
-5. Open pull request
-
-**Before submitting:**
-
-```bash
-npm run lint   # Check code quality
-npm run build  # Verify builds succeed
-npm test       # Run all tests
-```
-
-## License
-
-Mounasabet is [MIT licensed](LICENSE).
 
 ---
 

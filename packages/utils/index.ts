@@ -12,3 +12,5 @@ export function formatDate(date: Date): string {
     day: "numeric",
   }).format(date);
 }
+
+export * from "./src/i18n"
