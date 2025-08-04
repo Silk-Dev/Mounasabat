@@ -131,19 +131,20 @@ const APropos = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Modern Hero Section */}
-      <section className="relative pt-32 pb-24 overflow-hidden min-h-[80vh] flex items-center">
+      <section className="relative pt-32 pb-1 overflow-hidden min-h-[100vh] flex items-center">
         <div className="absolute inset-0 -z-10">
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: 'url(/back.jpg)',
+              backgroundImage: 'url(/expertise.jpg)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat'
+              backgroundRepeat: 'no-repeat',
+              filter: 'brightness(0.7) contrast(1.1)'
             }}
           />
-          {/* Voile noir semi-transparent */}
-          <div className="absolute inset-0 bg-black/50"></div>
+          {/* Dégradé noir pour assombrir l'image */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
           
         </div>
         
@@ -157,12 +158,12 @@ const APropos = () => {
             <motion.h1 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-5xl md:text-7xl font-bold text-white mb-8"
+              className="text-4xl md:text-5xl font-bold text-white mb-8"
             >
-              Votre Événement, Notre Engagement
+            À PROPOS DE NOUS
             </motion.h1>
             <motion.p 
-              className="text-xl text-gray-200 mb-12 max-w-4xl mx-auto"
+              className="text-lg text-gray-200 mb-8 max-w-3xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -177,17 +178,12 @@ const APropos = () => {
             >
               <Link 
                 href="/contact" 
-                className="inline-flex items-center justify-center bg-white text-gray-900 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-colors text-lg"
+                className="inline-flex items-center justify-center bg-[#F16462] text-white px-8 py-4 rounded-full font-semibold hover:bg-[#e04e4c] transition-colors text-lg"
               >
                 Nous contacter <FiArrowRight className="ml-2" />
               </Link>
-              <Link 
-                href="/prestataires" 
-                className="inline-flex items-center justify-center border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:bg-opacity-10 transition-colors text-lg"
-              >
-                Découvrir nos prestataires
-              </Link>
-            </motion.div>
+      
+          </motion.div>
           </motion.div>
 
           {/* Équipe tunisienne */}
@@ -225,9 +221,6 @@ const APropos = () => {
       <section className="py-24 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-16">
-            <span className="text-lg font-semibold text-[#F16462] mb-4 inline-block">
-              À PROPOS DE NOUS
-            </span>
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-[#3A3A3A]">Une Expérience Unique</h2>
             <p className="text-xl text-gray-600 leading-relaxed">
               Monasabet révolutionne l'organisation d'événements en Tunisie en offrant une plateforme complète 
