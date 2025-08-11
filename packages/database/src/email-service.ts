@@ -1,4 +1,4 @@
-import { type Language } from '@repo/utils/i18n';
+import { type Language } from '@mounasabet/utils';
 
 /**
  * Enhanced email data interface with multi-language support

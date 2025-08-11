@@ -1,0 +1,1 @@
+export { UserPreferencesComponent as UserPreferences } from './UserPreferences';
