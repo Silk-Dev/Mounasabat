@@ -35,21 +35,21 @@
   - Add proper loading states to all search components
   - _Requirements: 1.2, 2.1, 2.2, 5.1_
 
-- [ ] 6. Fix provider services page data loading
+- [x] 6. Fix provider services page data loading
   - Ensure services page only shows real provider services
   - Add proper empty state when provider has no services
   - Implement proper error handling for API failures
   - Add loading states during data fetching
   - _Requirements: 4.1, 4.2, 6.1, 6.4_
 
-- [ ] 7. Fix admin providers page data loading
+- [x] 7. Fix admin providers page data loading
   - Ensure providers page only shows real provider data
   - Add proper empty state when no providers exist
   - Implement proper error handling for API failures
   - Add loading states during data fetching
   - _Requirements: 3.1, 3.2, 6.1, 6.4_
 
-- [ ] 8. Update dashboard components to use real data
+- [-] 8. Update dashboard components to use real data
   - Remove any hardcoded metrics from RealTimeDashboard
   - Ensure all dashboard data comes from database queries
   - Add proper empty states for new providers/admins

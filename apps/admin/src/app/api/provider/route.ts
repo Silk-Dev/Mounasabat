@@ -1,45 +1,156 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const providers = await prisma.provider.findMany({
-      include: { user: true },
-    });
-    return NextResponse.json(providers);
-  } catch (error) {
-    console.error('Error fetching providers:', error);
-    return NextResponse.json({ error: 'Failed to fetch providers' }, { status: 500 });
-  }
-}
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
+    const providerId = searchParams.get('providerId');
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const search = searchParams.get('search');
 
-export async function POST(req: NextRequest) {
-  try {
-    const { userId, name, description, contactEmail, phoneNumber, address, website, services } = await req.json();
+    // If specific provider is requested
+    if (userId || providerId) {
+      let provider;
 
-    if (!userId || !name) {
-      return NextResponse.json({ error: 'User ID and name are required' }, { status: 400 });
+      if (providerId) {
+        provider = await prisma.provider.findUnique({
+          where: { id: providerId },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              }
+            },
+            serviceOfferings: {
+              where: { isActive: true },
+              select: {
+                id: true,
+                name: true,
+                category: true,
+              }
+            },
+            _count: {
+              select: {
+                serviceOfferings: true,
+                reviews: true,
+              }
+            }
+          }
+        });
+      } else {
+        provider = await prisma.provider.findUnique({
+          where: { userId: userId! },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              }
+            },
+            serviceOfferings: {
+              where: { isActive: true },
+              select: {
+                id: true,
+                name: true,
+                category: true,
+              }
+            },
+            _count: {
+              select: {
+                serviceOfferings: true,
+                reviews: true,
+              }
+            }
+          }
+        });
+      }
+
+      if (!provider) {
+        return NextResponse.json(
+          { success: false, error: 'Provider not found' },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        provider,
+      });
     }
 
-    const newProvider = await prisma.provider.create({
-      data: {
-        userId,
-        name,
-        description,
-        contactEmail,
-        phoneNumber,
-        address,
-        website,
-        services,
-      },
+    // Fetch all providers for admin (no specific userId or providerId)
+    const skip = (page - 1) * limit;
+    
+    const whereClause = search ? {
+      OR: [
+        { name: { contains: search, mode: 'insensitive' as const } },
+        { user: { name: { contains: search, mode: 'insensitive' as const } } },
+        { user: { email: { contains: search, mode: 'insensitive' as const } } },
+      ]
+    } : {};
+
+    const [providers, totalCount] = await Promise.all([
+      prisma.provider.findMany({
+        where: whereClause,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            }
+          },
+          serviceOfferings: {
+            where: { isActive: true },
+            select: {
+              id: true,
+              name: true,
+              category: true,
+            }
+          },
+          _count: {
+            select: {
+              serviceOfferings: true,
+              reviews: true,
+            }
+          }
+        },
+        orderBy: [
+          { isVerified: 'desc' },
+          { createdAt: 'desc' }
+        ],
+        skip,
+        take: limit,
+      }),
+      prisma.provider.count({ where: whereClause })
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      providers,
+      pagination: {
+        page,
+        limit,
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+      }
     });
 
-    return NextResponse.json(newProvider, { status: 201 });
   } catch (error) {
-    console.error('Error creating provider:', error);
-    return NextResponse.json({ error: 'Failed to create provider' }, { status: 500 });
+    console.error('Error fetching providers:', error);
+    return NextResponse.json(
+      { 
+        success: false,
+        error: 'Failed to fetch provider information' 
+      },
+      { status: 500 }
+    );
   }
 }
