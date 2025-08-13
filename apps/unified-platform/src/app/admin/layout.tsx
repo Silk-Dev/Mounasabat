@@ -3,9 +3,9 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { useAuth, useRole } from '@/lib/auth-context';
-import { Button } from '@mounasabet/ui';
-import { Avatar, AvatarFallback, AvatarImage } from '@mounasabet/ui';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@mounasabet/ui';
+import { Button } from '@/components/ui';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui';
 import { User, LogOut, Settings, BarChart3, Users, Shield, Cog, Star } from 'lucide-react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';

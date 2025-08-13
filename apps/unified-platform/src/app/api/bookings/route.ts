@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { prisma } from '@mounasabet/database';
+import { prisma } from '@/lib/database/prisma';
 import { auth } from '@/lib/auth';
 import { withRateLimit } from '@/lib/rate-limiter';
 import { auditLogger, AuditEventType, AuditLogLevel, auditHelpers } from '@/lib/audit-logger';
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
         lastName: customerInfo.lastName,
         email: customerInfo.email,
         phone: customerInfo.phone,
-        address: customerInfo.address,
+        address: JSON.stringify(customerInfo.address),
       });
 
       // Start transaction

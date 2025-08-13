@@ -3,14 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import { Card, CardContent, CardHeader, CardTitle } from '@mounasabet/ui';
-import { Button } from '@mounasabet/ui';
-import { Input } from '@mounasabet/ui';
-import { Textarea } from '@mounasabet/ui';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@mounasabet/ui';
-import { Label } from '@mounasabet/ui';
-import { Switch } from '@mounasabet/ui';
-import { Badge } from '@mounasabet/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { Input } from '@/components/ui';
+import { Textarea } from '@/components/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui';
+import { Label } from '@/components/ui';
+import { Switch } from '@/components/ui';
+import { Badge } from '@/components/ui';
 import { ArrowLeft, Plus, X, Upload } from 'lucide-react';
 import Link from 'next/link';
 

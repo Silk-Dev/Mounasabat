@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { prisma } from '@mounasabet/database';
+import { prisma } from '@/lib/database/prisma';
 
 const timeSlotSchema = z.object({
   id: z.string(),

@@ -12,7 +12,7 @@ import {
   Calendar
 } from 'lucide-react';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Button } from '@mounasabet/ui';
+import { Button } from '@/components/ui';
 import type { SearchFilters } from '@/types';
 
 interface SearchEmptyStateProps {

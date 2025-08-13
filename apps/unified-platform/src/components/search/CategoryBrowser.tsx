@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card } from '@mounasabet/ui';
-import { Button } from '@mounasabet/ui';
+import { Card } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { Loader2 } from 'lucide-react';
 import type { SearchFilters } from '@/types';
 

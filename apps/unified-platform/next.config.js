@@ -1,18 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Server external packages for Next.js 15
-  serverExternalPackages: ['@mounasabet/database'],
-  // Transpile packages from the monorepo
-  transpilePackages: [
-    '@mounasabet/ui',
-    '@mounasabet/events',
-    '@mounasabet/pricing',
-    '@mounasabet/notifications',
-    '@mounasabet/users',
-    '@mounasabet/utils',
-    '@mounasabet/types',
-    '@mounasabet/calendar',
-  ],
   images: {
     domains: ['localhost'],
     remotePatterns: [
@@ -32,14 +19,20 @@ const nextConfig = {
   // Performance optimizations
   experimental: {
     optimizePackageImports: [
-      '@mounasabet/ui',
-      '@mounasabet/events',
-      '@mounasabet/pricing',
-      '@mounasabet/notifications',
-      '@mounasabet/users',
-      '@mounasabet/utils',
-      '@mounasabet/types',
-      '@mounasabet/calendar',
+      'lucide-react',
+      '@radix-ui/react-accordion',
+      '@radix-ui/react-alert-dialog',
+      '@radix-ui/react-avatar',
+      '@radix-ui/react-checkbox',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-label',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-select',
+      '@radix-ui/react-separator',
+      '@radix-ui/react-switch',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-tooltip',
     ],
   },
   // Compression

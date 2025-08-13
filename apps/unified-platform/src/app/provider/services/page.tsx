@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { Card, CardContent, CardHeader, CardTitle } from '@mounasabet/ui';
-import { Button } from '@mounasabet/ui';
-import { Badge } from '@mounasabet/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { Badge } from '@/components/ui';
 import { 
   Plus, 
   Edit, 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@mounasabet/database';
+import { prisma } from '@/lib/database/prisma';
 import { getSession } from '@/lib/auth';
 
 // Get all service categories with statistics

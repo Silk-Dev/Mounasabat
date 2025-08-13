@@ -36,7 +36,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@mounasabet/ui';
+} from '@/components/ui';
 import { 
   Search, 
   Filter, 

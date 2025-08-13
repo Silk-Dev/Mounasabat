@@ -10,7 +10,13 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "eslint .",
-    "format": "prettier --write '**/*.{ts,tsx,md}'"
+    "format": "prettier --write '**/*.{ts,tsx,md}'",
+    "deploy": "node scripts/deployment-pipeline.js",
+    "deploy:production": "NODE_ENV=production node scripts/deployment-pipeline.js production",
+    "deploy:staging": "NODE_ENV=staging node scripts/deployment-pipeline.js staging",
+    "monitoring:check": "node scripts/monitoring-cron.js",
+    "monitoring:cron": "node scripts/monitoring-cron.js",
+    "verify:production": "node scripts/verify-production-config.js"
   },
   "devDependencies": {
     "@mounasabet/eslint-config": "*",

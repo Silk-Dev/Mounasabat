@@ -80,8 +80,14 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
 
-      - name: Seed production database
-        run: npm run db:seed:prod
+      - name: Seed production database (base only)
+        run: NODE_ENV=production npm run seed base
+        working-directory: packages/database
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+
+      - name: Validate seed data
+        run: npm run seed validate
         working-directory: packages/database
         env:
           DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}

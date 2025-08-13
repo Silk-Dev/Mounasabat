@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, MapPin, Calendar, Users, Filter, AlertCircle } from 'lucide-react';
-import { Button } from '@mounasabet/ui';
-import { Input } from '@mounasabet/ui';
-import { Card } from '@mounasabet/ui';
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@mounasabet/ui';
+import { Button } from '@/components/ui';
+import { Input } from '@/components/ui';
+import { Card } from '@/components/ui';
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSearchErrorHandler } from '@/lib/hooks/useErrorHandler';
 import { LoadingSpinner } from '@/components/ui/loading';

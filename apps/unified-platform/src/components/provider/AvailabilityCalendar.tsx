@@ -21,48 +21,36 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
   const [availabilityData, setAvailabilityData] = useState<AvailabilitySlot[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Mock availability data - in real app, this would come from API
-  const mockAvailability: AvailabilitySlot[] = [
-    {
-      date: new Date(2025, 7, 10),
-      startTime: '09:00',
-      endTime: '12:00',
-      isAvailable: true
-    },
-    {
-      date: new Date(2025, 7, 10),
-      startTime: '14:00',
-      endTime: '17:00',
-      isAvailable: true
-    },
-    {
-      date: new Date(2025, 7, 11),
-      startTime: '10:00',
-      endTime: '15:00',
-      isAvailable: false,
-      bookingId: 'booking-123'
-    },
-    {
-      date: new Date(2025, 7, 12),
-      startTime: '09:00',
-      endTime: '18:00',
-      isAvailable: true
-    },
-    {
-      date: new Date(2025, 7, 15),
-      startTime: '13:00',
-      endTime: '16:00',
-      isAvailable: true
+  // Fetch availability data from API
+  const fetchAvailability = async (date: Date, providerId: string) => {
+    try {
+      const response = await fetch(`/api/providers/${providerId}/availability?month=${date.getMonth() + 1}&year=${date.getFullYear()}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch availability');
+      }
+      const data = await response.json();
+      return data.availability || [];
+    } catch (error) {
+      console.error('Error fetching availability:', error);
+      return [];
     }
-  ];
+  };
 
   useEffect(() => {
-    // Simulate API call to fetch availability
-    setLoading(true);
-    setTimeout(() => {
-      setAvailabilityData(mockAvailability);
-      setLoading(false);
-    }, 500);
+    const loadAvailability = async () => {
+      setLoading(true);
+      try {
+        const availability = await fetchAvailability(currentDate, providerId);
+        setAvailabilityData(availability);
+      } catch (error) {
+        console.error('Failed to load availability:', error);
+        setAvailabilityData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAvailability();
   }, [currentDate, providerId]);
 
   const getDaysInMonth = (date: Date) => {

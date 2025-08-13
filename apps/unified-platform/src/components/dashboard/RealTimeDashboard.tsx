@@ -52,14 +52,19 @@ export function RealTimeDashboard({ providerId, userRole }: RealTimeDashboardPro
   const [recentBookings, setRecentBookings] = useState<RecentBooking[]>([]);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'connecting'>('connecting');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Load initial dashboard data
     loadDashboardData();
 
-    // Set up WebSocket connection
-    const userId = 'current-user-id'; // Get from auth context
-    websocketService.connect(userId, userRole);
+    // Set up WebSocket connection - only if we have a valid user
+    if (typeof window !== 'undefined') {
+      // Get user ID from session/auth context in a real implementation
+      // For now, we'll skip WebSocket connection if no proper user ID is available
+      const userId = providerId || 'anonymous';
+      websocketService.connect(userId, userRole);
+    }
     
     // Subscribe to dashboard updates
     const unsubscribe = websocketService.subscribe('dashboard_update', handleDashboardUpdate);
@@ -78,16 +83,67 @@ export function RealTimeDashboard({ providerId, userRole }: RealTimeDashboardPro
   const loadDashboardData = async () => {
     try {
       setLoading(true);
+      setError(null);
+      
       const endpoint = userRole === 'admin' ? '/api/admin/dashboard' : `/api/provider/${providerId}/dashboard`;
       const response = await fetch(endpoint);
       
-      if (response.ok) {
-        const data = await response.json();
-        setMetrics(data.metrics);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch dashboard data: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (userRole === 'admin') {
+        if (data.metrics) {
+          // Transform admin metrics to match dashboard interface
+          setMetrics({
+            totalBookings: data.metrics.overview?.totalBookings?.value || 0,
+            totalRevenue: data.metrics.overview?.totalOrders?.value || 0,
+            averageRating: 0, // Admin dashboard doesn't have average rating
+            activeCustomers: data.metrics.overview?.totalUsers?.value || 0,
+            pendingBookings: data.metrics.breakdowns?.bookingsByStatus?.PENDING || 0,
+            completedBookings: data.metrics.breakdowns?.bookingsByStatus?.CONFIRMED || 0,
+            cancelledBookings: data.metrics.breakdowns?.bookingsByStatus?.CANCELLED || 0,
+            monthlyGrowth: parseFloat(data.metrics.overview?.totalBookings?.growth?.replace(/[+%]/g, '') || '0'),
+            revenueGrowth: 0, // Not available in admin metrics
+            lastUpdated: new Date()
+          });
+          
+          // Transform recent activity to recent bookings format
+          const recentBookings = (data.metrics.recentActivity || [])
+            .filter((activity: any) => activity.type === 'booking')
+            .slice(0, 5)
+            .map((activity: any) => ({
+              id: activity.bookingId || Math.random().toString(),
+              customerName: activity.message.split(' booked ')[0] || 'Customer',
+              serviceName: activity.message.split(' booked ')[1] || 'Service',
+              amount: 0, // Not available in activity data
+              status: 'confirmed',
+              date: new Date(activity.timestamp)
+            }));
+          
+          setRecentBookings(recentBookings);
+        }
+      } else {
+        // Provider dashboard
+        setMetrics(data.metrics || {
+          totalBookings: 0,
+          totalRevenue: 0,
+          averageRating: 0,
+          activeCustomers: 0,
+          pendingBookings: 0,
+          completedBookings: 0,
+          cancelledBookings: 0,
+          monthlyGrowth: 0,
+          revenueGrowth: 0,
+          lastUpdated: new Date()
+        });
         setRecentBookings(data.recentBookings || []);
       }
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
@@ -178,6 +234,35 @@ export function RealTimeDashboard({ providerId, userRole }: RealTimeDashboardPro
             </CardContent>
           </Card>
         ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">
+            {userRole === 'admin' ? 'Platform Dashboard' : 'Provider Dashboard'}
+          </h2>
+        </div>
+        <Card>
+          <CardContent className="p-8 text-center">
+            <div className="flex flex-col items-center">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                <Activity className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-medium mb-2">Dashboard Unavailable</h3>
+              <p className="text-muted-foreground mb-4">{error}</p>
+              <button 
+                onClick={loadDashboardData}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+              >
+                Try Again
+              </button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { prisma } from '@mounasabet/database';
+import { prisma } from '@/lib/database/prisma';
 
 const updateServiceSchema = z.object({
   name: z.string().min(1, 'Service name is required').optional(),

@@ -97,11 +97,49 @@ export class CategoryService {
   }
 
   /**
-   * Get trending categories (first 6 categories)
+   * Get trending categories based on search analytics
    */
   static async getTrendingCategories(): Promise<Category[]> {
-    const categories = await this.getAllCategories();
-    return categories.slice(0, 6);
+    try {
+      // Import SearchAnalytics here to avoid circular dependency
+      const { SearchAnalytics } = await import('./search-analytics');
+      
+      // Get trending categories from search analytics
+      const trendingFromAnalytics = await SearchAnalytics.getTrendingCategories(7);
+      
+      if (trendingFromAnalytics.length > 0) {
+        // Get all categories to match with trending data
+        const allCategories = await this.getAllCategories();
+        const categoryMap = new Map(allCategories.map(cat => [cat.name.toLowerCase(), cat]));
+        
+        // Map trending categories to full category objects
+        const trendingCategories = trendingFromAnalytics
+          .map(({ category }) => categoryMap.get(category.toLowerCase()))
+          .filter(Boolean) as Category[];
+        
+        // Fill remaining slots with other categories if needed
+        const remainingSlots = 6 - trendingCategories.length;
+        if (remainingSlots > 0) {
+          const usedCategoryIds = new Set(trendingCategories.map(cat => cat.id));
+          const additionalCategories = allCategories
+            .filter(cat => !usedCategoryIds.has(cat.id))
+            .slice(0, remainingSlots);
+          
+          trendingCategories.push(...additionalCategories);
+        }
+        
+        return trendingCategories.slice(0, 6);
+      }
+      
+      // Fallback to first 6 categories if no analytics data
+      const categories = await this.getAllCategories();
+      return categories.slice(0, 6);
+    } catch (error) {
+      console.error('Failed to get trending categories:', error);
+      // Fallback to first 6 categories
+      const categories = await this.getAllCategories();
+      return categories.slice(0, 6);
+    }
   }
 
   /**

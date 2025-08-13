@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card } from '@mounasabet/ui';
-import { Button } from '@mounasabet/ui';
-import { Badge } from '@mounasabet/ui';
+import { Card } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { Badge } from '@/components/ui';
 import { 
   Star, 
   MapPin, 

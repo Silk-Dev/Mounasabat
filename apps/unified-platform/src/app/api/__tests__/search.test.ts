@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { POST } from '../search/route';
 
 // Mock Prisma
-jest.mock('../../../lib/prisma', () => ({
+jest.mock('@/lib/prisma', () => ({
   prisma: {
     service: {
       findMany: jest.fn(),
@@ -15,14 +15,14 @@ jest.mock('../../../lib/prisma', () => ({
 }));
 
 // Mock search utilities
-jest.mock('../../../lib/search', () => ({
+jest.mock('@/lib/search', () => ({
   buildSearchQuery: jest.fn(),
   buildSearchFilters: jest.fn(),
   calculateRelevanceScore: jest.fn(),
 }));
 
-import { prisma } from '../../../lib/prisma';
-import { buildSearchQuery, buildSearchFilters } from '../../../lib/search';
+import { prisma } from '@/lib/prisma';
+import { buildSearchQuery, buildSearchFilters } from '@/lib/search';
 
 const mockServices = [
   {

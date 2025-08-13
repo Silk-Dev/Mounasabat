@@ -57,30 +57,31 @@ export function DateTimePicker({
     setLoading(true);
     try {
       // Simulate API call to check availability
-      // In real implementation, this would call the backend
+      // Fetch availability from backend
       const providerIds = [...new Set(selectedServices.map(s => s.providerId))];
       
-      // Mock availability data - in real app, this would come from API
-      const mockAvailability: AvailabilitySlot[] = [];
-      const baseSlots = generateTimeSlots();
-      
-      baseSlots.forEach(time => {
-        // Simulate some unavailable slots
-        const isAvailable = Math.random() > 0.3; // 70% availability
-        mockAvailability.push({
-          date,
-          startTime: time,
-          endTime: addMinutesToTime(time, 30),
-          isAvailable,
-          bookingId: isAvailable ? undefined : `booking-${Math.random().toString(36).substr(2, 9)}`
+      try {
+        const availabilityPromises = providerIds.map(async (providerId) => {
+          const response = await fetch(`/api/providers/${providerId}/availability?date=${date.toISOString().split('T')[0]}`);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch availability for provider ${providerId}`);
+          }
+          const data = await response.json();
+          return data.availability || [];
         });
-      });
 
-      setAvailableSlots(mockAvailability);
+        const allAvailability = await Promise.all(availabilityPromises);
+        const combinedAvailability = allAvailability.flat();
+        
+        setAvailableSlots(combinedAvailability);
+      } catch (error) {
+        console.error('Error fetching availability:', error);
+        setAvailableSlots([]);
+      }
       
       // Process time slots with availability
       const processedTimeSlots: TimeSlot[] = baseSlots.map(time => {
-        const slot = mockAvailability.find(s => s.startTime === time);
+        const slot = combinedAvailability.find(s => s.startTime === time);
         return {
           time,
           available: slot?.isAvailable || false,

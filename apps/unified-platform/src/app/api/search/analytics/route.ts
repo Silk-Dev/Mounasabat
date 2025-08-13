@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SearchAnalytics } from '@/lib/search';
+import { SearchAnalytics } from '@/lib/search-analytics';
 
 export async function GET(request: NextRequest) {
   try {
@@ -33,13 +33,40 @@ export async function GET(request: NextRequest) {
           data: performanceMetrics,
         });
       }
+
+      case 'empty-searches': {
+        const emptySearchAnalytics = await SearchAnalytics.getEmptySearchAnalytics(days);
+        
+        return NextResponse.json({
+          success: true,
+          data: emptySearchAnalytics,
+        });
+      }
+
+      case 'user-behavior': {
+        const userBehavior = await SearchAnalytics.getUserSearchBehavior(days);
+        
+        return NextResponse.json({
+          success: true,
+          data: userBehavior,
+        });
+      }
+
+      case 'trending-categories': {
+        const trendingCategories = await SearchAnalytics.getTrendingCategories(days);
+        
+        return NextResponse.json({
+          success: true,
+          data: trendingCategories,
+        });
+      }
       
       default:
         return NextResponse.json(
           {
             success: false,
             error: 'Invalid analytics type',
-            message: 'Supported types: metrics, performance',
+            message: 'Supported types: metrics, performance, empty-searches, user-behavior, trending-categories',
           },
           { status: 400 }
         );

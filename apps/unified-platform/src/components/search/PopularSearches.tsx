@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@mounasabet/ui';
+import { Button } from '@/components/ui';
 import { TrendingUp, Loader2, RefreshCw } from 'lucide-react';
 
 interface PopularSearchesProps {

@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { GET, POST, PUT, DELETE } from '../bookings/route';
 
 // Mock Prisma
-jest.mock('../../../lib/prisma', () => ({
+jest.mock('@/lib/prisma', () => ({
   prisma: {
     booking: {
       create: jest.fn(),
@@ -25,8 +25,8 @@ jest.mock('../../../lib/prisma', () => ({
 }));
 
 // Mock auth
-jest.mock('../../../lib/auth', () => ({
-  getServerSession: jest.fn(),
+jest.mock('@/lib/auth', () => ({
+  auth.api.getSession: jest.fn(),
   requireAuth: jest.fn(),
 }));
 
@@ -43,14 +43,14 @@ jest.mock('stripe', () => ({
 }));
 
 // Mock email service
-jest.mock('../../../lib/email-service', () => ({
+jest.mock('@/lib/email-service', () => ({
   sendBookingConfirmation: jest.fn(),
   sendBookingUpdate: jest.fn(),
 }));
 
-import { prisma } from '../../../lib/prisma';
-import { getServerSession, requireAuth } from '../../../lib/auth';
-import { sendBookingConfirmation, sendBookingUpdate } from '../../../lib/email-service';
+import { prisma } from '@/lib/prisma';
+import { auth, requireAuth } from '@/lib/auth';
+import { sendBookingConfirmation, sendBookingUpdate } from '@/lib/email-service';
 
 const mockUser = {
   id: 'user-1',
@@ -100,7 +100,7 @@ describe('/api/bookings', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (requireAuth as jest.Mock).mockResolvedValue(mockUser);
-    (getServerSession as jest.Mock).mockResolvedValue({ user: mockUser });
+    (auth.api.getSession as jest.Mock).mockResolvedValue({ user: mockUser });
   });
 
   describe('GET /api/bookings', () => {

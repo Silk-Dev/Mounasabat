@@ -29,7 +29,7 @@ import {
   DialogTitle,
   DialogTrigger,
   Textarea,
-} from '@mounasabet/ui';
+} from '@/components/ui';
 import { 
   Search, 
   Filter, 

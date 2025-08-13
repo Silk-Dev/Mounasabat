@@ -6,9 +6,9 @@ import { SearchBar, CategoryBrowser, PopularSearches } from '@/components/search
 import { searchServices, buildSearchQuery } from '@/lib/search';
 import { SearchLoadingState, SearchNoResultsState, SearchErrorState } from '@/components/search/SearchEmptyStates';
 import type { SearchFilters, SearchResult } from '@/types';
-import { Button } from '@mounasabet/ui';
-import { Card } from '@mounasabet/ui';
-import { Badge } from '@mounasabet/ui';
+import { Button } from '@/components/ui';
+import { Card } from '@/components/ui';
+import { Badge } from '@/components/ui';
 import { Star, MapPin, Verified } from 'lucide-react';
 import { ResponsiveImage } from '@/components/ui/ResponsiveImage';
 import { useIsMobile } from '@/hooks/use-mobile';

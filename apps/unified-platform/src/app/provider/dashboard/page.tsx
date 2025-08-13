@@ -3,9 +3,9 @@
 import { Metadata } from 'next';
 import { useAuth } from '@/lib/auth-context';
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@mounasabet/ui';
-import { Button } from '@mounasabet/ui';
-import { Badge } from '@mounasabet/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { Badge } from '@/components/ui';
 import { 
   Calendar, 
   DollarSign, 
@@ -42,6 +42,7 @@ export default function ProviderDashboardPage() {
     recentBookings: []
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (session?.user) {
@@ -52,18 +53,44 @@ export default function ProviderDashboardPage() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
+      setError(null);
       
-      // Fetch provider metrics
-      const metricsResponse = await fetch('/api/provider/metrics');
-      if (metricsResponse.ok) {
-        const metricsData = await metricsResponse.json();
-        setMetrics(metricsData);
+      if (!session?.user?.id) {
+        throw new Error('User session not found');
+      }
+
+      // Fetch provider metrics using the correct endpoint
+      const metricsResponse = await fetch(`/api/provider/metrics?providerId=${session.user.id}`);
+      
+      if (!metricsResponse.ok) {
+        throw new Error(`Failed to fetch dashboard data: ${metricsResponse.status}`);
+      }
+      
+      const data = await metricsResponse.json();
+      
+      if (data.success) {
+        setMetrics({
+          totalBookings: data.totalBookings || 0,
+          monthlyRevenue: data.monthlyRevenue || 0,
+          activeServices: data.activeServices || 0,
+          averageRating: data.averageRating || 0,
+          pendingBookings: data.pendingBookings || 0,
+          completedBookings: data.completedBookings || 0,
+          recentBookings: data.recentBookings || []
+        });
+      } else {
+        throw new Error(data.error || 'Failed to fetch metrics');
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRetry = () => {
+    fetchDashboardData();
   };
 
   if (loading) {
@@ -78,6 +105,26 @@ export default function ProviderDashboardPage() {
           </div>
           <div className="h-96 bg-gray-200 rounded-lg"></div>
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Provider Dashboard</h1>
+        </div>
+        <Card>
+          <CardContent className="p-8 text-center">
+            <AlertCircle className="mx-auto h-12 w-12 text-red-500 mb-4" />
+            <h3 className="text-lg font-medium mb-2">Failed to load dashboard</h3>
+            <p className="text-muted-foreground mb-4">{error}</p>
+            <Button onClick={handleRetry}>
+              Try Again
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -124,8 +171,7 @@ export default function ProviderDashboardPage() {
               }).format(metrics.monthlyRevenue)}
             </div>
             <p className="text-xs text-muted-foreground">
-              <TrendingUp className="inline h-3 w-3 mr-1" />
-              +12% from last month
+              This month's earnings
             </p>
           </CardContent>
         </Card>
@@ -177,7 +223,7 @@ export default function ProviderDashboardPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Awaiting Reviews</span>
-                <Badge variant="secondary">3</Badge>
+                <Badge variant="secondary">{metrics.completedBookings - (metrics.averageRating > 0 ? Math.floor(metrics.completedBookings * 0.8) : 0)}</Badge>
               </div>
               <Button variant="outline" size="sm" className="w-full mt-4" asChild>
                 <Link href="/provider/bookings?status=pending">
@@ -197,14 +243,24 @@ export default function ProviderDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <div className="text-sm">
-                <p className="font-medium">New booking received</p>
-                <p className="text-muted-foreground">Wedding photography - 2 hours ago</p>
-              </div>
-              <div className="text-sm">
-                <p className="font-medium">Service updated</p>
-                <p className="text-muted-foreground">Catering package - 1 day ago</p>
-              </div>
+              {metrics.recentBookings.length > 0 ? (
+                <>
+                  {metrics.recentBookings.slice(0, 2).map((booking: any, index: number) => (
+                    <div key={index} className="text-sm">
+                      <p className="font-medium">
+                        {booking.status === 'pending' ? 'New booking received' : 'Booking updated'}
+                      </p>
+                      <p className="text-muted-foreground">
+                        {booking.service?.name || 'Service'} - {new Date(booking.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <div className="text-sm text-muted-foreground">
+                  No recent activity
+                </div>
+              )}
               <Button variant="outline" size="sm" className="w-full mt-4" asChild>
                 <Link href="/provider/analytics">
                   View Analytics
@@ -224,12 +280,12 @@ export default function ProviderDashboardPage() {
           <CardContent>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm">Repeat Customers</span>
-                <span className="text-sm font-medium">23%</span>
+                <span className="text-sm">Total Customers</span>
+                <span className="text-sm font-medium">{metrics.totalBookings}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Customer Satisfaction</span>
-                <span className="text-sm font-medium">4.8/5</span>
+                <span className="text-sm font-medium">{metrics.averageRating > 0 ? `${metrics.averageRating.toFixed(1)}/5` : 'No ratings yet'}</span>
               </div>
               <Button variant="outline" size="sm" className="w-full mt-4" asChild>
                 <Link href="/provider/customers">

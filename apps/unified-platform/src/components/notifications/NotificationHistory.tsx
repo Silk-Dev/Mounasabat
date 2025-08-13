@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatDistanceToNow } from 'date-fns';
-import { Mail, Bell, Smartphone, Trash2, MarkAsRead } from 'lucide-react';
+import { Mail, Bell, Smartphone, Trash2, CheckCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -158,7 +158,7 @@ export function NotificationHistory() {
           </div>
           {unreadCount > 0 && (
             <Button variant="outline" size="sm" onClick={markAllAsRead}>
-              <MarkAsRead className="h-4 w-4 mr-2" />
+              <CheckCheck className="h-4 w-4 mr-2" />
               Mark all as read ({unreadCount})
             </Button>
           )}
@@ -239,7 +239,7 @@ export function NotificationHistory() {
                                     size="sm"
                                     onClick={() => markAsRead(notification.id)}
                                   >
-                                    <MarkAsRead className="h-4 w-4" />
+                                    <CheckCheck className="h-4 w-4" />
                                   </Button>
                                 )}
                                 <Button

@@ -115,7 +115,7 @@ deploy_to_vercel() {
     cd ..
 }
 
-# Run database migrations
+# Run database migrations and seeding
 run_migrations() {
     print_status "Running database migrations..."
     
@@ -127,10 +127,15 @@ run_migrations() {
     # Run production setup
     npm run db:setup:prod
     
-    # Seed production data
-    npm run db:seed:prod
+    # Seed production data (base seed only)
+    print_status "Running base seed for production..."
+    NODE_ENV=production npm run seed base
     
-    print_status "Database migrations completed"
+    # Validate seed data
+    print_status "Validating seed data..."
+    npm run seed validate
+    
+    print_status "Database migrations and seeding completed"
     cd ../..
 }
 

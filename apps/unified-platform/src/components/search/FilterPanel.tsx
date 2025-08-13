@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Card } from '@mounasabet/ui';
-import { Button } from '@mounasabet/ui';
-import { Input } from '@mounasabet/ui';
-import { Label } from '@mounasabet/ui';
-import { Checkbox } from '@mounasabet/ui';
-import { Slider } from '@mounasabet/ui';
-import { Badge } from '@mounasabet/ui';
+import { Card } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { Input } from '@/components/ui';
+import { Label } from '@/components/ui';
+import { Checkbox } from '@/components/ui';
+import { Slider } from '@/components/ui';
+import { Badge } from '@/components/ui';
 import { 
   MapPin, 
   DollarSign, 

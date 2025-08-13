@@ -6,7 +6,7 @@ import FilterPanel from '@/components/search/FilterPanel';
 import SearchResultsComponent from '@/components/search/SearchResults';
 import { useAdvancedSearch } from '@/lib/hooks/useAdvancedSearch';
 import type { SearchResult, SearchFilters } from '@/types';
-import { Button } from '@mounasabet/ui';
+import { Button } from '@/components/ui';
 import { Filter } from 'lucide-react';
 
 export default function SearchPage() {

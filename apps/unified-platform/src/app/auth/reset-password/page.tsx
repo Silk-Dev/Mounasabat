@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { authClient } from '@/lib/auth';
-import { Button } from '@mounasabet/ui';
-import { Input } from '@mounasabet/ui';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@mounasabet/ui';
-import { Alert, AlertDescription } from '@mounasabet/ui';
+import { Button } from '@/components/ui';
+import { Input } from '@/components/ui';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui';
+import { Alert, AlertDescription } from '@/components/ui';
 import { Loader2, Eye, EyeOff, CheckCircle } from 'lucide-react';
 
 export default function ResetPasswordPage() {

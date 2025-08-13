@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { Card, CardContent, CardHeader, CardTitle } from '@mounasabet/ui';
-import { Button } from '@mounasabet/ui';
-import { Badge } from '@mounasabet/ui';
-import { Input } from '@mounasabet/ui';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@mounasabet/ui';
-import { Switch } from '@mounasabet/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { Badge } from '@/components/ui';
+import { Input } from '@/components/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui';
+import { Switch } from '@/components/ui';
 import { 
   Calendar,
   Clock,

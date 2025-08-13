@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
-import { Button } from '@mounasabet/ui';
-import { Input } from '@mounasabet/ui';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@mounasabet/ui';
-import { Alert, AlertDescription } from '@mounasabet/ui';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@mounasabet/ui';
+import { Button } from '@/components/ui';
+import { Input } from '@/components/ui';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui';
+import { Alert, AlertDescription } from '@/components/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 export default function SignUpPage() {

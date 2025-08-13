@@ -99,27 +99,43 @@ npm run db:migrate:deploy
 npm run db:setup:prod
 ```
 
-### 3. Seed Production Data
+### 3. Seed Production Data (Base Only)
 ```bash
-npm run db:seed:prod
+# Only run base seed in production
+NODE_ENV=production npm run seed base
+
+# Validate seed data
+npm run seed validate
 ```
+
+**Important**: Production deployments must NEVER include demo data. Only the base seed script should be run to ensure essential platform data is available without any test or demo content.
 
 ## Deployment Process
 
 ### Automated Deployment (Recommended)
 
-Use the deployment script:
+Use the deployment pipeline:
+```bash
+npm run deploy:production
+```
+
+Or use the legacy deployment script:
 ```bash
 ./scripts/production-deploy.sh
 ```
 
-This script will:
-1. Run all tests
-2. Build the application
-3. Deploy to Vercel
-4. Run database migrations
-5. Execute smoke tests
-6. Create backups
+The deployment pipeline will:
+1. Check prerequisites and environment configuration
+2. Install dependencies
+3. Run all tests (unit, integration, E2E)
+4. Build the application with production configuration
+5. Run database migrations and production setup
+6. Seed database with base data only (no demo data)
+7. Validate seed data integrity
+8. Deploy to Vercel
+9. Run post-deployment smoke tests
+10. Set up monitoring and alerting
+11. Create deployment backups
 
 ### Manual Deployment
 
@@ -139,11 +155,15 @@ This script will:
    vercel --prod
    ```
 
-4. **Run Database Migrations**
+4. **Run Database Migrations and Seeding**
    ```bash
    cd packages/database
    npm run db:migrate:deploy
-   npm run db:seed:prod
+   npm run db:setup:prod
+   
+   # Seed with base data only (NEVER demo data in production)
+   NODE_ENV=production npm run seed base
+   npm run seed validate
    ```
 
 5. **Verify Deployment**
@@ -168,6 +188,46 @@ npm run test:load
 
 ## Monitoring and Alerting
 
+### Database Monitoring
+- Automated monitoring for empty states and missing data
+- Real-time alerts for critical data issues
+- Performance monitoring for database queries
+- Data integrity checks
+
+### Monitoring Endpoints
+- `/api/monitoring?action=health` - Basic health check
+- `/api/monitoring?action=metrics` - Comprehensive metrics
+- `/api/monitoring?action=check` - Run monitoring check
+- `/api/monitoring?action=report` - Generate monitoring report
+
+### Automated Monitoring Checks
+The system automatically monitors for:
+- Missing admin users
+- Empty service categories
+- No verified providers
+- Missing platform settings
+- Database connectivity issues
+- Data integrity problems
+
+### Alert Configuration
+Alerts are sent when:
+- Critical empty states are detected
+- Essential data is missing
+- Database errors occur
+- Performance thresholds are exceeded
+
+### Monitoring Commands
+```bash
+# Run monitoring check
+npm run monitoring:check
+
+# Set up monitoring cron job (runs every 15 minutes)
+*/15 * * * * /path/to/project/scripts/monitoring-cron.js
+
+# Check monitoring status via API
+curl https://your-domain.com/api/monitoring?action=health
+```
+
 ### Sentry Integration
 - Error tracking and performance monitoring
 - Automatic error alerts
@@ -182,6 +242,7 @@ npm run test:load
 - Slack webhook integration
 - Database alert storage
 - Performance threshold monitoring
+- Environment-specific alert configuration
 
 ## Performance Optimization
 

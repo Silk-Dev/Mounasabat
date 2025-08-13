@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Search, Heart, User, Calendar } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
-import { Badge } from '@mounasabet/ui';
+import { Badge } from '@/components/ui';
 
 interface NavItem {
   href: string;

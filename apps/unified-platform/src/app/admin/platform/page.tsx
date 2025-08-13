@@ -27,7 +27,7 @@ import {
   DialogTitle,
   DialogTrigger,
   Switch,
-} from '@mounasabet/ui';
+} from '@/components/ui';
 import { 
   Star,
   TrendingUp,

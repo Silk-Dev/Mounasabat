@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Button } from '@mounasabet/ui';
-import { Card } from '@mounasabet/ui';
+import { Button } from '@/components/ui';
+import { Card } from '@/components/ui';
 import { 
   Grid3X3, 
   List, 

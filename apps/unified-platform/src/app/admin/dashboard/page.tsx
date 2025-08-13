@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, Badge } from '@mounasabet/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Badge } from '@/components/ui';
 import { Users, Shield, BarChart3, AlertTriangle, TrendingUp, TrendingDown, Activity } from 'lucide-react';
 
 interface DashboardMetrics {

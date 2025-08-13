@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateSearchFilters, searchWithMonitoring, SearchOptions } from '@/lib/search';
+import { SearchAnalytics } from '@/lib/search-analytics';
 import type { SearchFilters } from '@/types';
+import { auth } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -91,8 +93,32 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    // Get user information for analytics
+    const session = await auth();
+    const userId = session?.user?.id;
+
     // Perform search with monitoring
+    const startTime = Date.now();
     const searchResponse = await searchWithMonitoring(validatedFilters, options);
+    const responseTime = Date.now() - startTime;
+
+    // Record search analytics with user information
+    if (validatedFilters.query) {
+      await SearchAnalytics.recordSearch(
+        validatedFilters.query,
+        validatedFilters,
+        searchResponse.total,
+        userId
+      );
+
+      // Record performance metrics
+      await SearchAnalytics.recordSearchPerformance(
+        validatedFilters.query,
+        responseTime,
+        searchResponse.total,
+        false // Assuming not from cache for API calls
+      );
+    }
 
     // Add search metadata
     const response = {
@@ -104,6 +130,7 @@ export async function GET(request: NextRequest) {
         hasResults: searchResponse.results.length > 0,
         appliedFilters: Object.keys(validatedFilters).length,
         sortBy: options.sortBy,
+        responseTime,
       }
     };
 
@@ -138,7 +165,32 @@ export async function POST(request: NextRequest) {
       useCache: rawOptions?.useCache !== false,
     };
     
+    // Get user information for analytics
+    const session = await auth();
+    const userId = session?.user?.id;
+
+    // Perform search with monitoring
+    const startTime = Date.now();
     const searchResponse = await searchWithMonitoring(filters, options);
+    const responseTime = Date.now() - startTime;
+
+    // Record search analytics with user information
+    if (filters.query) {
+      await SearchAnalytics.recordSearch(
+        filters.query,
+        filters,
+        searchResponse.total,
+        userId
+      );
+
+      // Record performance metrics
+      await SearchAnalytics.recordSearchPerformance(
+        filters.query,
+        responseTime,
+        searchResponse.total,
+        false // Assuming not from cache for API calls
+      );
+    }
 
     return NextResponse.json({
       success: true,
@@ -149,6 +201,7 @@ export async function POST(request: NextRequest) {
         hasResults: searchResponse.results.length > 0,
         appliedFilters: Object.keys(filters).length,
         sortBy: options.sortBy,
+        responseTime,
       }
     });
 

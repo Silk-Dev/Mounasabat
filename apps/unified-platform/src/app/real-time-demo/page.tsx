@@ -30,10 +30,11 @@ function RealTimeDemoContent() {
     // Navigate to booking details or open relevant view
   };
 
-  const mockOtherUser = {
-    id: 'user-456',
-    name: 'John Doe',
-    avatar: '/avatars/john-doe.jpg',
+  // Demo user data - in production this would come from auth context
+  const demoOtherUser = {
+    id: 'demo-user',
+    name: 'Demo User',
+    avatar: '/avatars/demo-user.jpg',
     isOnline: true,
     role: 'customer' as const
   };
@@ -117,10 +118,10 @@ function RealTimeDemoContent() {
                   <Button
                     onClick={() => {
                       // Simulate a booking notification
-                      const mockNotification = {
-                        bookingId: 'booking-' + Date.now(),
-                        providerId: 'provider-123',
-                        customerId: 'customer-456',
+                      const demoNotification = {
+                        bookingId: 'demo-booking-' + Date.now(),
+                        providerId: 'demo-provider',
+                        customerId: 'demo-customer',
                         type: 'new_booking' as const,
                         booking: {
                           id: 'booking-' + Date.now(),
@@ -133,7 +134,7 @@ function RealTimeDemoContent() {
                       };
                       
                       // This would normally come through WebSocket
-                      console.log('Mock notification:', mockNotification);
+                      console.log('Demo notification:', demoNotification);
                     }}
                   >
                     Simulate New Booking
@@ -305,7 +306,7 @@ function RealTimeDemoContent() {
         <LiveChat
           conversationId="conv-123"
           currentUserId="user-123"
-          otherUser={mockOtherUser}
+          otherUser={demoOtherUser}
           onClose={() => setShowChat(false)}
           onMinimize={() => setChatMinimized(!chatMinimized)}
           isMinimized={chatMinimized}

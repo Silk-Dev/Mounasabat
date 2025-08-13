@@ -6,105 +6,44 @@ import { ReviewSection } from '@/components/provider';
 import { Card, CardContent, CardHeader, CardTitle, Button, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
 import { Star, Users, Award, TrendingUp } from 'lucide-react';
 
-// Mock data for demonstration
-const mockReviews = [
-  {
-    id: 'review-1',
-    userId: 'user-1',
-    user: {
-      id: 'user-1',
-      name: 'Sarah Johnson',
-      image: '/images/user1.jpg',
-    },
-    providerId: 'provider-1',
-    provider: {
-      id: 'provider-1',
-      name: 'Elite Photography',
-    },
-    serviceId: 'service-1',
-    service: {
-      id: 'service-1',
-      name: 'Wedding Photography Package',
-    },
-    rating: 5,
-    comment: 'Absolutely amazing service! The photographer captured every special moment of our wedding day. The quality of photos exceeded our expectations and the team was very professional throughout the entire event.',
-    isVerified: true,
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-01-15'),
-  },
-  {
-    id: 'review-2',
-    userId: 'user-2',
-    user: {
-      id: 'user-2',
-      name: 'Ahmed Ben Ali',
-      image: '/images/user2.jpg',
-    },
-    providerId: 'provider-1',
-    provider: {
-      id: 'provider-1',
-      name: 'Elite Photography',
-    },
-    serviceId: 'service-1',
-    service: {
-      id: 'service-1',
-      name: 'Corporate Event Photography',
-    },
-    rating: 4,
-    comment: 'Great photographer with excellent equipment. Very punctual and delivered high-quality photos on time. Would definitely recommend for corporate events.',
-    isVerified: true,
-    createdAt: new Date('2024-01-10'),
-    updatedAt: new Date('2024-01-10'),
-  },
-  {
-    id: 'review-3',
-    userId: 'user-3',
-    user: {
-      id: 'user-3',
-      name: 'Fatima Zahra',
-      image: '/images/user3.jpg',
-    },
-    providerId: 'provider-1',
-    provider: {
-      id: 'provider-1',
-      name: 'Elite Photography',
-    },
-    serviceId: 'service-2',
-    service: {
-      id: 'service-2',
-      name: 'Birthday Party Photography',
-    },
-    rating: 5,
-    comment: 'Perfect for our daughter\'s birthday party! The photographer was great with kids and captured beautiful candid moments.',
-    isVerified: false,
-    createdAt: new Date('2024-01-05'),
-    updatedAt: new Date('2024-01-05'),
-  },
-];
+// Demo data fetched from database
+import { useDataLoader } from '@/hooks/useDataLoader';
 
-const mockBooking = {
-  id: 'booking-1',
-  eventDate: new Date('2024-01-20'),
-  service: {
-    id: 'service-1',
-    name: 'Wedding Photography Package',
-    provider: {
-      id: 'provider-1',
-      name: 'Elite Photography',
-    },
-  },
-  user: {
-    id: 'user-1',
-    name: 'Current User',
-  },
+const fetchDemoReviews = async () => {
+  try {
+    const response = await fetch('/api/reviews?demo=true&limit=3');
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.reviews || [];
+  } catch (error) {
+    console.error('Failed to fetch demo reviews:', error);
+    return [];
+  }
+};
+
+const fetchDemoBooking = async () => {
+  try {
+    const response = await fetch('/api/bookings?demo=true&limit=1');
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data.bookings?.[0] || null;
+  } catch (error) {
+    console.error('Failed to fetch demo booking:', error);
+    return null;
+  }
 };
 
 export default function ReviewsDemoPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [showReviewForm, setShowReviewForm] = useState(false);
 
-  const averageRating = mockReviews.reduce((sum, review) => sum + review.rating, 0) / mockReviews.length;
-  const totalReviews = mockReviews.length;
+  const { data: reviews, loading: reviewsLoading } = useDataLoader(fetchDemoReviews, []);
+  const { data: booking, loading: bookingLoading } = useDataLoader(fetchDemoBooking, []);
+
+  const averageRating = reviews?.length > 0 
+    ? reviews.reduce((sum: number, review: any) => sum + review.rating, 0) / reviews.length 
+    : 0;
+  const totalReviews = reviews?.length || 0;
 
   const handleReviewSubmit = async (reviewData: any) => {
     console.log('Review submitted:', reviewData);
@@ -157,7 +96,7 @@ export default function ReviewsDemoPage() {
               <Award className="h-8 w-8 text-green-500" />
               <div className="ml-4">
                 <p className="text-2xl font-bold">
-                  {mockReviews.filter(r => r.isVerified).length}
+                  {reviews?.filter((r: any) => r.isVerified).length || 0}
                 </p>
                 <p className="text-gray-600">Verified Reviews</p>
               </div>
@@ -219,16 +158,24 @@ export default function ReviewsDemoPage() {
           </Card>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {mockReviews.map((review) => (
-              <Review
-                key={review.id}
-                review={review}
-                currentUserId="user-1"
-                onEdit={(review) => console.log('Edit review:', review)}
-                onDelete={(reviewId) => console.log('Delete review:', reviewId)}
-                onFlag={(reviewId, reason) => console.log('Flag review:', reviewId, reason)}
-              />
-            ))}
+            {reviewsLoading ? (
+              <div className="col-span-2 text-center py-8">Loading reviews...</div>
+            ) : reviews?.length > 0 ? (
+              reviews.map((review: any) => (
+                <Review
+                  key={review.id}
+                  review={review}
+                  currentUserId="user-1"
+                  onEdit={(review) => console.log('Edit review:', review)}
+                  onDelete={(reviewId) => console.log('Delete review:', reviewId)}
+                  onFlag={(reviewId, reason) => console.log('Flag review:', reviewId, reason)}
+                />
+              ))
+            ) : (
+              <div className="col-span-2 text-center py-8 text-gray-500">
+                No reviews available for demo. Please seed the database with demo data.
+              </div>
+            )}
           </div>
         </TabsContent>
 
@@ -263,10 +210,18 @@ export default function ReviewsDemoPage() {
               <p className="text-gray-600 mb-4">
                 This invitation is sent to customers after their booking is completed.
               </p>
-              <ReviewInvitation
-                booking={mockBooking}
-                onReviewSubmitted={() => console.log('Review submitted from invitation')}
-              />
+              {bookingLoading ? (
+                <div className="text-center py-4">Loading booking...</div>
+              ) : booking ? (
+                <ReviewInvitation
+                  booking={booking}
+                  onReviewSubmitted={() => console.log('Review submitted from invitation')}
+                />
+              ) : (
+                <div className="text-center py-4 text-gray-500">
+                  No booking available for demo. Please seed the database with demo data.
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -281,7 +236,7 @@ export default function ReviewsDemoPage() {
                 This is how reviews appear on provider profile pages.
               </p>
               <ReviewSection
-                reviews={mockReviews}
+                reviews={reviews || []}
                 averageRating={averageRating}
                 totalReviews={totalReviews}
                 currentUserId="user-1"

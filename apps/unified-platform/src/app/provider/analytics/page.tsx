@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { Card, CardContent, CardHeader, CardTitle } from '@mounasabet/ui';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@mounasabet/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui';
 import { 
   TrendingUp,
   TrendingDown,
