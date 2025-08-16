@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { logger } from '../../../../lib/production-logger';
 
 const prisma = new PrismaClient();
 
@@ -46,7 +47,7 @@ export async function GET(
       data: review,
     });
   } catch (error) {
-    console.error('Error fetching review:', error);
+    logger.error('Error fetching review:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch review' },
       { status: 500 }
@@ -130,7 +131,7 @@ export async function PUT(
       message: 'Review updated successfully',
     });
   } catch (error) {
-    console.error('Error updating review:', error);
+    logger.error('Error updating review:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to update review' },
       { status: 500 }
@@ -181,7 +182,7 @@ export async function DELETE(
       message: 'Review deleted successfully',
     });
   } catch (error) {
-    console.error('Error deleting review:', error);
+    logger.error('Error deleting review:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to delete review' },
       { status: 500 }

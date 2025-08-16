@@ -6,7 +6,7 @@ import { useAuth, useRole } from '@/lib/auth-context';
 import { Button } from '@/components/ui';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui';
-import { User, LogOut, Settings, BarChart3, Users, Shield, Cog, Star } from 'lucide-react';
+import { User, LogOut, Settings, BarChart3, Users, Shield, Cog, Star, FileText } from 'lucide-react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -51,6 +51,14 @@ function AdminHeader() {
               <Link href="/admin/reviews" className="flex items-center text-gray-600 hover:text-gray-900">
                 <Star className="mr-2 h-4 w-4" />
                 Reviews
+              </Link>
+              <Link href="/admin/audit-logs" className="flex items-center text-gray-600 hover:text-gray-900">
+                <FileText className="mr-2 h-4 w-4" />
+                Audit Logs
+              </Link>
+              <Link href="/admin/monitoring" className="flex items-center text-gray-600 hover:text-gray-900">
+                <BarChart3 className="mr-2 h-4 w-4" />
+                Monitoring
               </Link>
               <Link href="/admin/platform" className="flex items-center text-gray-600 hover:text-gray-900">
                 <Cog className="mr-2 h-4 w-4" />

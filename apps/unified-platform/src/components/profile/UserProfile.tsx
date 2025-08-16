@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { User as UserType, Booking, Review } from '@/types';
 import { toast } from 'sonner';
+import { logger } from '@/lib/production-logger';
 
 interface UserProfileProps {
   userId: string;
@@ -90,7 +91,7 @@ export function UserProfile({ userId, onUserUpdate }: UserProfileProps) {
         setRecentReviews(reviews.data || []);
       }
     } catch (error) {
-      console.error('Failed to load user data:', error);
+      logger.error('Failed to load user data:', error);
     } finally {
       setLoading(false);
     }

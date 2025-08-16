@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { authClient } from '@/lib/auth';
+import { logger } from './production-logger';
 
 export interface User {
   id: string;
@@ -61,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           });
         }
       } catch (error) {
-        console.error('Failed to initialize auth:', error);
+        logger.error('Failed to initialize auth:', error);
       } finally {
         setIsLoading(false);
       }
@@ -90,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return { success: false, error: 'Sign in failed' };
     } catch (error) {
-      console.error('Sign in error:', error);
+      logger.error('Sign in error:', error);
       return { success: false, error: 'An unexpected error occurred' };
     } finally {
       setIsLoading(false);
@@ -118,7 +119,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return { success: false, error: 'Sign up failed' };
     } catch (error) {
-      console.error('Sign up error:', error);
+      logger.error('Sign up error:', error);
       return { success: false, error: 'An unexpected error occurred' };
     } finally {
       setIsLoading(false);
@@ -133,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Redirect to home page
       window.location.href = '/';
     } catch (error) {
-      console.error('Sign out error:', error);
+      logger.error('Sign out error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -160,7 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return { success: false, error: 'Profile update failed' };
     } catch (error) {
-      console.error('Profile update error:', error);
+      logger.error('Profile update error:', error);
       return { success: false, error: 'An unexpected error occurred' };
     }
   };
@@ -189,7 +190,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(null);
       }
     } catch (error) {
-      console.error('Failed to refresh session:', error);
+      logger.error('Failed to refresh session:', error);
       setSession(null);
     }
   };

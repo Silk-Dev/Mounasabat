@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client';
+import { logger } from './production-logger';
 
 export interface WebSocketMessage {
   type: 'availability_update' | 'booking_notification' | 'chat_message' | 'dashboard_update' | 'notification';
@@ -77,12 +78,12 @@ class WebSocketService {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      console.log('WebSocket connected');
+      logger.info('WebSocket connected');
       this.reconnectAttempts = 0;
     });
 
     this.socket.on('disconnect', (reason) => {
-      console.log('WebSocket disconnected:', reason);
+      logger.info('WebSocket disconnected:', reason);
       if (reason === 'io server disconnect') {
         // Server initiated disconnect, reconnect manually
         this.reconnect();
@@ -90,7 +91,7 @@ class WebSocketService {
     });
 
     this.socket.on('connect_error', (error) => {
-      console.error('WebSocket connection error:', error);
+      logger.error('WebSocket connection error:', error);
       this.reconnect();
     });
 
@@ -118,7 +119,7 @@ class WebSocketService {
 
   private reconnect() {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error('Max reconnection attempts reached');
+      logger.error('Max reconnection attempts reached');
       return;
     }
 
@@ -126,7 +127,7 @@ class WebSocketService {
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
 
     setTimeout(() => {
-      console.log(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+      logger.info(`Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts});`);
       this.socket?.connect();
     }, delay);
   }

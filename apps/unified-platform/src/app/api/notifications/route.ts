@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { notificationService } from '@/lib/notification-service';
 import { auth } from '@/lib/auth';
+import { logger } from '../../../lib/production-logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -37,7 +38,7 @@ export async function GET(request: NextRequest) {
       hasMore: result.hasMore,
     });
   } catch (error) {
-    console.error('Error fetching notifications:', error);
+    logger.error('Error fetching notifications:', error);
     return NextResponse.json(
       { error: 'Failed to fetch notifications' },
       { status: 500 }
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(notification, { status: 201 });
   } catch (error) {
-    console.error('Error creating notification:', error);
+    logger.error('Error creating notification:', error);
     return NextResponse.json(
       { error: 'Failed to create notification' },
       { status: 500 }

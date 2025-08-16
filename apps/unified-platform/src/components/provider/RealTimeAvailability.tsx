@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { websocketService, AvailabilityUpdate } from '@/lib/websocket';
 import { format, parseISO, isSameDay } from 'date-fns';
+import { logger } from '@/lib/production-logger';
 
 interface TimeSlot {
   time: string;
@@ -71,7 +72,7 @@ export function RealTimeAvailability({
         setAvailability(data.availability || {});
       }
     } catch (error) {
-      console.error('Failed to load availability:', error);
+      logger.error('Failed to load availability:', error);
     } finally {
       setLoading(false);
     }

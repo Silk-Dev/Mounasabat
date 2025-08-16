@@ -4,7 +4,8 @@
  */
 
 import { PrismaClient } from '@prisma/client';
-import { isMonitoringEnabled } from '../../../deployment.config.js';
+import { isMonitoringEnabled } from '../../../../../deployment.config';
+import { logger } from '../production-logger';
 
 export interface MonitoringMetrics {
   timestamp: Date;
@@ -401,10 +402,10 @@ export class DatabaseMonitor {
       });
 
       if (!response.ok) {
-        console.error('Failed to send Slack alert:', response.statusText);
+        logger.error('Failed to send Slack alert:', response.statusText);
       }
     } catch (error) {
-      console.error('Error sending Slack alert:', error);
+      logger.error('Error sending Slack alert:', error);
     }
   }
 
@@ -413,7 +414,7 @@ export class DatabaseMonitor {
    */
   private async sendEmailAlert(message: string): Promise<void> {
     // Implementation depends on email service (Resend, SendGrid, etc.)
-    console.log('Email alert would be sent:', message);
+    logger.info('Email alert would be sent:', message);
   }
 
   /**
@@ -431,7 +432,7 @@ export class DatabaseMonitor {
         },
       });
     } catch (error) {
-      console.error('Failed to log alert to database:', error);
+      logger.error('Failed to log alert to database:', error);
     }
   }
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import { getSession } from '@/lib/auth';
+import { logger } from '../../../../../lib/production-logger';
 
 // Get all service categories with statistics
 export async function GET(request: NextRequest) {
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ categories: categoriesWithStats });
   } catch (error) {
-    console.error('Error fetching categories:', error);
+    logger.error('Error fetching categories:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -75,7 +76,7 @@ export async function POST(request: NextRequest) {
       message: 'Category operation completed' 
     });
   } catch (error) {
-    console.error('Error managing category:', error);
+    logger.error('Error managing category:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

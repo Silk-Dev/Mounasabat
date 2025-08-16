@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { websocketService, DashboardUpdate } from '@/lib/websocket';
 import { format } from 'date-fns';
+import { logger } from '@/lib/production-logger';
 
 interface DashboardMetrics {
   totalBookings: number;
@@ -142,7 +143,7 @@ export function RealTimeDashboard({ providerId, userRole }: RealTimeDashboardPro
         setRecentBookings(data.recentBookings || []);
       }
     } catch (error) {
-      console.error('Failed to load dashboard data:', error);
+      logger.error('Failed to load dashboard data:', error);
       setError(error instanceof Error ? error.message : 'Failed to load dashboard data');
     } finally {
       setLoading(false);

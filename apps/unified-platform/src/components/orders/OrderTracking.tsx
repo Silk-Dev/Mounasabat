@@ -6,6 +6,7 @@ import { Button } from '../ui';
 import { Badge } from '../ui';
 import { Alert, AlertDescription } from '../ui';
 import { Separator } from '../ui';
+import { logger } from '@/lib/production-logger';
 import { 
   Package, 
   Clock, 
@@ -116,7 +117,7 @@ export function OrderTracking({ orderId, onRefund, onCancel }: OrderTrackingProp
 
       setOrder(data.order);
     } catch (error) {
-      console.error('Error fetching order details:', error);
+      logger.error('Error fetching order details:', error);
       setError(error instanceof Error ? error.message : 'Failed to load order details');
     } finally {
       setLoading(false);

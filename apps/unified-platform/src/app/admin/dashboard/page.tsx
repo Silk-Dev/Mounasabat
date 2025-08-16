@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Badge } from '@/components/ui';
 import { Users, Shield, BarChart3, AlertTriangle, TrendingUp, TrendingDown, Activity } from 'lucide-react';
+import { logger } from '@/lib/production-logger';
+import { DashboardSkeleton, LoadingButton } from '@/components/ui/loading';
+import { useDataFetching } from '@/hooks/useLoadingState';
 
 interface DashboardMetrics {
   overview: {
@@ -52,28 +55,26 @@ interface DashboardMetrics {
 export default function AdminDashboard() {
   const { session } = useAuth();
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
-  const [loading, setLoading] = useState(true);
+  
+  const { isLoading, error, fetchData, retry } = useDataFetching<DashboardMetrics>();
 
-  const fetchDashboardMetrics = async () => {
-    try {
-      const response = await fetch('/api/admin/dashboard');
-      const data = await response.json();
+  const fetchDashboardMetrics = async (): Promise<DashboardMetrics> => {
+    const response = await fetch('/api/admin/dashboard');
+    const data = await response.json();
 
-      if (response.ok) {
-        setMetrics(data.metrics);
-      } else {
-        console.error('Error fetching dashboard metrics:', data.error);
-      }
-    } catch (error) {
-      console.error('Error fetching dashboard metrics:', error);
-    } finally {
-      setLoading(false);
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to fetch dashboard metrics');
     }
+
+    return data.metrics;
   };
 
   useEffect(() => {
-    fetchDashboardMetrics();
-  }, []);
+    fetchData(fetchDashboardMetrics, {
+      onSuccess: (data) => setMetrics(data),
+      onError: (error) => logger.error('Error fetching dashboard metrics:', error),
+    });
+  }, [fetchData]);
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -99,17 +100,27 @@ export default function AdminDashboard() {
     return `${Math.floor(diffInMinutes / 1440)} days ago`;
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded"></div>
-            ))}
-          </div>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
+          <p className="text-gray-600">Loading dashboard metrics...</p>
+        </div>
+        <DashboardSkeleton />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Failed to Load Dashboard</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <LoadingButton onClick={retry} variant="outline">
+            Try Again
+          </LoadingButton>
         </div>
       </div>
     );

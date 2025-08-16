@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import { getSession } from '@/lib/auth';
+import { logger } from '../../../../lib/production-logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -183,7 +184,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ metrics });
   } catch (error) {
-    console.error('Error fetching dashboard metrics:', error);
+    logger.error('Error fetching dashboard metrics:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

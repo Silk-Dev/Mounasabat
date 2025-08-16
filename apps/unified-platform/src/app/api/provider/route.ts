@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
+import { logger } from '../../../lib/production-logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -85,7 +86,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error fetching provider:', error);
+    logger.error('Error fetching provider:', error);
     return NextResponse.json(
       { 
         success: false,

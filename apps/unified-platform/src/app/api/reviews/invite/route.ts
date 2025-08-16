@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { logger } from '@/lib/production-logger';
 
 const prisma = new PrismaClient();
 
@@ -83,7 +84,7 @@ export async function POST(request: NextRequest) {
       message: 'Review invitation sent successfully',
     });
   } catch (error) {
-    console.error('Error sending review invitation:', error);
+    logger.error('Error sending review invitation:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to send review invitation' },
       { status: 500 }
@@ -142,7 +143,7 @@ export async function GET(request: NextRequest) {
       data: pendingReviews,
     });
   } catch (error) {
-    console.error('Error fetching pending reviews:', error);
+    logger.error('Error fetching pending reviews:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch pending reviews' },
       { status: 500 }

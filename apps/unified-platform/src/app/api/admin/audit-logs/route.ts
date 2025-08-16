@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { auditLogger, AuditEventType, AuditLogLevel } from '@/lib/audit-logger';
 import { withRateLimit } from '@/lib/rate-limiter';
 import { z } from 'zod';
+import { logger } from '../../../../lib/production-logger';
 
 // Validation schema for audit log queries
 const auditLogQuerySchema = z.object({
@@ -78,7 +79,7 @@ export async function GET(request: NextRequest) {
       });
     });
   } catch (error) {
-    console.error('Audit logs API error:', error);
+    logger.error('Audit logs API error:', error);
 
     await auditLogger.logFromRequest(request, {
       level: AuditLogLevel.ERROR,
@@ -150,7 +151,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(stats);
     });
   } catch (error) {
-    console.error('Audit stats API error:', error);
+    logger.error('Audit stats API error:', error);
 
     await auditLogger.logFromRequest(request, {
       level: AuditLogLevel.ERROR,

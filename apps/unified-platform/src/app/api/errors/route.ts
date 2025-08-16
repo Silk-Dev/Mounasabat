@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { logger } from '../../../lib/production-logger';
 
 const ErrorLogSchema = z.object({
   id: z.string(),
@@ -108,7 +109,7 @@ export async function POST(request: NextRequest) {
             });
           }
         } catch (dbError) {
-          console.error('Failed to store error in database:', dbError);
+          logger.error('Failed to store error in database:', dbError);
           return null;
         }
       })
@@ -133,7 +134,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error logging endpoint failed:', error);
+    logger.error('Error logging endpoint failed:', error);
     
     // Don't return error details to client for security
     return NextResponse.json(
@@ -192,7 +193,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error fetching logs:', error);
+    logger.error('Error fetching logs:', error);
     return NextResponse.json(
       { error: 'Failed to fetch error logs' },
       { status: 500 }
@@ -230,6 +231,6 @@ async function sendToExternalMonitoring(errors: any[]): Promise<void> {
       });
     }
   } catch (error) {
-    console.error('Failed to send to external monitoring:', error);
+    logger.error('Failed to send to external monitoring:', error);
   }
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import { toast } from "sonner";
 import Link from "next/link";
 
 interface PricingPlan {
@@ -80,7 +80,7 @@ export default function AdminPricingManagement() {
                   </Link>
                   <button
                     onClick={() =>
-                      alert("Delete functionality not yet implemented")
+                      toast.error("Delete functionality not yet implemented")
                     }
                     className="text-red-600 hover:text-red-900"
                   >

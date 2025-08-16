@@ -8,9 +8,12 @@ import { Card } from '@/components/ui';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSearchErrorHandler } from '@/lib/hooks/useErrorHandler';
-import { LoadingSpinner } from '@/components/ui/loading';
+import { LoadingSpinner, LoadingButton } from '@/components/ui/loading';
 import SearchErrorBoundary from '@/components/error/SearchErrorBoundary';
 import type { SearchFilters } from '@/types';
+import { toast } from 'sonner';
+import { logger } from '@/lib/production-logger';
+import { useUserFeedback } from '@/hooks/useUserFeedback';
 
 interface SearchBarProps {
   onSearch: (filters: SearchFilters) => void;
@@ -56,6 +59,8 @@ function SearchBarContent({
     executeWithRetry,
     reset: resetError 
   } = useSearchErrorHandler();
+  
+  const feedback = useUserFeedback();
 
   // Handle location input changes and show suggestions
   useEffect(() => {
@@ -73,24 +78,11 @@ function SearchBarContent({
             }
           }
         } catch (error) {
-          console.error('Failed to load location suggestions:', error);
+          logger.error('Failed to load location suggestions:', error);
+          // Don't show suggestions if API fails - no fallback to hardcoded data
+          setLocationSuggestions([]);
+          setShowSuggestions(false);
         }
-        
-        // Fallback to common Tunisian cities if API fails
-        const fallbackLocations: LocationSuggestion[] = [
-          { id: '1', name: 'Tunis', type: 'city' },
-          { id: '2', name: 'Sfax', type: 'city' },
-          { id: '3', name: 'Sousse', type: 'city' },
-          { id: '4', name: 'Monastir', type: 'city' },
-          { id: '5', name: 'Bizerte', type: 'city' },
-          { id: '6', name: 'Gabès', type: 'city' },
-        ];
-        
-        const filtered = fallbackLocations.filter(suggestion =>
-          suggestion.name.toLowerCase().includes(location.toLowerCase())
-        );
-        setLocationSuggestions(filtered);
-        setShowSuggestions(true);
       } else {
         setShowSuggestions(false);
       }
@@ -114,7 +106,7 @@ function SearchBarContent({
 
   const handleLocationDetection = async () => {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by this browser.');
+      toast.error('Geolocation is not supported by this browser.');
       return;
     }
 
@@ -342,17 +334,14 @@ function SearchBarContent({
               )}
 
               {/* Search button */}
-              <Button
+              <LoadingButton
                 onClick={handleSearch}
-                disabled={currentlyLoading}
+                loading={currentlyLoading}
+                loadingText="Searching..."
                 className="h-10 px-4 bg-primary hover:bg-primary/90 text-white font-medium"
               >
-                {currentlyLoading ? (
-                  <LoadingSpinner size="sm" className="text-white" />
-                ) : (
-                  <Search className="h-4 w-4" />
-                )}
-              </Button>
+                <Search className="h-4 w-4" />
+              </LoadingButton>
             </div>
           </div>
         </Card>
@@ -462,23 +451,15 @@ function SearchBarContent({
           )}
 
           {/* Search button */}
-          <Button
+          <LoadingButton
             onClick={handleSearch}
-            disabled={currentlyLoading}
+            loading={currentlyLoading}
+            loadingText="Searching..."
             className="h-12 px-8 bg-primary hover:bg-primary/90 text-white font-medium"
           >
-            {currentlyLoading ? (
-              <div className="flex items-center gap-2">
-                <LoadingSpinner size="sm" className="text-white" />
-                Searching...
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Search className="h-5 w-5" />
-                Search
-              </div>
-            )}
-          </Button>
+            <Search className="h-5 w-5 mr-2" />
+            Search
+          </LoadingButton>
         </div>
       </Card>
     </div>

@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { logger } from './production-logger';
 
 const prisma = new PrismaClient();
 
@@ -56,7 +57,7 @@ export async function sendReviewInvitation(data: ReviewInvitationData) {
 
     return { success: true, message: 'Review invitation sent successfully' };
   } catch (error) {
-    console.error('Error sending review invitation:', error);
+    logger.error('Error sending review invitation:', error);
     return { success: false, error: 'Failed to send review invitation' };
   }
 }
@@ -123,7 +124,7 @@ export async function sendBulkReviewInvitations() {
       details: invitations,
     };
   } catch (error) {
-    console.error('Error sending bulk review invitations:', error);
+    logger.error('Error sending bulk review invitations:', error);
     return { success: false, error: 'Failed to send bulk review invitations' };
   }
 }
@@ -168,7 +169,7 @@ export async function getPendingReviewInvitations(userId: string) {
 
     return { success: true, data: pendingReviews };
   } catch (error) {
-    console.error('Error fetching pending review invitations:', error);
+    logger.error('Error fetching pending review invitations:', error);
     return { success: false, error: 'Failed to fetch pending reviews' };
   }
 }
@@ -217,7 +218,7 @@ async function sendReviewInvitationEmail(data: ReviewInvitationData) {
   };
 
   // Mock email sending - replace with actual implementation
-  console.log('Sending review invitation email:', emailContent);
+  logger.info('Sending review invitation email:', emailContent);
   
   // Simulate email sending delay
   await new Promise(resolve => setTimeout(resolve, 100));

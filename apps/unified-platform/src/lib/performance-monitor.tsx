@@ -1,5 +1,7 @@
 'use client';
 
+import React, { useEffect } from 'react';
+
 // Performance monitoring utilities
 export class PerformanceMonitor {
   private static instance: PerformanceMonitor;

@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic';
+import React from 'react';
 import { ComponentType } from 'react';
 
 // Loading component for dynamic imports
@@ -237,13 +238,13 @@ export function createRoleBasedComponent<T extends ComponentType<any>>(
 ) {
   return function RoleBasedComponent(props: any) {
     const { userRole } = props;
-    
+
     if (!userRole && fallback) {
       return <fallback {...props} />;
     }
 
     const componentLoader = components[userRole as keyof typeof components];
-    
+
     if (!componentLoader) {
       return <div>Unauthorized access</div>;
     }
@@ -286,7 +287,7 @@ export const bundleOptimization = {
       onFocus: () => preloadCriticalComponents[componentName](),
     };
   },
-  
+
   // Preload components based on route
   preloadForRoute: (route: string) => {
     switch (route) {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import { getSession } from '@/lib/auth';
+import { logger } from '../../../../../lib/production-logger';
 
 // Get featured providers and services
 export async function GET(request: NextRequest) {
@@ -75,7 +76,7 @@ export async function GET(request: NextRequest) {
       featuredServices 
     });
   } catch (error) {
-    console.error('Error fetching featured content:', error);
+    logger.error('Error fetching featured content:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -102,7 +103,7 @@ export async function POST(request: NextRequest) {
       message: `${type} featured status updated` 
     });
   } catch (error) {
-    console.error('Error updating featured status:', error);
+    logger.error('Error updating featured status:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

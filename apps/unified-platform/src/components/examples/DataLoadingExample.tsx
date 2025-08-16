@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { DataLoader, withDataLoader } from '@/components/ui/data-loader';
 import { useDataLoader, usePaginatedDataLoader } from '@/hooks/useDataLoader';
 import { useLoadingState, useSequentialLoading } from '@/hooks/useLoadingState';
+import { logger } from '@/lib/production-logger';
+
 import { 
   LoadingSpinner, 
   LoadingOverlay, 
@@ -114,8 +116,8 @@ function HookDataLoaderExample() {
       retryCount: 2,
       retryDelay: 1000,
       timeout: 5000,
-      onSuccess: (data) => console.log('Data loaded:', data),
-      onError: (error) => console.error('Load failed:', error),
+      onSuccess: (data) => logger.info('Data loaded:', data),
+      onError: (error) => logger.error('Load failed:', error),
     }
   );
 
@@ -144,7 +146,7 @@ function HookDataLoaderExample() {
               </div>
             }
           >
-            {data && (
+            {!!data && (
               <div className="p-4 bg-blue-50 rounded">
                 <p>Hook data loaded!</p>
                 <pre className="text-sm mt-2">{JSON.stringify(data, null, 2)}</pre>
@@ -330,10 +332,10 @@ function SequentialLoadingExample() {
     try {
       await sequentialLoader.executeSequential(
         operations,
-        (step, result) => console.log(`Step ${step} completed:`, result)
+        (step, result) => logger.info(`Step ${step} completed:`, result)
       );
     } catch (error) {
-      console.error('Sequential operation failed:', error);
+      logger.error('Sequential operation failed:', error);
     }
   };
 

@@ -1,4 +1,5 @@
 import { prisma } from './prisma';
+import { logger } from './production-logger';
 
 export interface Category {
   id: string;
@@ -28,7 +29,7 @@ export class CategoryService {
 
       return categories;
     } catch (error) {
-      console.error('Failed to get categories:', error);
+      logger.error('Failed to get categories:', error);
       return [];
     }
   }
@@ -71,7 +72,7 @@ export class CategoryService {
         sortOrder: index,
       }));
     } catch (error) {
-      console.error('Failed to get categories from services:', error);
+      logger.error('Failed to get categories from services:', error);
       return [];
     }
   }
@@ -91,7 +92,7 @@ export class CategoryService {
       // Fallback to getting from services/products
       return await this.getCategoriesFromServices();
     } catch (error) {
-      console.error('Failed to get all categories:', error);
+      logger.error('Failed to get all categories:', error);
       return [];
     }
   }
@@ -135,7 +136,7 @@ export class CategoryService {
       const categories = await this.getAllCategories();
       return categories.slice(0, 6);
     } catch (error) {
-      console.error('Failed to get trending categories:', error);
+      logger.error('Failed to get trending categories:', error);
       // Fallback to first 6 categories
       const categories = await this.getAllCategories();
       return categories.slice(0, 6);
@@ -176,9 +177,9 @@ export class CategoryService {
         })),
       });
 
-      console.log('Default categories seeded successfully');
+      logger.info('Default categories seeded successfully');
     } catch (error) {
-      console.error('Failed to seed default categories:', error);
+      logger.error('Failed to seed default categories:', error);
     }
   }
 

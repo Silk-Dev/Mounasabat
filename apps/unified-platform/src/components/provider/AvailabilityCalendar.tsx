@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { AvailabilitySlot } from '@/types';
 import { Button, Badge } from '@/components/ui';
 import { ChevronLeft, ChevronRight, Calendar, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { logger } from '@/lib/production-logger';
 
 interface AvailabilityCalendarProps {
   providerId: string;
@@ -31,7 +32,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
       const data = await response.json();
       return data.availability || [];
     } catch (error) {
-      console.error('Error fetching availability:', error);
+      logger.error('Error fetching availability:', error);
       return [];
     }
   };
@@ -43,7 +44,7 @@ const AvailabilityCalendar: React.FC<AvailabilityCalendarProps> = ({
         const availability = await fetchAvailability(currentDate, providerId);
         setAvailabilityData(availability);
       } catch (error) {
-        console.error('Failed to load availability:', error);
+        logger.error('Failed to load availability:', error);
         setAvailabilityData([]);
       } finally {
         setLoading(false);

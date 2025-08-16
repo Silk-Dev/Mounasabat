@@ -1,3 +1,4 @@
+import { logger } from './production-logger';
 interface ErrorContext {
   userId?: string;
   sessionId?: string;
@@ -92,7 +93,7 @@ class ErrorLogger {
         body: JSON.stringify({ errors }),
       });
     } catch (error) {
-      console.warn('Failed to send errors to server:', error);
+      logger.warn('Failed to send errors to server:', error);
       throw error;
     }
   }
@@ -166,8 +167,7 @@ class ErrorLogger {
 
     // Log to console in development
     if (process.env.NODE_ENV === 'development') {
-      console.error('Error logged:', {
-        message: error.message,
+      logger.error('Error logged:', new Error(error.message), {
         stack: error.stack,
         context,
         level,

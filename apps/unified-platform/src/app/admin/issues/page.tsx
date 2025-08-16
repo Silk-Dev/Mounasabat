@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
+import { logger } from '@/lib/production-logger';
 import { 
   Card, 
   CardContent, 
@@ -125,10 +126,10 @@ export default function IssuesPage() {
         setIssues(data.issues);
         setTotalPages(data.pagination.pages);
       } else {
-        console.error('Error fetching issues:', data.error);
+        logger.error('Error fetching issues:', data.error);
       }
     } catch (error) {
-      console.error('Error fetching issues:', error);
+      logger.error('Error fetching issues:', error);
     } finally {
       setLoading(false);
     }
@@ -143,10 +144,10 @@ export default function IssuesPage() {
         setSelectedIssue(data.issue);
         setShowIssueDetail(true);
       } else {
-        console.error('Error fetching issue detail:', data.error);
+        logger.error('Error fetching issue detail:', data.error);
       }
     } catch (error) {
-      console.error('Error fetching issue detail:', error);
+      logger.error('Error fetching issue detail:', error);
     }
   };
 
@@ -168,10 +169,10 @@ export default function IssuesPage() {
           fetchIssueDetail(issueId);
         }
       } else {
-        console.error('Error updating issue:', data.error);
+        logger.error('Error updating issue:', data.error);
       }
     } catch (error) {
-      console.error('Error updating issue:', error);
+      logger.error('Error updating issue:', error);
     }
   };
 
@@ -193,10 +194,10 @@ export default function IssuesPage() {
           fetchIssueDetail(issueId);
         }
       } else {
-        console.error('Error updating issue priority:', data.error);
+        logger.error('Error updating issue priority:', data.error);
       }
     } catch (error) {
-      console.error('Error updating issue priority:', error);
+      logger.error('Error updating issue priority:', error);
     }
   };
 
@@ -217,10 +218,10 @@ export default function IssuesPage() {
         setNewIssue({ title: '', description: '', priority: 'MEDIUM' });
         fetchIssues();
       } else {
-        console.error('Error creating issue:', data.error);
+        logger.error('Error creating issue:', data.error);
       }
     } catch (error) {
-      console.error('Error creating issue:', error);
+      logger.error('Error creating issue:', error);
     }
   };
 

@@ -3,6 +3,7 @@ import { useAuth } from "better-auth/react";
 import { useRouter } from "next/navigation";
 import Head from "next/head";
 import { Button } from "@mounasabet/ui";
+import { toast } from "sonner";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -17,7 +18,7 @@ export default function SignIn() {
       router.push("/"); // Redirect to home on successful sign-in
     } catch (error) {
       console.error("Sign-in failed:", error);
-      alert("Sign-in failed. Please check your credentials.");
+      toast.error("Sign-in failed. Please check your credentials.");
     }
   };
 

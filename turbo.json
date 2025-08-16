@@ -12,10 +12,10 @@
       "env": ["AUTH_SECRET", "NEXTAUTH_SECRET", "NEXTAUTH_URL", "STRIPE_SECRET_KEY"]
     },
     "@mounasabet/ui#build": {
-      "outputs": ["dist/**"]
+      "outputs": ["**/*.d.ts"]
     },
     "@mounasabet/database#db:generate": {
-      "outputs": ["dist/**"]
+      "outputs": ["src/generated/**"]
     },
     "@mounasabet/client#build": {
       "dependsOn": ["@mounasabet/ui#build"],

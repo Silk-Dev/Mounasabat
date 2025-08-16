@@ -7,6 +7,7 @@ import { auditLogger, AuditEventType, AuditLogLevel, auditHelpers } from '@/lib/
 import { bookingSchema } from '@/lib/validation';
 import { InputSanitizer } from '@/lib/security';
 import { DataEncryption } from '@/lib/encryption';
+import { logger } from '../../../lib/production-logger';
 
 // Enhanced booking schema with security validations
 const createBookingSchema = z.object({
@@ -234,7 +235,7 @@ export async function POST(request: NextRequest) {
           totalAmount,
         });
       } catch (emailError) {
-        console.error('Failed to send confirmation email:', emailError);
+        logger.error('Failed to send confirmation email:', emailError);
         
         // Log email failure but don't fail the booking
         await auditLogger.logFromRequest(request, {
@@ -262,7 +263,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Booking creation error:', error);
+    logger.error('Booking creation error:', error);
 
     // Log the error
     await auditLogger.logFromRequest(request, {
@@ -327,8 +328,8 @@ async function sendBookingConfirmationEmail({
 }) {
   // In a real application, this would integrate with an email service
   // like SendGrid, AWS SES, or similar
-  console.log('Sending confirmation email to:', customerEmail);
-  console.log('Confirmation details:', {
+  logger.info('Sending confirmation email to:', customerEmail);
+  logger.info('Confirmation details:', {
     confirmationNumber,
     eventType: eventDetails.type,
     eventDate: eventDetails.date,
@@ -437,7 +438,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error fetching bookings:', error);
+    logger.error('Error fetching bookings:', error);
 
     // Log the error
     await auditLogger.logFromRequest(request, {

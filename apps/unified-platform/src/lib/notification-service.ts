@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { EmailService } from '@mounasabet/notifications';
 import { NotificationType } from '@prisma/client';
+import { logger } from './production-logger';
 
 export interface CreateNotificationData {
   userId: string;
@@ -51,7 +52,7 @@ export class NotificationService {
 
       return notification;
     } catch (error) {
-      console.error('Error creating notification:', error);
+      logger.error('Error creating notification:', error);
       throw new Error('Failed to create notification');
     }
   }
@@ -112,7 +113,7 @@ export class NotificationService {
       });
 
     } catch (error) {
-      console.error('Error sending booking confirmation:', error);
+      logger.error('Error sending booking confirmation:', error);
       throw new Error('Failed to send booking confirmation');
     }
   }
@@ -165,7 +166,7 @@ export class NotificationService {
       });
 
     } catch (error) {
-      console.error('Error sending booking update:', error);
+      logger.error('Error sending booking update:', error);
       throw new Error('Failed to send booking update');
     }
   }
@@ -195,7 +196,7 @@ export class NotificationService {
         hasMore: total > page * limit,
       };
     } catch (error) {
-      console.error('Error getting user notifications:', error);
+      logger.error('Error getting user notifications:', error);
       throw new Error('Failed to get notifications');
     }
   }
@@ -208,7 +209,7 @@ export class NotificationService {
         data: { isRead: true },
       });
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      logger.error('Error marking notification as read:', error);
       throw new Error('Failed to mark notification as read');
     }
   }
@@ -221,7 +222,7 @@ export class NotificationService {
         data: { isRead: true },
       });
     } catch (error) {
-      console.error('Error marking all notifications as read:', error);
+      logger.error('Error marking all notifications as read:', error);
       throw new Error('Failed to mark all notifications as read');
     }
   }
@@ -233,7 +234,7 @@ export class NotificationService {
         where: { id: notificationId, userId },
       });
     } catch (error) {
-      console.error('Error deleting notification:', error);
+      logger.error('Error deleting notification:', error);
       throw new Error('Failed to delete notification');
     }
   }
@@ -257,7 +258,7 @@ export class NotificationService {
         pushNotifications: preferences.pushNotifications ?? false,
       };
     } catch (error) {
-      console.error('Error getting user preferences:', error);
+      logger.error('Error getting user preferences:', error);
       throw new Error('Failed to get user preferences');
     }
   }
@@ -280,7 +281,7 @@ export class NotificationService {
 
       return updatedPreferences;
     } catch (error) {
-      console.error('Error updating user preferences:', error);
+      logger.error('Error updating user preferences:', error);
       throw new Error('Failed to update user preferences');
     }
   }
@@ -312,7 +313,7 @@ export class NotificationService {
         actionText: data?.actionText,
       });
     } catch (error) {
-      console.error('Error sending email notification:', error);
+      logger.error('Error sending email notification:', error);
       // Don't throw error here to avoid breaking the main notification flow
     }
   }
@@ -321,7 +322,7 @@ export class NotificationService {
   private async triggerRealTimeNotification(userId: string, notification: any) {
     // This will be implemented when we add WebSocket support
     // For now, we'll just log it
-    console.log(`Real-time notification for user ${userId}:`, notification);
+    logger.info(`Real-time notification for user ${userId}:`, notification);
   }
 
   // Send reminder notifications
@@ -370,7 +371,7 @@ export class NotificationService {
         });
       }
     } catch (error) {
-      console.error('Error sending reminders:', error);
+      logger.error('Error sending reminders:', error);
     }
   }
 }

@@ -1,5 +1,6 @@
 import { prisma, queryOptimizations } from './prisma';
 import { memoryCache } from './cache';
+import { logger } from './production-logger';
 
 // Optimized search queries with proper indexing
 export const optimizedQueries = {
@@ -368,13 +369,13 @@ export const queryPerformanceMonitor = {
         const duration = Date.now() - startTime;
         
         if (duration > queryPerformanceMonitor.slowQueryThreshold) {
-          console.warn(`Slow query detected: ${queryName} took ${duration}ms`);
+          logger.warn(`Slow query detected: ${queryName} took ${duration}ms`);
         }
         
         return result;
       } catch (error) {
         const duration = Date.now() - startTime;
-        console.error(`Query failed: ${queryName} after ${duration}ms`, error);
+        logger.error(`Query failed: ${queryName} after ${duration}ms`, error);
         throw error;
       }
     };

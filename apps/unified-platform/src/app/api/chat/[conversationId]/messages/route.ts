@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { logger } from '../../../../../lib/production-logger';
 
 export async function GET(
   request: NextRequest,
@@ -50,7 +51,7 @@ export async function GET(
       }))
     });
   } catch (error) {
-    console.error('Error fetching chat messages:', error);
+    logger.error('Error fetching chat messages:', error);
     return NextResponse.json(
       { error: 'Failed to fetch messages' },
       { status: 500 }
@@ -109,7 +110,7 @@ export async function POST(
       }
     });
   } catch (error) {
-    console.error('Error creating chat message:', error);
+    logger.error('Error creating chat message:', error);
     return NextResponse.json(
       { error: 'Failed to create message' },
       { status: 500 }

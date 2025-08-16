@@ -11,6 +11,7 @@ import { RealTimeBookingNotifications } from '@/components/notifications/RealTim
 import { LiveChat } from '@/components/chat/LiveChat';
 import { RealTimeDashboard } from '@/components/dashboard/RealTimeDashboard';
 import { useRealTimeContext } from '@/components/provider/RealTimeProvider';
+import { logger } from '@/lib/production-logger';
 
 function RealTimeDemoContent() {
   const [showChat, setShowChat] = useState(false);
@@ -26,7 +27,7 @@ function RealTimeDemoContent() {
   };
 
   const handleNotificationClick = (bookingId: string) => {
-    console.log('Notification clicked for booking:', bookingId);
+    logger.info('Notification clicked for booking:', bookingId);
     // Navigate to booking details or open relevant view
   };
 
@@ -134,7 +135,7 @@ function RealTimeDemoContent() {
                       };
                       
                       // This would normally come through WebSocket
-                      console.log('Demo notification:', demoNotification);
+                      logger.info('Demo notification:', demoNotification);
                     }}
                   >
                     Simulate New Booking

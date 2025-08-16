@@ -31,7 +31,7 @@ const customJestConfig = {
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(@mounasabet|react-resizable-panels|@stripe|better-auth)/)',
+    '/node_modules/(?!(@mounasabet|react-resizable-panels|@stripe|better-auth|@react-pdf)/)',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],

@@ -8,6 +8,7 @@ import { useAdvancedSearch } from '@/lib/hooks/useAdvancedSearch';
 import type { SearchResult, SearchFilters } from '@/types';
 import { Button } from '@/components/ui';
 import { Filter } from 'lucide-react';
+import { logger } from '@/lib/production-logger';
 
 export default function SearchPage() {
   const [showFilters, setShowFilters] = useState(false);
@@ -57,16 +58,16 @@ export default function SearchPage() {
         });
       } catch (shareError) {
         // User cancelled sharing or sharing failed
-        console.log('Share cancelled or failed:', shareError);
+        logger.info('Share cancelled or failed:', shareError);
       }
     } else {
       // Fallback to copying to clipboard
       try {
         await navigator.clipboard.writeText(url);
         // You could show a toast notification here
-        console.log('Link copied to clipboard');
+        logger.info('Link copied to clipboard');
       } catch (clipboardError) {
-        console.error('Failed to copy to clipboard:', clipboardError);
+        logger.error('Failed to copy to clipboard:', clipboardError);
       }
     }
   }, []);

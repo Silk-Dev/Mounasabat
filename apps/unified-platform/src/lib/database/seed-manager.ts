@@ -1,6 +1,7 @@
 import { PrismaClient } from "./generated/client";
 import seedBase from "../prisma/seed-base";
 import seedDemo from "../prisma/seed-demo";
+import { logger } from '../production-logger';
 
 const prisma = new PrismaClient();
 
@@ -33,7 +34,7 @@ export class SeedManager {
   async runBaseSeed(options: SeedOptions = {}): Promise<SeedResult> {
     try {
       if (options.verbose) {
-        console.log("🌱 Starting base seed...");
+        logger.info("🌱 Starting base seed...");
       }
 
       await seedBase();
@@ -68,7 +69,7 @@ export class SeedManager {
       }
 
       if (options.verbose) {
-        console.log("🎭 Starting demo seed...");
+        logger.info("🎭 Starting demo seed...");
       }
 
       await seedDemo();
@@ -136,7 +137,7 @@ export class SeedManager {
         };
       }
 
-      console.log("🧹 Clearing demo data...");
+      logger.info("🧹 Clearing demo data...");
 
       // Delete in reverse dependency order
       await this.prisma.notification.deleteMany({
@@ -343,7 +344,7 @@ export class SeedManager {
         systemSettings,
       };
     } catch (error) {
-      console.error("Error getting counts:", error);
+      logger.error("Error getting counts:", error);
       return {};
     }
   }
@@ -356,7 +357,7 @@ export class SeedManager {
       const userCount = await this.prisma.user.count();
       return userCount === 0;
     } catch (error) {
-      console.error("Error checking if database is empty:", error);
+      logger.error("Error checking if database is empty:", error);
       return false;
     }
   }
@@ -376,7 +377,7 @@ export class SeedManager {
       });
       return demoUserCount > 0;
     } catch (error) {
-      console.error("Error checking for demo data:", error);
+      logger.error("Error checking for demo data:", error);
       return false;
     }
   }
@@ -424,7 +425,7 @@ export class SeedManager {
         recommendations,
       };
     } catch (error) {
-      console.error("Error getting status:", error);
+      logger.error("Error getting status:", error);
       return {
         isEmpty: true,
         hasBaseData: false,

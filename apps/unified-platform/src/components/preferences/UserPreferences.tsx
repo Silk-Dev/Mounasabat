@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { UserPreferences } from '@/types';
 import { useUserPreferences } from '@/lib/hooks/useUserPreferences';
 import { toast } from 'sonner';
+import { logger } from '@/lib/production-logger';
 
 interface CategorySelectorProps {
     selectedCategories: string[];
@@ -44,7 +45,7 @@ function CategorySelector({ selectedCategories, onCategoriesChange }: CategorySe
                     ]);
                 }
             } catch (error) {
-                console.error('Failed to load categories:', error);
+                logger.error('Failed to load categories:', error);
                 // Fallback to default categories
                 setCategories([
                     'Wedding Planning',

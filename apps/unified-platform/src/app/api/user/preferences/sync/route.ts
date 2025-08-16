@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@/../../packages/database/src/generated/client';
+import { logger } from '../../../../../lib/production-logger';
 
 const prisma = new PrismaClient();
 
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
       message: 'Guest preferences synced successfully',
     });
   } catch (error) {
-    console.error('Error syncing guest preferences:', error);
+    logger.error('Error syncing guest preferences:', error);
     return NextResponse.json(
       { error: 'Failed to sync guest preferences' },
       { status: 500 }

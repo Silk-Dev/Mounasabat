@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import Redis from 'ioredis';
+import { logger } from './production-logger';
 
 // Rate limiter configuration
 interface RateLimitConfig {
@@ -55,7 +56,7 @@ class RateLimiter {
       try {
         this.redis = new Redis(process.env.REDIS_URL);
       } catch (error) {
-        console.warn('Redis connection failed, falling back to memory store:', error);
+        logger.warn('Redis connection failed, falling back to memory store:', error);
       }
     }
   }

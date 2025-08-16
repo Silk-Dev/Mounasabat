@@ -3,7 +3,7 @@
 import React from 'react';
 import { Button } from './button';
 import { Card } from './card';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 
 export interface EmptyStateAction {
   label: string;

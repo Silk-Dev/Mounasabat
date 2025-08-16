@@ -5,7 +5,9 @@ import { useAuth } from '@/lib/auth-context';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { Badge } from '@/components/ui';
-import { 
+import { toast } from 'sonner';
+import { logger } from '@/lib/production-logger';
+import {
   Plus, 
   Edit, 
   Eye, 
@@ -84,8 +86,8 @@ export default function ProviderServicesPage() {
 
       refetch(); // Refresh the list using the data loader
     } catch (error) {
-      console.error('Error updating service status:', error);
-      alert(error instanceof Error ? error.message : 'Failed to update service status');
+      logger.error('Error updating service status:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to update service status');
     } finally {
       setActionLoading(null);
     }
@@ -109,8 +111,8 @@ export default function ProviderServicesPage() {
 
       refetch(); // Refresh the list using the data loader
     } catch (error) {
-      console.error('Error deleting service:', error);
-      alert(error instanceof Error ? error.message : 'Failed to delete service');
+      logger.error('Error deleting service:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to delete service');
     } finally {
       setActionLoading(null);
     }

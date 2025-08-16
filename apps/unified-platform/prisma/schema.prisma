@@ -165,6 +165,10 @@ model User {
   // Search analytics
   searchAnalytics SearchAnalytics[]
 
+  // Audit log relationships
+  auditLogs       AuditLog[] @relation("AuditLogUser")
+  targetAuditLogs AuditLog[] @relation("AuditLogTargetUser")
+
   @@unique([email])
   @@map("user")
 }
@@ -824,4 +828,104 @@ model SystemAlert {
   @@index([environment, createdAt])
   @@index([resolved, createdAt])
   @@map("system_alerts")
+}
+
+// Audit log levels enum
+enum AuditLogLevel {
+  info
+  warning
+  error
+  critical
+}
+
+// Audit event types enum
+enum AuditEventType {
+  // Authentication events
+  user_login
+  user_logout
+  user_login_failed
+  password_reset
+  password_changed
+  
+  // User management
+  user_created
+  user_updated
+  user_deleted
+  user_suspended
+  user_activated
+  
+  // Provider management
+  provider_approved
+  provider_rejected
+  provider_suspended
+  provider_verified
+  
+  // Service management
+  service_created
+  service_updated
+  service_deleted
+  service_approved
+  service_rejected
+  
+  // Booking events
+  booking_created
+  booking_updated
+  booking_cancelled
+  booking_completed
+  
+  // Payment events
+  payment_processed
+  payment_failed
+  refund_processed
+  
+  // Security events
+  security_violation
+  rate_limit_exceeded
+  unauthorized_access
+  suspicious_activity
+  
+  // Admin actions
+  admin_action
+  system_config_changed
+  data_export
+  data_import
+}
+
+// Audit logs model for tracking administrative actions and security events
+model AuditLog {
+  id                 String         @id @default(uuid())
+  timestamp          DateTime       @default(now())
+  level              AuditLogLevel
+  eventType          AuditEventType
+  userId             String?
+  user               User?          @relation("AuditLogUser", fields: [userId], references: [id], onDelete: SetNull)
+  userRole           String?
+  targetUserId       String?
+  targetUser         User?          @relation("AuditLogTargetUser", fields: [targetUserId], references: [id], onDelete: SetNull)
+  targetResourceId   String?
+  targetResourceType String?
+  action             String
+  description        String
+  metadata           Json?
+  ipAddress          String?
+  userAgent          String?
+  sessionId          String?
+  success            Boolean
+  errorMessage       String?
+  requestId          String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @default(now()) @updatedAt
+
+  @@index([timestamp])
+  @@index([level])
+  @@index([eventType])
+  @@index([userId])
+  @@index([targetUserId])
+  @@index([targetResourceType])
+  @@index([success])
+  @@index([sessionId])
+  @@index([level, timestamp])
+  @@index([eventType, timestamp])
+  @@index([userId, timestamp])
+  @@map("audit_logs")
 }

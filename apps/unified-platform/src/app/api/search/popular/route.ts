@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SearchAnalytics } from '@/lib/search-analytics';
+import { logger } from '../../../../lib/production-logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Popular searches API error:', error);
+    logger.error('Popular searches API error:', error);
 
     return NextResponse.json(
       {

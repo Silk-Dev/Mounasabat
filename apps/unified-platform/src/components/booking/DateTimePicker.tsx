@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from '../ui';
 import { Skeleton } from '../ui';
 import { Calendar as CalendarIcon, Clock, AlertCircle, CheckCircle } from 'lucide-react';
 import type { SelectedService, AvailabilitySlot } from '../../types';
+import { logger } from '@/lib/production-logger';
 
 interface DateTimePickerProps {
   selectedServices: SelectedService[];
@@ -75,7 +76,7 @@ export function DateTimePicker({
         
         setAvailableSlots(combinedAvailability);
       } catch (error) {
-        console.error('Error fetching availability:', error);
+        logger.error('Error fetching availability:', error);
         setAvailableSlots([]);
       }
       
@@ -91,7 +92,7 @@ export function DateTimePicker({
 
       setTimeSlots(processedTimeSlots);
     } catch (error) {
-      console.error('Error checking availability:', error);
+      logger.error('Error checking availability:', error);
       setValidationMessage('Error checking availability. Please try again.');
     } finally {
       setLoading(false);

@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { DataEncryption } from './encryption';
+import { logger } from './production-logger';
 
 // Audit log levels
 export enum AuditLogLevel {
@@ -128,7 +129,7 @@ export class AuditLogger {
         await this.sendCriticalAlert(auditEntry);
       }
     } catch (error) {
-      console.error('Failed to persist audit log:', error);
+      logger.error('Failed to persist audit log:', error);
       // Don't throw error to avoid breaking the main application flow
     }
   }
@@ -246,37 +247,114 @@ export class AuditLogger {
     limit?: number;
     offset?: number;
   } = {}): Promise<AuditLogEntry[]> {
-    let filteredLogs = [...this.logs];
+    try {
+      // Import prisma dynamically to avoid circular dependencies
+      const { prisma } = await import('./database/prisma');
 
-    // Apply filters
-    if (filters.userId) {
-      filteredLogs = filteredLogs.filter(log => log.userId === filters.userId);
+      // Build where clause
+      const where: any = {};
+      
+      if (filters.userId) {
+        where.userId = filters.userId;
+      }
+
+      if (filters.eventType) {
+        where.eventType = filters.eventType;
+      }
+
+      if (filters.level) {
+        where.level = filters.level;
+      }
+
+      if (filters.startDate || filters.endDate) {
+        where.timestamp = {};
+        if (filters.startDate) {
+          where.timestamp.gte = filters.startDate;
+        }
+        if (filters.endDate) {
+          where.timestamp.lte = filters.endDate;
+        }
+      }
+
+      // Query database
+      const logs = await prisma.auditLog.findMany({
+        where,
+        orderBy: { timestamp: 'desc' },
+        take: filters.limit || 100,
+        skip: filters.offset || 0,
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+          targetUser: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+        },
+      });
+
+      // Transform to AuditLogEntry format
+      return logs.map(log => ({
+        id: log.id,
+        timestamp: log.timestamp,
+        level: log.level as AuditLogLevel,
+        eventType: log.eventType as AuditEventType,
+        userId: log.userId,
+        userRole: log.userRole,
+        targetUserId: log.targetUserId,
+        targetResourceId: log.targetResourceId,
+        targetResourceType: log.targetResourceType,
+        action: log.action,
+        description: log.description,
+        metadata: log.metadata as Record<string, any>,
+        ipAddress: log.ipAddress,
+        userAgent: log.userAgent,
+        sessionId: log.sessionId,
+        success: log.success,
+        errorMessage: log.errorMessage,
+        requestId: log.requestId,
+      }));
+    } catch (error) {
+      logger.error('Failed to retrieve audit logs from database:', error);
+      
+      // Fallback to memory logs if database fails
+      let filteredLogs = [...this.logs];
+
+      // Apply filters
+      if (filters.userId) {
+        filteredLogs = filteredLogs.filter(log => log.userId === filters.userId);
+      }
+
+      if (filters.eventType) {
+        filteredLogs = filteredLogs.filter(log => log.eventType === filters.eventType);
+      }
+
+      if (filters.level) {
+        filteredLogs = filteredLogs.filter(log => log.level === filters.level);
+      }
+
+      if (filters.startDate) {
+        filteredLogs = filteredLogs.filter(log => log.timestamp >= filters.startDate!);
+      }
+
+      if (filters.endDate) {
+        filteredLogs = filteredLogs.filter(log => log.timestamp <= filters.endDate!);
+      }
+
+      // Sort by timestamp (newest first)
+      filteredLogs.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+
+      // Apply pagination
+      const offset = filters.offset || 0;
+      const limit = filters.limit || 100;
+      
+      return filteredLogs.slice(offset, offset + limit);
     }
-
-    if (filters.eventType) {
-      filteredLogs = filteredLogs.filter(log => log.eventType === filters.eventType);
-    }
-
-    if (filters.level) {
-      filteredLogs = filteredLogs.filter(log => log.level === filters.level);
-    }
-
-    if (filters.startDate) {
-      filteredLogs = filteredLogs.filter(log => log.timestamp >= filters.startDate!);
-    }
-
-    if (filters.endDate) {
-      filteredLogs = filteredLogs.filter(log => log.timestamp <= filters.endDate!);
-    }
-
-    // Sort by timestamp (newest first)
-    filteredLogs.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-
-    // Apply pagination
-    const offset = filters.offset || 0;
-    const limit = filters.limit || 100;
-    
-    return filteredLogs.slice(offset, offset + limit);
   }
 
   // Get audit statistics
@@ -290,66 +368,172 @@ export class AuditLogger {
     failureRate: number;
     topUsers: Array<{ userId: string; eventCount: number }>;
   }> {
-    const logs = await this.getLogs({
-      startDate: timeRange.startDate,
-      endDate: timeRange.endDate,
-      limit: 10000, // Get all logs in range
-    });
+    try {
+      // Import prisma dynamically to avoid circular dependencies
+      const { prisma } = await import('./database/prisma');
 
-    const eventsByType: Record<string, number> = {};
-    const eventsByLevel: Record<string, number> = {};
-    const userEventCounts: Record<string, number> = {};
-    let failedEvents = 0;
+      const where = {
+        timestamp: {
+          gte: timeRange.startDate,
+          lte: timeRange.endDate,
+        },
+      };
 
-    logs.forEach(log => {
-      // Count by event type
-      eventsByType[log.eventType] = (eventsByType[log.eventType] || 0) + 1;
+      // Get total events count
+      const totalEvents = await prisma.auditLog.count({ where });
+
+      // Get events by type
+      const eventsByTypeRaw = await prisma.auditLog.groupBy({
+        by: ['eventType'],
+        where,
+        _count: { eventType: true },
+      });
+
+      const eventsByType: Record<string, number> = {};
+      eventsByTypeRaw.forEach(item => {
+        eventsByType[item.eventType] = item._count.eventType;
+      });
+
+      // Get events by level
+      const eventsByLevelRaw = await prisma.auditLog.groupBy({
+        by: ['level'],
+        where,
+        _count: { level: true },
+      });
+
+      const eventsByLevel: Record<string, number> = {};
+      eventsByLevelRaw.forEach(item => {
+        eventsByLevel[item.level] = item._count.level;
+      });
+
+      // Get failure rate
+      const failedEvents = await prisma.auditLog.count({
+        where: {
+          ...where,
+          success: false,
+        },
+      });
+
+      const failureRate = totalEvents > 0 ? failedEvents / totalEvents : 0;
+
+      // Get top users
+      const topUsersRaw = await prisma.auditLog.groupBy({
+        by: ['userId'],
+        where: {
+          ...where,
+          userId: { not: null },
+        },
+        _count: { userId: true },
+        orderBy: { _count: { userId: 'desc' } },
+        take: 10,
+      });
+
+      const topUsers = topUsersRaw.map(item => ({
+        userId: item.userId!,
+        eventCount: item._count.userId,
+      }));
+
+      return {
+        totalEvents,
+        eventsByType,
+        eventsByLevel,
+        failureRate,
+        topUsers,
+      };
+    } catch (error) {
+      logger.error('Failed to retrieve audit stats from database:', error);
       
-      // Count by level
-      eventsByLevel[log.level] = (eventsByLevel[log.level] || 0) + 1;
-      
-      // Count by user
-      if (log.userId) {
-        userEventCounts[log.userId] = (userEventCounts[log.userId] || 0) + 1;
-      }
-      
-      // Count failures
-      if (!log.success) {
-        failedEvents++;
-      }
-    });
+      // Fallback to memory-based calculation
+      const logs = await this.getLogs({
+        startDate: timeRange.startDate,
+        endDate: timeRange.endDate,
+        limit: 10000, // Get all logs in range
+      });
 
-    // Get top users
-    const topUsers = Object.entries(userEventCounts)
-      .map(([userId, eventCount]) => ({ userId, eventCount }))
-      .sort((a, b) => b.eventCount - a.eventCount)
-      .slice(0, 10);
+      const eventsByType: Record<string, number> = {};
+      const eventsByLevel: Record<string, number> = {};
+      const userEventCounts: Record<string, number> = {};
+      let failedEvents = 0;
 
-    return {
-      totalEvents: logs.length,
-      eventsByType,
-      eventsByLevel,
-      failureRate: logs.length > 0 ? failedEvents / logs.length : 0,
-      topUsers,
-    };
+      logs.forEach(log => {
+        // Count by event type
+        eventsByType[log.eventType] = (eventsByType[log.eventType] || 0) + 1;
+        
+        // Count by level
+        eventsByLevel[log.level] = (eventsByLevel[log.level] || 0) + 1;
+        
+        // Count by user
+        if (log.userId) {
+          userEventCounts[log.userId] = (userEventCounts[log.userId] || 0) + 1;
+        }
+        
+        // Count failures
+        if (!log.success) {
+          failedEvents++;
+        }
+      });
+
+      // Get top users
+      const topUsers = Object.entries(userEventCounts)
+        .map(([userId, eventCount]) => ({ userId, eventCount }))
+        .sort((a, b) => b.eventCount - a.eventCount)
+        .slice(0, 10);
+
+      return {
+        totalEvents: logs.length,
+        eventsByType,
+        eventsByLevel,
+        failureRate: logs.length > 0 ? failedEvents / logs.length : 0,
+        topUsers,
+      };
+    }
   }
 
   // Private method to persist log (implement based on your storage solution)
   private async persistLog(entry: AuditLogEntry): Promise<void> {
-    // In production, implement database storage
-    // For now, we'll just log to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log('AUDIT LOG:', JSON.stringify(entry, null, 2));
+    try {
+      // Import prisma dynamically to avoid circular dependencies
+      const { prisma } = await import('./database/prisma');
+      
+      // Create audit log entry in database
+      await prisma.auditLog.create({
+        data: {
+          id: entry.id,
+          timestamp: entry.timestamp,
+          level: entry.level,
+          eventType: entry.eventType,
+          userId: entry.userId,
+          userRole: entry.userRole,
+          targetUserId: entry.targetUserId,
+          targetResourceId: entry.targetResourceId,
+          targetResourceType: entry.targetResourceType,
+          action: entry.action,
+          description: entry.description,
+          metadata: entry.metadata,
+          ipAddress: entry.ipAddress,
+          userAgent: entry.userAgent,
+          sessionId: entry.sessionId,
+          success: entry.success,
+          errorMessage: entry.errorMessage,
+          requestId: entry.requestId,
+        },
+      });
+
+      // Also log to console in development for debugging
+      if (process.env.NODE_ENV === 'development') {
+        logger.info('AUDIT LOG:', JSON.stringify(entry, null, 2));
+      }
+    } catch (error) {
+      // Fallback to console logging if database fails
+      logger.error('Failed to persist audit log to database:', error);
+      logger.info('AUDIT LOG (fallback):', JSON.stringify(entry, null, 2));
     }
-    
-    // TODO: Implement database persistence
-    // await prisma.auditLog.create({ data: entry });
   }
 
   // Private method to send critical alerts
   private async sendCriticalAlert(entry: AuditLogEntry): Promise<void> {
     // In production, implement alerting (email, Slack, PagerDuty, etc.)
-    console.error('CRITICAL AUDIT EVENT:', JSON.stringify(entry, null, 2));
+    logger.error('CRITICAL AUDIT EVENT:', JSON.stringify(entry, null, 2));
     
     // TODO: Implement alerting system
     // await sendSlackAlert(entry);

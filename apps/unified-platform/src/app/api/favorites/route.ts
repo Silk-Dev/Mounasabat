@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@/../../packages/database/src/generated/client';
+import { logger } from '../../../lib/production-logger';
 
 const prisma = new PrismaClient();
 
@@ -89,7 +90,7 @@ export async function GET(request: NextRequest) {
       favorites: validFavoriteItems,
     });
   } catch (error) {
-    console.error('Error fetching favorites:', error);
+    logger.error('Error fetching favorites:', error);
     return NextResponse.json(
       { error: 'Failed to fetch favorites' },
       { status: 500 }
@@ -220,7 +221,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(favoriteItem);
   } catch (error) {
-    console.error('Error adding favorite:', error);
+    logger.error('Error adding favorite:', error);
     return NextResponse.json(
       { error: 'Failed to add favorite' },
       { status: 500 }
@@ -249,7 +250,7 @@ export async function DELETE(request: NextRequest) {
       message: 'All favorites cleared',
     });
   } catch (error) {
-    console.error('Error clearing favorites:', error);
+    logger.error('Error clearing favorites:', error);
     return NextResponse.json(
       { error: 'Failed to clear favorites' },
       { status: 500 }

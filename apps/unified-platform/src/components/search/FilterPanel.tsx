@@ -21,6 +21,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { getServiceCategories } from '@/lib/search';
+import { logger } from '@/lib/production-logger';
 import type { SearchFilters } from '@/types';
 
 interface FilterPanelProps {
@@ -52,6 +53,8 @@ export default function FilterPanel({
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [availabilityDate, setAvailabilityDate] = useState('');
   const [locationInput, setLocationInput] = useState('');
+  const [popularLocations, setPopularLocations] = useState<string[]>([]);
+  const [locationsLoading, setLocationsLoading] = useState(true);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     location: true,
     category: true,
@@ -77,7 +80,7 @@ export default function FilterPanel({
     }
   }, [filters]);
 
-  // Load categories from database
+  // Load categories and popular locations from database
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -85,14 +88,33 @@ export default function FilterPanel({
         const loadedCategories = await getServiceCategories();
         setCategories(loadedCategories);
       } catch (error) {
-        console.error('Failed to load categories:', error);
+        logger.error('Failed to load categories:', error);
         setCategories([]);
       } finally {
         setCategoriesLoading(false);
       }
     };
 
+    const loadPopularLocations = async () => {
+      try {
+        setLocationsLoading(true);
+        const response = await fetch('/api/search/popular-locations');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setPopularLocations(data.locations || []);
+          }
+        }
+      } catch (error) {
+        logger.error('Failed to load popular locations:', error);
+        setPopularLocations([]);
+      } finally {
+        setLocationsLoading(false);
+      }
+    };
+
     loadCategories();
+    loadPopularLocations();
   }, []);
 
   // Debounced filter updates for better performance
@@ -338,19 +360,21 @@ export default function FilterPanel({
               onChange={(e) => handleLocationChange(e.target.value)}
               className="w-full"
             />
-            <div className="flex flex-wrap gap-2 mt-2">
-              {['Tunis', 'Sfax', 'Sousse', 'Monastir', 'Bizerte'].map(city => (
-                <Button
-                  key={city}
-                  variant={localFilters.location === city ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleLocationSelect(city)}
-                  className="text-xs"
-                >
-                  {city}
-                </Button>
-              ))}
-            </div>
+            {!locationsLoading && popularLocations.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {popularLocations.slice(0, 5).map(city => (
+                  <Button
+                    key={city}
+                    variant={localFilters.location === city ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleLocationSelect(city)}
+                    className="text-xs"
+                  >
+                    {city}
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
         </FilterSectionHeader>
       </Card>
@@ -541,16 +565,18 @@ export default function FilterPanel({
             <DollarSign className="h-4 w-4 mr-2" />
             Budget Friendly
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleLocationChange('Tunis')}
-            className="w-full justify-start"
-            disabled={isLoading}
-          >
-            <MapPin className="h-4 w-4 mr-2" />
-            Near Tunis
-          </Button>
+          {!locationsLoading && popularLocations.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleLocationChange(popularLocations[0])}
+              className="w-full justify-start"
+              disabled={isLoading}
+            >
+              <MapPin className="h-4 w-4 mr-2" />
+              Near {popularLocations[0]}
+            </Button>
+          )}
         </div>
       </Card>
     </div>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { startOfMonth, endOfMonth, subMonths } from 'date-fns';
+import { logger } from '../../../../../lib/production-logger';
 
 export async function GET(
   request: NextRequest,
@@ -205,7 +206,7 @@ export async function GET(
       recentBookings: formattedRecentBookings
     });
   } catch (error) {
-    console.error('Error fetching provider dashboard:', error);
+    logger.error('Error fetching provider dashboard:', error);
     return NextResponse.json(
       { error: 'Failed to fetch dashboard data' },
       { status: 500 }

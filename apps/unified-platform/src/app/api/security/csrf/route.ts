@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CSRFProtection } from '@/lib/security';
 import { auditLogger, AuditEventType } from '@/lib/audit-logger';
+import { logger } from '../../../../lib/production-logger';
 
 // Generate CSRF token
 export async function GET(request: NextRequest) {
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error('CSRF token generation error:', error);
+    logger.error('CSRF token generation error:', error);
     
     await auditLogger.logFromRequest(request, {
       level: 'error' as const,
@@ -110,7 +111,7 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch (error) {
-    console.error('CSRF validation error:', error);
+    logger.error('CSRF validation error:', error);
     
     await auditLogger.logFromRequest(request, {
       level: 'error' as const,

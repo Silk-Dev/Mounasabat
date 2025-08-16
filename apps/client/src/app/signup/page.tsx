@@ -3,6 +3,7 @@ import { useAuth } from "better-auth/react";
 import { useRouter } from "next/navigation";
 import Head from "next/head";
 import { Button } from "@mounasabet/ui";
+import { toast } from "sonner";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -14,11 +15,11 @@ export default function SignUp() {
     e.preventDefault();
     try {
       await signUp({ email, password });
-      alert("Sign-up successful! Please sign in.");
+      toast.success("Sign-up successful! Please sign in.");
       router.push("/signin"); // Redirect to sign-in page after successful sign-up
     } catch (error) {
       console.error("Sign-up failed:", error);
-      alert("Sign-up failed. Please try again.");
+      toast.error("Sign-up failed. Please try again.");
     }
   };
 

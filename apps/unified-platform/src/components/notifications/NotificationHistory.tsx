@@ -10,6 +10,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Mail, Bell, Smartphone, Trash2, CheckCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/production-logger';
 
 interface Notification {
   id: string;
@@ -76,7 +77,7 @@ export function NotificationHistory() {
         setPage(pageNum);
       }
     } catch (error) {
-      console.error('Error loading notifications:', error);
+      logger.error('Error loading notifications:', error);
       toast.error('Failed to load notifications');
     } finally {
       setLoading(false);
@@ -95,7 +96,7 @@ export function NotificationHistory() {
         );
       }
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      logger.error('Error marking notification as read:', error);
       toast.error('Failed to mark notification as read');
     }
   };
@@ -111,7 +112,7 @@ export function NotificationHistory() {
         toast.success('Notification deleted');
       }
     } catch (error) {
-      console.error('Error deleting notification:', error);
+      logger.error('Error deleting notification:', error);
       toast.error('Failed to delete notification');
     }
   };
@@ -127,7 +128,7 @@ export function NotificationHistory() {
         toast.success('All notifications marked as read');
       }
     } catch (error) {
-      console.error('Error marking all as read:', error);
+      logger.error('Error marking all as read:', error);
       toast.error('Failed to mark all notifications as read');
     }
   };

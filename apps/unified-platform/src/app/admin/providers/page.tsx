@@ -55,6 +55,7 @@ import {
   Mail,
   Globe,
 } from 'lucide-react';
+import { logger } from '@/lib/production-logger';
 
 interface Provider {
   id: string;
@@ -140,10 +141,10 @@ export default function ProvidersPage() {
         setProviders(data.providers);
         setTotalPages(data.pagination.pages);
       } else {
-        console.error('Error fetching providers:', data.error);
+        logger.error('Error fetching providers:', data.error);
       }
     } catch (error) {
-      console.error('Error fetching providers:', error);
+      logger.error('Error fetching providers:', error);
     } finally {
       setLoading(false);
     }
@@ -158,10 +159,10 @@ export default function ProvidersPage() {
         setSelectedProvider(data.provider);
         setShowProviderDetail(true);
       } else {
-        console.error('Error fetching provider detail:', data.error);
+        logger.error('Error fetching provider detail:', data.error);
       }
     } catch (error) {
-      console.error('Error fetching provider detail:', error);
+      logger.error('Error fetching provider detail:', error);
     }
   };
 
@@ -185,10 +186,10 @@ export default function ProvidersPage() {
           fetchProviderDetail(providerId);
         }
       } else {
-        console.error('Error updating provider:', data.error);
+        logger.error('Error updating provider:', data.error);
       }
     } catch (error) {
-      console.error('Error updating provider:', error);
+      logger.error('Error updating provider:', error);
     }
   };
 
@@ -214,10 +215,10 @@ export default function ProvidersPage() {
           fetchProviderDetail(providerId);
         }
       } else {
-        console.error('Error banning provider:', data.error);
+        logger.error('Error banning provider:', data.error);
       }
     } catch (error) {
-      console.error('Error banning provider:', error);
+      logger.error('Error banning provider:', error);
     }
   };
 

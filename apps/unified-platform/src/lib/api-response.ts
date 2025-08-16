@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { logger } from './production-logger';
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -206,7 +207,7 @@ export function withErrorHandling<T>(
   return handler()
     .then(data => ApiResponseBuilder.success(data))
     .catch(error => {
-      console.error('API Error:', error);
+      logger.error('API Error:', error);
       
       if (error.message?.includes('not found')) {
         return ApiResponseBuilder.notFound();
@@ -227,7 +228,7 @@ export function withErrorHandling<T>(
 }
 
 /**
- * Utility to validate required fields
+ * Utility to validate required fields with enhanced validation
  */
 export function validateRequiredFields(
   data: Record<string, any>,
@@ -236,12 +237,98 @@ export function validateRequiredFields(
   const missing: string[] = [];
   
   for (const field of requiredFields) {
-    if (!data[field] || (typeof data[field] === 'string' && !data[field].trim())) {
+    const value = data[field];
+    
+    // Check for null, undefined, or empty values
+    if (value === null || value === undefined) {
       missing.push(field);
+      continue;
+    }
+    
+    // Check for empty strings (after trimming)
+    if (typeof value === 'string' && !value.trim()) {
+      missing.push(field);
+      continue;
+    }
+    
+    // Check for empty arrays
+    if (Array.isArray(value) && value.length === 0) {
+      missing.push(field);
+      continue;
+    }
+    
+    // Check for empty objects
+    if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) {
+      missing.push(field);
+      continue;
     }
   }
   
   return missing;
+}
+
+/**
+ * Utility to sanitize input data to prevent XSS and injection attacks
+ */
+export function sanitizeInput(data: any): any {
+  if (typeof data === 'string') {
+    // Remove potentially dangerous characters and HTML tags
+    return data
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
+      .replace(/<[^>]*>/g, '') // Remove HTML tags
+      .replace(/javascript:/gi, '') // Remove javascript: protocol
+      .replace(/on\w+\s*=/gi, '') // Remove event handlers
+      .trim();
+  }
+  
+  if (Array.isArray(data)) {
+    return data.map(item => sanitizeInput(item));
+  }
+  
+  if (typeof data === 'object' && data !== null) {
+    const sanitized: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      // Sanitize both key and value
+      const sanitizedKey = typeof key === 'string' ? sanitizeInput(key) : key;
+      sanitized[sanitizedKey] = sanitizeInput(value);
+    }
+    return sanitized;
+  }
+  
+  return data;
+}
+
+/**
+ * Utility to validate and sanitize pagination parameters
+ */
+export function validatePagination(
+  page?: string | number | null,
+  limit?: string | number | null,
+  maxLimit: number = 100
+): { page: number; limit: number } {
+  let sanitizedPage = 1;
+  let sanitizedLimit = 10;
+  
+  // Validate and sanitize page
+  if (page !== null && page !== undefined) {
+    const pageNum = typeof page === 'string' ? parseInt(page) : page;
+    if (!isNaN(pageNum) && pageNum > 0) {
+      sanitizedPage = Math.min(pageNum, 10000); // Prevent extremely large page numbers
+    }
+  }
+  
+  // Validate and sanitize limit
+  if (limit !== null && limit !== undefined) {
+    const limitNum = typeof limit === 'string' ? parseInt(limit) : limit;
+    if (!isNaN(limitNum) && limitNum > 0) {
+      sanitizedLimit = Math.min(limitNum, maxLimit);
+    }
+  }
+  
+  return {
+    page: sanitizedPage,
+    limit: sanitizedLimit,
+  };
 }
 
 /**

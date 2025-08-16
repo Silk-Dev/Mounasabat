@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Favorite, FavoriteItem } from '@/types';
+import { logger } from '../production-logger';
 
 interface UseFavoritesReturn {
   favorites: FavoriteItem[];
@@ -105,7 +106,7 @@ export function useFavorites(userId?: string): UseFavoritesReturn {
               });
             }
           } catch (error) {
-            console.error(`Failed to load provider ${itemId}:`, error);
+            logger.error(`Failed to load provider ${itemId}:`, error);
           }
         } else if (type === 'product') {
           try {
@@ -127,14 +128,14 @@ export function useFavorites(userId?: string): UseFavoritesReturn {
               });
             }
           } catch (error) {
-            console.error(`Failed to load product ${itemId}:`, error);
+            logger.error(`Failed to load product ${itemId}:`, error);
           }
         }
       }
 
       setFavorites(favoriteItems);
     } catch (err) {
-      console.error('Failed to load local favorites:', err);
+      logger.error('Failed to load local favorites:', err);
       setFavorites([]);
     }
   };
@@ -302,7 +303,7 @@ export function useFavoriteSync() {
         window.dispatchEvent(new CustomEvent('favoritesChanged'));
       }
     } catch (error) {
-      console.error('Failed to sync local favorites:', error);
+      logger.error('Failed to sync local favorites:', error);
     }
   }, []);
 

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { validateSearchFilters, buildSearchQuery } from '@/lib/search';
 import type { SearchFilters, SearchResult, SearchResponse } from '@/types';
+import { logger } from '../production-logger';
 
 interface UseAdvancedSearchOptions {
   initialFilters?: SearchFilters;
@@ -109,7 +110,7 @@ export function useAdvancedSearch(options: UseAdvancedSearchOptions = {}): UseAd
       setError(errorMessage);
       setResults([]);
       setTotalResults(0);
-      console.error('Search error:', err);
+      logger.error('Search error:', err);
     } finally {
       setIsLoading(false);
     }

@@ -5,6 +5,7 @@ import { Review as ReviewType } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, Button, Progress } from '@/components/ui';
 import { Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { Review } from '@/components/reviews';
+import { logger } from '@/lib/production-logger';
 
 interface ReviewSectionProps {
   reviews: ReviewType[];
@@ -85,7 +86,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
 
   const handleReviewEdit = (review: ReviewType) => {
     // Handle review editing - could open a modal or navigate to edit page
-    console.log('Edit review:', review.id);
+    logger.info('Edit review:', review.id);
   };
 
   const handleReviewDelete = async (reviewId: string) => {
@@ -102,7 +103,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
         window.location.reload();
       }
     } catch (error) {
-      console.error('Error deleting review:', error);
+      logger.error('Error deleting review:', error);
     }
   };
 
@@ -118,10 +119,10 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
 
       if (response.ok) {
         // Show success message
-        console.log('Review flagged successfully');
+        logger.info('Review flagged successfully');
       }
     } catch (error) {
-      console.error('Error flagging review:', error);
+      logger.error('Error flagging review:', error);
     }
   };
 

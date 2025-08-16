@@ -316,23 +316,7 @@ export const SuccessEmptyState: React.FC<BaseEmptyStateProps & {
   />
 );
 
-// Coming Soon Empty State
-export const ComingSoonEmptyState: React.FC<BaseEmptyStateProps> = ({ 
-  onAction,
-  ...props 
-}) => (
-  <EmptyState
-    title="Coming Soon"
-    description="This feature is currently under development. We're working hard to bring it to you soon!"
-    icon={<Clock className="w-16 h-16" />}
-    action={onAction ? {
-      label: "Get Notified",
-      onClick: onAction,
-      variant: "outline"
-    } : undefined}
-    {...props}
-  />
-);
+// Removed ComingSoonEmptyState - no longer needed as all features are implemented
 
 // Maintenance Empty State
 export const MaintenanceEmptyState: React.FC<BaseEmptyStateProps> = ({ 

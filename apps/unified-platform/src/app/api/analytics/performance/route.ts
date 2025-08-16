@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { logger } from '../../../../lib/production-logger';
 
 // Store performance metrics
 export async function POST(request: NextRequest) {
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     // Log critical performance issues
     if (shouldLogCriticalIssue(type, data)) {
-      console.warn(`Critical performance issue detected:`, {
+      logger.warn(`Critical performance issue detected:`, {
         type,
         data,
         userAgent,
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error storing performance metric:', error);
+    logger.error('Error storing performance metric:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -78,7 +79,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(aggregated);
   } catch (error) {
-    console.error('Error fetching performance metrics:', error);
+    logger.error('Error fetching performance metrics:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

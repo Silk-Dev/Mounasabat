@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@/../../packages/database/src/generated/client';
+import { logger } from '../../../../../lib/production-logger';
 
 const prisma = new PrismaClient();
 
@@ -64,7 +65,7 @@ export async function GET(
 
     return NextResponse.json(stats);
   } catch (error) {
-    console.error('Error fetching user stats:', error);
+    logger.error('Error fetching user stats:', error);
     return NextResponse.json(
       { error: 'Failed to fetch user statistics' },
       { status: 500 }

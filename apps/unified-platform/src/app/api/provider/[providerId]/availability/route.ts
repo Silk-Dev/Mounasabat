@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { format, addDays, startOfDay, endOfDay } from 'date-fns';
+import { logger } from '../../../../../lib/production-logger';
 
 export async function GET(
   request: NextRequest,
@@ -88,7 +89,7 @@ export async function GET(
 
     return NextResponse.json({ availability });
   } catch (error) {
-    console.error('Error fetching availability:', error);
+    logger.error('Error fetching availability:', error);
     return NextResponse.json(
       { error: 'Failed to fetch availability' },
       { status: 500 }
@@ -131,7 +132,7 @@ export async function POST(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error updating availability:', error);
+    logger.error('Error updating availability:', error);
     return NextResponse.json(
       { error: 'Failed to update availability' },
       { status: 500 }

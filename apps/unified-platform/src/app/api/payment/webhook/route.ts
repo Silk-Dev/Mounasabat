@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
 import { prisma } from '@/lib/prisma';
+import { logger } from '../../../../lib/production-logger';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2023-10-16',
@@ -16,7 +17,7 @@ export async function POST(request: NextRequest) {
     const signature = headersList.get('stripe-signature');
 
     if (!signature) {
-      console.error('Missing Stripe signature');
+      logger.error('Missing Stripe signature');
       return NextResponse.json(
         { error: 'Missing signature' },
         { status: 400 }
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err) {
-      console.error('Webhook signature verification failed:', err);
+      logger.error('Webhook signature verification failed:', err);
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 400 }
@@ -61,17 +62,17 @@ export async function POST(request: NextRequest) {
       case 'customer.subscription.updated':
       case 'customer.subscription.deleted':
         // Handle subscription events if needed in the future
-        console.log(`Subscription event: ${event.type}`);
+        logger.info(`Subscription event: ${event.type}`);
         break;
       
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        logger.info(`Unhandled event type: ${event.type}`);
     }
 
     return NextResponse.json({ received: true });
 
   } catch (error) {
-    console.error('Webhook error:', error);
+    logger.error('Webhook error:', error);
     return NextResponse.json(
       { error: 'Webhook handler failed' },
       { status: 500 }
@@ -81,7 +82,7 @@ export async function POST(request: NextRequest) {
 
 async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
   try {
-    console.log('Payment succeeded:', paymentIntent.id);
+    logger.info('Payment succeeded:', paymentIntent.id);
 
     // Update payment record
     await prisma.payment.updateMany({
@@ -164,16 +165,16 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
       });
     }
 
-    console.log('Payment success handling completed');
+    logger.info('Payment success handling completed');
   } catch (error) {
-    console.error('Error handling payment success:', error);
+    logger.error('Error handling payment success:', error);
     throw error;
   }
 }
 
 async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
   try {
-    console.log('Payment failed:', paymentIntent.id);
+    logger.info('Payment failed:', paymentIntent.id);
 
     // Update payment record
     await prisma.payment.updateMany({
@@ -256,16 +257,16 @@ async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
       });
     }
 
-    console.log('Payment failure handling completed');
+    logger.info('Payment failure handling completed');
   } catch (error) {
-    console.error('Error handling payment failure:', error);
+    logger.error('Error handling payment failure:', error);
     throw error;
   }
 }
 
 async function handlePaymentCanceled(paymentIntent: Stripe.PaymentIntent) {
   try {
-    console.log('Payment canceled:', paymentIntent.id);
+    logger.info('Payment canceled:', paymentIntent.id);
 
     // Update payment record
     await prisma.payment.updateMany({
@@ -310,16 +311,16 @@ async function handlePaymentCanceled(paymentIntent: Stripe.PaymentIntent) {
       });
     }
 
-    console.log('Payment cancellation handling completed');
+    logger.info('Payment cancellation handling completed');
   } catch (error) {
-    console.error('Error handling payment cancellation:', error);
+    logger.error('Error handling payment cancellation:', error);
     throw error;
   }
 }
 
 async function handleChargeDispute(dispute: Stripe.Dispute) {
   try {
-    console.log('Charge dispute created:', dispute.id);
+    logger.info('Charge dispute created:', dispute.id);
 
     // Create an issue for the dispute
     await prisma.issue.create({
@@ -331,23 +332,23 @@ async function handleChargeDispute(dispute: Stripe.Dispute) {
       },
     });
 
-    console.log('Dispute handling completed');
+    logger.info('Dispute handling completed');
   } catch (error) {
-    console.error('Error handling dispute:', error);
+    logger.error('Error handling dispute:', error);
     throw error;
   }
 }
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   try {
-    console.log('Invoice payment succeeded:', invoice.id);
+    logger.info('Invoice payment succeeded:', invoice.id);
     
     // Handle subscription or recurring payment logic here if needed
     // For now, just log the event
     
-    console.log('Invoice payment success handling completed');
+    logger.info('Invoice payment success handling completed');
   } catch (error) {
-    console.error('Error handling invoice payment success:', error);
+    logger.error('Error handling invoice payment success:', error);
     throw error;
   }
 }

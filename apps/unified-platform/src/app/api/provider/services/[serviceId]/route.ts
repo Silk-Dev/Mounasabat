@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
+import { logger } from '../../../../../lib/production-logger';
 
 const updateServiceSchema = z.object({
   name: z.string().min(1, 'Service name is required').optional(),
@@ -74,7 +75,7 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('Error fetching service:', error);
+    logger.error('Error fetching service:', error);
     return NextResponse.json(
       { 
         success: false,
@@ -130,7 +131,7 @@ export async function PATCH(
     });
 
   } catch (error) {
-    console.error('Service update error:', error);
+    logger.error('Service update error:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -212,7 +213,7 @@ export async function DELETE(
     });
 
   } catch (error) {
-    console.error('Service deletion error:', error);
+    logger.error('Service deletion error:', error);
     return NextResponse.json(
       { 
         success: false,

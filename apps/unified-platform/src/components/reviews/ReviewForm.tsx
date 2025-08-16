@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, Button, Textarea, Alert, AlertDescription } from '@/components/ui';
 import { Star, Send, X } from 'lucide-react';
+import { LoadingButton, FormLoadingOverlay } from '@/components/ui/loading';
 
 interface ReviewFormProps {
   providerId?: string;
@@ -170,7 +171,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
       </CardHeader>
       
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <FormLoadingOverlay isLoading={isSubmitting} message="Submitting your review...">
+          <form onSubmit={handleSubmit} className="space-y-4">
           <StarRating />
 
           <div>
@@ -200,27 +202,30 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
           )}
 
           <div className="flex gap-3 pt-2">
-            <Button
+            <LoadingButton
               type="submit"
-              disabled={isSubmitting || rating === 0}
+              loading={isSubmitting}
+              disabled={rating === 0}
+              loadingText="Submitting..."
               className="flex items-center gap-2"
             >
               <Send className="w-4 h-4" />
-              {isSubmitting ? 'Submitting...' : 'Submit Review'}
-            </Button>
+              Submit Review
+            </LoadingButton>
             
             {onCancel && (
-              <Button
+              <LoadingButton
                 type="button"
                 variant="outline"
                 onClick={onCancel}
-                disabled={isSubmitting}
+                loading={isSubmitting}
               >
                 Cancel
-              </Button>
+              </LoadingButton>
             )}
           </div>
         </form>
+        </FormLoadingOverlay>
       </CardContent>
     </Card>
   );

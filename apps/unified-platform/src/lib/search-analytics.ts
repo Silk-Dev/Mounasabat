@@ -1,5 +1,6 @@
 import { prisma } from './prisma';
 import type { SearchFilters } from '@/types';
+import { logger } from './production-logger';
 
 export interface SearchPerformanceMetrics {
   averageResponseTime: number;
@@ -30,7 +31,7 @@ export class SearchAnalytics {
         },
       });
     } catch (error) {
-      console.error('Failed to record search analytics:', error);
+      logger.error('Failed to record search analytics:', error);
       // Don't throw error to avoid breaking search functionality
     }
   }
@@ -61,7 +62,7 @@ export class SearchAnalytics {
         },
       });
     } catch (error) {
-      console.error('Failed to record search performance:', error);
+      logger.error('Failed to record search performance:', error);
     }
   }
 
@@ -99,7 +100,7 @@ export class SearchAnalytics {
         count: result._count.query,
       }));
     } catch (error) {
-      console.error('Failed to get popular queries:', error);
+      logger.error('Failed to get popular queries:', error);
       return [];
     }
   }
@@ -179,7 +180,7 @@ export class SearchAnalytics {
         },
       };
     } catch (error) {
-      console.error('Failed to get search metrics:', error);
+      logger.error('Failed to get search metrics:', error);
       return {
         totalSearches: 0,
         uniqueQueries: 0,
@@ -232,7 +233,7 @@ export class SearchAnalytics {
         .sort((a, b) => b.count - a.count)
         .slice(0, 10);
     } catch (error) {
-      console.error('Failed to get trending categories:', error);
+      logger.error('Failed to get trending categories:', error);
       return [];
     }
   }
@@ -346,7 +347,7 @@ export class SearchAnalytics {
         })),
       };
     } catch (error) {
-      console.error('Failed to get performance metrics:', error);
+      logger.error('Failed to get performance metrics:', error);
       return {
         averageResponseTime: 0,
         cacheHitRate: 0,
@@ -413,7 +414,7 @@ export class SearchAnalytics {
         })),
       };
     } catch (error) {
-      console.error('Failed to get empty search analytics:', error);
+      logger.error('Failed to get empty search analytics:', error);
       return {
         totalEmptySearches: 0,
         emptySearchRate: 0,
@@ -471,7 +472,7 @@ export class SearchAnalytics {
         })),
       };
     } catch (error) {
-      console.error('Failed to get user search behavior:', error);
+      logger.error('Failed to get user search behavior:', error);
       return {
         uniqueUsers: 0,
         averageSearchesPerUser: 0,

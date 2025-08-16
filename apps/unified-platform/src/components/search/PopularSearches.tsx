@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui';
 import { TrendingUp, Loader2, RefreshCw } from 'lucide-react';
+import { logger } from '@/lib/production-logger';
 
 interface PopularSearchesProps {
   onSearchSelect: (query: string) => void;
@@ -31,7 +32,7 @@ export default function PopularSearches({ onSearchSelect }: PopularSearchesProps
       
       setPopularSearches(data.searches || []);
     } catch (error) {
-      console.error('Failed to load popular searches:', error);
+      logger.error('Failed to load popular searches:', error);
       setError(error instanceof Error ? error.message : 'Failed to load popular searches');
       setPopularSearches([]);
     } finally {

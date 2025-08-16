@@ -1,4 +1,5 @@
 import { type Language } from '@/lib/utils';
+import { logger } from '../production-logger';
 
 /**
  * Enhanced email data interface with multi-language support
@@ -30,12 +31,12 @@ export async function sendEmail(emailData: EmailData): Promise<void> {
   // For now, we'll log the email content
   // In production, this would integrate with a real email service like SendGrid, AWS SES, etc.
   
-  console.log('=== EMAIL SERVICE ===');
-  console.log('To:', emailData.to);
-  console.log('Subject:', emailData.subject);
-  console.log('Template:', emailData.template);
-  console.log('Language:', emailData.data.language);
-  console.log('Data:', JSON.stringify(emailData.data, null, 2));
+  logger.info('=== EMAIL SERVICE ===');
+  logger.info('To:', emailData.to);
+  logger.info('Subject:', emailData.subject);
+  logger.info('Template:', emailData.template);
+  logger.info('Language:', emailData.data.language);
+  logger.info('Data:', JSON.stringify(emailData.data, null, 2));
   
   // Get localized greeting based on language
   const greeting = emailData.data.language === 'ar' 
@@ -44,45 +45,45 @@ export async function sendEmail(emailData: EmailData): Promise<void> {
   
   // Simulate email templates with multi-language support
   if (emailData.template === 'email-verification') {
-    console.log('\n=== EMAIL VERIFICATION TEMPLATE ===');
-    console.log(greeting);
+    logger.info('\n=== EMAIL VERIFICATION TEMPLATE ===');
+    logger.info(greeting);
     
     if (emailData.data.language === 'ar') {
-      console.log(`الرجاء التحقق من بريدك الإلكتروني بالنقر على: ${emailData.data.verificationUrl}`);
-      console.log(`رمز التحقق: ${emailData.data.token}`);
-      console.log('شكرا لك على التسجيل في منصتنا!');
+      logger.info(`الرجاء التحقق من بريدك الإلكتروني بالنقر على: ${emailData.data.verificationUrl}`);
+      logger.info(`رمز التحقق: ${emailData.data.token}`);
+      logger.info('شكرا لك على التسجيل في منصتنا!');
     } else {
-      console.log(`Veuillez vérifier votre email en cliquant sur: ${emailData.data.verificationUrl}`);
-      console.log(`Token: ${emailData.data.token}`);
-      console.log('Merci de vous être inscrit sur notre plateforme!');
+      logger.info(`Veuillez vérifier votre email en cliquant sur: ${emailData.data.verificationUrl}`);
+      logger.info(`Token: ${emailData.data.token}`);
+      logger.info('Merci de vous être inscrit sur notre plateforme!');
     }
   } else if (emailData.template === 'password-reset') {
-    console.log('\n=== PASSWORD RESET TEMPLATE ===');
-    console.log(greeting);
+    logger.info('\n=== PASSWORD RESET TEMPLATE ===');
+    logger.info(greeting);
     
     if (emailData.data.language === 'ar') {
-      console.log(`إعادة تعيين كلمة المرور الخاصة بك بالنقر على: ${emailData.data.resetUrl}`);
-      console.log(`رمز إعادة التعيين: ${emailData.data.token}`);
-      console.log('إذا لم تطلب إعادة تعيين كلمة المرور، يرجى تجاهل هذا البريد الإلكتروني.');
+      logger.info(`إعادة تعيين كلمة المرور الخاصة بك بالنقر على: ${emailData.data.resetUrl}`);
+      logger.info(`رمز إعادة التعيين: ${emailData.data.token}`);
+      logger.info('إذا لم تطلب إعادة تعيين كلمة المرور، يرجى تجاهل هذا البريد الإلكتروني.');
     } else {
-      console.log(`Réinitialisez votre mot de passe en cliquant sur: ${emailData.data.resetUrl}`);
-      console.log(`Token: ${emailData.data.token}`);
-      console.log('Si vous n\'avez pas demandé de réinitialisation de mot de passe, veuillez ignorer cet email.');
+      logger.info(`Réinitialisez votre mot de passe en cliquant sur: ${emailData.data.resetUrl}`);
+      logger.info(`Token: ${emailData.data.token}`);
+      logger.info('Si vous n\'avez pas demandé de réinitialisation de mot de passe, veuillez ignorer cet email.');
     }
   } else if (emailData.template === 'welcome') {
-    console.log('\n=== WELCOME TEMPLATE ===');
-    console.log(greeting);
+    logger.info('\n=== WELCOME TEMPLATE ===');
+    logger.info(greeting);
     
     if (emailData.data.language === 'ar') {
-      console.log('مرحبًا بك في منصة مناسبات!');
-      console.log('نحن سعداء بانضمامك إلينا.');
+      logger.info('مرحبًا بك في منصة مناسبات!');
+      logger.info('نحن سعداء بانضمامك إلينا.');
     } else {
-      console.log('Bienvenue sur la plateforme Mounasabet!');
-      console.log('Nous sommes ravis de vous compter parmi nous.');
+      logger.info('Bienvenue sur la plateforme Mounasabet!');
+      logger.info('Nous sommes ravis de vous compter parmi nous.');
     }
   }
   
-  console.log('=== END EMAIL ===\n');
+  logger.info('=== END EMAIL ===\n');
   
   // In a real implementation, you would:
   // 1. Load the appropriate email template based on language
@@ -175,7 +176,7 @@ export function createEmailService(config: EmailServiceConfig) {
       const languageTemplate = template[emailData.data.language];
       if (!languageTemplate) {
         // Fall back to French if the requested language is not available
-        console.warn(`Template "${emailData.template}" not available in language "${emailData.data.language}", falling back to French`);
+        logger.warn(`Template "${emailData.template}" not available in language "${emailData.data.language}", falling back to French`);
         emailData.data.language = 'fr';
       }
       

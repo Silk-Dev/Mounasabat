@@ -1,3 +1,4 @@
+import { logger } from './production-logger';
 'use client';
 
 export interface PushNotificationOptions {
@@ -62,10 +63,10 @@ export class PushNotificationService {
 
     try {
       this.registration = await navigator.serviceWorker.register('/sw.js');
-      console.log('Service worker registered:', this.registration);
+      logger.info('Service worker registered:', this.registration);
       return this.registration;
     } catch (error) {
-      console.error('Service worker registration failed:', error);
+      logger.error('Service worker registration failed:', error);
       throw error;
     }
   }
@@ -93,7 +94,7 @@ export class PushNotificationService {
       
       return subscription;
     } catch (error) {
-      console.error('Push subscription failed:', error);
+      logger.error('Push subscription failed:', error);
       throw error;
     }
   }
@@ -113,7 +114,7 @@ export class PushNotificationService {
       }
       return false;
     } catch (error) {
-      console.error('Push unsubscription failed:', error);
+      logger.error('Push unsubscription failed:', error);
       return false;
     }
   }
@@ -157,7 +158,7 @@ export class PushNotificationService {
         }),
       });
     } catch (error) {
-      console.error('Failed to send subscription to server:', error);
+      logger.error('Failed to send subscription to server:', error);
     }
   }
 
@@ -174,7 +175,7 @@ export class PushNotificationService {
         }),
       });
     } catch (error) {
-      console.error('Failed to remove subscription from server:', error);
+      logger.error('Failed to remove subscription from server:', error);
     }
   }
 

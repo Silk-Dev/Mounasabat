@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
+import { logger } from '@/lib/production-logger';
 import {
   Elements,
   CardElement,
@@ -136,7 +137,7 @@ function AddPaymentMethodForm({
 
       onSuccess();
     } catch (error) {
-      console.error('Error adding payment method:', error);
+      logger.error('Error adding payment method:', error);
       setError(error instanceof Error ? error.message : 'Failed to add payment method');
     } finally {
       setProcessing(false);
@@ -260,7 +261,7 @@ export function PaymentMethods({ userId }: PaymentMethodsProps) {
 
       setPaymentMethods(data.paymentMethods);
     } catch (error) {
-      console.error('Error fetching payment methods:', error);
+      logger.error('Error fetching payment methods:', error);
       setError(error instanceof Error ? error.message : 'Failed to load payment methods');
     } finally {
       setLoading(false);
@@ -292,7 +293,7 @@ export function PaymentMethods({ userId }: PaymentMethodsProps) {
 
       await fetchPaymentMethods();
     } catch (error) {
-      console.error('Error removing payment method:', error);
+      logger.error('Error removing payment method:', error);
       setError(error instanceof Error ? error.message : 'Failed to remove payment method');
     } finally {
       setDeletingId('');
@@ -319,7 +320,7 @@ export function PaymentMethods({ userId }: PaymentMethodsProps) {
 
       await fetchPaymentMethods();
     } catch (error) {
-      console.error('Error setting default payment method:', error);
+      logger.error('Error setting default payment method:', error);
       setError(error instanceof Error ? error.message : 'Failed to set default payment method');
     }
   };

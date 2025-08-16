@@ -2,6 +2,7 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import { ProviderProfile } from '@/components/provider';
 import { Provider } from '@/types';
+import { logger } from '@/lib/production-logger';
 
 // Fetch provider data from database
 async function getProviderById(providerId: string): Promise<Provider | null> {
@@ -20,7 +21,7 @@ async function getProviderById(providerId: string): Promise<Provider | null> {
     const data = await response.json();
     return data.provider;
   } catch (error) {
-    console.error('Error fetching provider:', error);
+    logger.error('Error fetching provider:', error);
     return null;
   }
 }

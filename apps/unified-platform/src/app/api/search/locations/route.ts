@@ -1,30 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+import { prisma } from '@/lib/database/prisma';
+import { logger } from '@/lib/production-logger';
+import { withAuth } from '@/lib/api-middleware';
 
-export async function GET(request: NextRequest) {
+const locationQuerySchema = z.object({
+  q: z.string().min(1, 'Query is required').max(100, 'Query too long').trim(),
+  limit: z.string().transform(val => Math.min(20, Math.max(1, parseInt(val) || 10))),
+});
+
+interface LocationSuggestion {
+  id: string;
+  name: string;
+  type: 'city' | 'region' | 'venue';
+}
+
+async function handleGET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const query = searchParams.get('q')?.trim();
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const { q: query, limit } = locationQuerySchema.parse({
+      q: searchParams.get('q'),
+      limit: searchParams.get('limit') || '10',
+    });
 
-    if (!query || query.length < 2) {
-      return NextResponse.json({
-        success: true,
-        locations: [],
-        message: 'Query too short for location suggestions',
-      });
-    }
+    logger.info('Fetching location suggestions', { query, limit });
 
     // Get unique locations from services and providers
     const [serviceLocations, providerLocations] = await Promise.all([
       // Get locations from services
       prisma.service.findMany({
         where: {
-          isActive: true,
           location: {
             contains: query,
             mode: 'insensitive',
           },
+          isActive: true,
         },
         select: {
           location: true,
@@ -32,18 +42,20 @@ export async function GET(request: NextRequest) {
         distinct: ['location'],
         take: limit,
       }),
-
-      // Get locations from provider coverage areas
+      
+      // Get locations from providers
       prisma.provider.findMany({
         where: {
-          isActive: true,
-          coverageAreas: {
-            hasSome: [query],
+          location: {
+            contains: query,
+            mode: 'insensitive',
           },
+          isVerified: true,
         },
         select: {
-          coverageAreas: true,
+          location: true,
         },
+        distinct: ['location'],
         take: limit,
       }),
     ]);
@@ -51,48 +63,63 @@ export async function GET(request: NextRequest) {
     // Combine and deduplicate locations
     const allLocations = new Set<string>();
     
-    // Add service locations
     serviceLocations.forEach(service => {
       if (service.location) {
         allLocations.add(service.location);
       }
     });
-
-    // Add provider coverage areas that match the query
+    
     providerLocations.forEach(provider => {
-      provider.coverageAreas.forEach(area => {
-        if (area.toLowerCase().includes(query.toLowerCase())) {
-          allLocations.add(area);
-        }
-      });
+      if (provider.location) {
+        allLocations.add(provider.location);
+      }
     });
 
-    // Convert to location suggestion format
-    const locations = Array.from(allLocations)
+    // Convert to suggestion format
+    const suggestions: LocationSuggestion[] = Array.from(allLocations)
       .slice(0, limit)
       .map((location, index) => ({
-        id: `loc-${index}`,
+        id: `location-${index}`,
         name: location,
-        type: 'city' as const,
+        type: 'city' as const, // Default to city type
       }));
+
+    logger.info('Location suggestions fetched successfully', { 
+      query, 
+      resultCount: suggestions.length 
+    });
 
     return NextResponse.json({
       success: true,
-      locations,
-      total: locations.length,
+      locations: suggestions,
+      total: suggestions.length,
     });
 
   } catch (error) {
-    console.error('Location suggestions API error:', error);
+    logger.error('Failed to fetch location suggestions:', error, {
+      url: request.url,
+    });
+
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid query parameters',
+          details: error.errors,
+        },
+        { status: 400 }
+      );
+    }
 
     return NextResponse.json(
       {
         success: false,
-        error: 'Internal server error',
-        message: 'An error occurred while fetching location suggestions',
-        locations: [],
+        error: 'Failed to fetch location suggestions',
+        locations: [], // Return empty array instead of fallback data
       },
       { status: 500 }
     );
   }
 }
+
+export const GET = handleGET;

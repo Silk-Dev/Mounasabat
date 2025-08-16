@@ -1,6 +1,7 @@
 
 'use client';
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 
 interface Service {
   id: string;
@@ -136,7 +137,7 @@ export default function ProviderServicesPage() {
       refetch(); // Refresh the list
     } catch (error) {
       console.error('Error updating service status:', error);
-      alert(error instanceof Error ? error.message : 'Failed to update service status');
+      toast.error(error instanceof Error ? error.message : 'Failed to update service status');
     } finally {
       setActionLoading(null);
     }
@@ -161,7 +162,7 @@ export default function ProviderServicesPage() {
       refetch(); // Refresh the list
     } catch (error) {
       console.error('Error deleting service:', error);
-      alert(error instanceof Error ? error.message : 'Failed to delete service');
+      toast.error(error instanceof Error ? error.message : 'Failed to delete service');
     } finally {
       setActionLoading(null);
     }

@@ -1,4 +1,5 @@
 import { prisma } from '@mounasabet/database/src/prisma';
+import { logger } from '../production-logger';
 
 export async function createBooking(data: any) {
   try {
@@ -36,7 +37,7 @@ export async function createBooking(data: any) {
 
     return booking;
   } catch (error) {
-    console.error('Error creating booking:', error);
+    logger.error('Error creating booking:', error);
     throw new Error('Failed to create booking');
   }
 }
@@ -69,7 +70,7 @@ export async function getBooking(id: string) {
 
     return booking;
   } catch (error) {
-    console.error('Error fetching booking:', error);
+    logger.error('Error fetching booking:', error);
     throw error;
   }
 }
@@ -104,7 +105,7 @@ export async function getPricingPlans() {
       };
     });
   } catch (error) {
-    console.error('Error fetching pricing plans:', error);
+    logger.error('Error fetching pricing plans:', error);
     // Return empty array instead of mock data
     return [];
   }

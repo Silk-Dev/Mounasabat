@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { z } from 'zod';
+import { logger } from '../../../../../lib/production-logger';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2023-10-16',
@@ -55,7 +56,7 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('Payment method retrieval error:', error);
+    logger.error('Payment method retrieval error:', error);
 
     if (error instanceof Stripe.errors.StripeError) {
       return NextResponse.json(
@@ -146,7 +147,7 @@ export async function PATCH(
     });
 
   } catch (error) {
-    console.error('Payment method update error:', error);
+    logger.error('Payment method update error:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -186,7 +187,7 @@ export async function DELETE(
     });
 
   } catch (error) {
-    console.error('Payment method deletion error:', error);
+    logger.error('Payment method deletion error:', error);
 
     if (error instanceof Stripe.errors.StripeError) {
       return NextResponse.json(

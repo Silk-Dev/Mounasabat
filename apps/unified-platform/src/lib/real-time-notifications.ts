@@ -1,5 +1,6 @@
 import { websocketService } from './websocket';
 import { toast } from 'sonner';
+import { logger } from './production-logger';
 
 export interface RealTimeNotification {
   id: string;
@@ -156,7 +157,7 @@ class RealTimeNotificationService {
         this.markAsRead(notification.id);
         break;
       default:
-        console.log('Unknown action:', action.action);
+        logger.info('Unknown action:', action.action);
     }
   }
 
@@ -203,7 +204,7 @@ class RealTimeNotificationService {
           method: 'POST'
         });
       } catch (error) {
-        console.error('Failed to mark notification as read:', error);
+        logger.error('Failed to mark notification as read:', error);
       }
       
       this.notifyListeners();
@@ -226,7 +227,7 @@ class RealTimeNotificationService {
         method: 'POST'
       });
     } catch (error) {
-      console.error('Failed to mark all notifications as read:', error);
+      logger.error('Failed to mark all notifications as read:', error);
     }
     
     this.notifyListeners();
@@ -245,7 +246,7 @@ class RealTimeNotificationService {
         this.notifyUnreadCountListeners();
       }
     } catch (error) {
-      console.error('Failed to load notifications:', error);
+      logger.error('Failed to load notifications:', error);
     }
   }
 
@@ -274,7 +275,7 @@ class RealTimeNotificationService {
       
       return await response.json();
     } catch (error) {
-      console.error('Failed to send notification:', error);
+      logger.error('Failed to send notification:', error);
       throw error;
     }
   }

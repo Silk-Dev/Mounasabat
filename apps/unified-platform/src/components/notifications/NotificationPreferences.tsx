@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Separator } from '@/components/ui/separator';
+import { logger } from '@/lib/production-logger';
 
 interface NotificationPreferences {
   emailBookingConfirmations: boolean;
@@ -41,7 +42,7 @@ export function NotificationPreferences() {
         setPreferences(data);
       }
     } catch (error) {
-      console.error('Error loading preferences:', error);
+      logger.error('Error loading preferences:', error);
       toast.error('Failed to load notification preferences');
     } finally {
       setLoading(false);
@@ -65,7 +66,7 @@ export function NotificationPreferences() {
         throw new Error('Failed to save preferences');
       }
     } catch (error) {
-      console.error('Error saving preferences:', error);
+      logger.error('Error saving preferences:', error);
       toast.error('Failed to save notification preferences');
     } finally {
       setSaving(false);

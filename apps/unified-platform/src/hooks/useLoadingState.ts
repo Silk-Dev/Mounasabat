@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 export interface LoadingState {
   loading: boolean;
@@ -116,5 +116,146 @@ export function useSequentialLoading() {
     totalSteps,
     progress,
     executeSequential,
+  };
+}
+
+// Hook for form submission with loading states
+export function useFormSubmission<T = any>() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const submitForm = useCallback(async (
+    submitFn: () => Promise<T>,
+    options?: {
+      onSuccess?: (result: T) => void;
+      onError?: (error: string) => void;
+      successMessage?: string;
+      errorMessage?: string;
+    }
+  ): Promise<T | null> => {
+    try {
+      setIsSubmitting(true);
+      setSubmitError(null);
+      setSubmitSuccess(false);
+
+      const result = await submitFn();
+      
+      setSubmitSuccess(true);
+      options?.onSuccess?.(result);
+      
+      if (options?.successMessage) {
+        // Import toast dynamically to avoid circular dependencies
+        const { toast } = await import('sonner');
+        toast.success(options.successMessage);
+      }
+      
+      return result;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : (options?.errorMessage || 'An error occurred');
+      setSubmitError(errorMessage);
+      options?.onError?.(errorMessage);
+      
+      // Import toast dynamically to avoid circular dependencies
+      const { toast } = await import('sonner');
+      toast.error(errorMessage);
+      
+      return null;
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, []);
+
+  const resetSubmission = useCallback(() => {
+    setIsSubmitting(false);
+    setSubmitError(null);
+    setSubmitSuccess(false);
+  }, []);
+
+  return {
+    isSubmitting,
+    submitError,
+    submitSuccess,
+    submitForm,
+    resetSubmission,
+  };
+}
+
+// Hook for data fetching with loading states and retry logic
+export function useDataFetching<T>() {
+  const [data, setData] = useState<T | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+
+  const fetchData = useCallback(async (
+    fetchFn: () => Promise<T>,
+    options?: {
+      maxRetries?: number;
+      retryDelay?: number;
+      onSuccess?: (data: T) => void;
+      onError?: (error: string) => void;
+    }
+  ): Promise<T | null> => {
+    const maxRetries = options?.maxRetries || 3;
+    const retryDelay = options?.retryDelay || 1000;
+
+    setIsLoading(true);
+    setError(null);
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const result = await fetchFn();
+        setData(result);
+        setRetryCount(0);
+        options?.onSuccess?.(result);
+        return result;
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch data';
+        
+        if (attempt === maxRetries) {
+          setError(errorMessage);
+          setRetryCount(attempt + 1);
+          options?.onError?.(errorMessage);
+          return null;
+        }
+        
+        // Wait before retrying
+        if (attempt < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, retryDelay * (attempt + 1)));
+        }
+      }
+    }
+    
+    return null;
+  }, []);
+
+  const retry = useCallback(() => {
+    setRetryCount(0);
+    setError(null);
+  }, []);
+
+  const reset = useCallback(() => {
+    setData(null);
+    setIsLoading(false);
+    setError(null);
+    setRetryCount(0);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      setIsLoading(false);
+    };
+  }, []);
+
+  return {
+    data,
+    isLoading: isLoading,
+    error,
+    retryCount,
+    fetchData,
+    retry,
+    reset,
+    setIsLoading,
   };
 }

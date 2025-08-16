@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import { getSession } from '@/lib/auth';
+import { logger } from '../../../../../lib/production-logger';
+import { auditLogger, AuditEventType, AuditLogLevel } from '@/lib/audit-logger';
 
 export async function GET(
   request: NextRequest,
@@ -10,6 +12,14 @@ export async function GET(
     const session = await getSession(request);
 
     if (!session?.user || session.user.role !== 'admin') {
+      await auditLogger.logFromRequest(request, {
+        level: AuditLogLevel.WARNING,
+        eventType: AuditEventType.UNAUTHORIZED_ACCESS,
+        userId: session?.user?.id,
+        action: 'view_user_details',
+        description: 'Unauthorized attempt to view user details',
+        success: false,
+      });
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -70,8 +80,37 @@ export async function GET(
     });
 
     if (!user) {
+      await auditLogger.logFromRequest(request, {
+        level: AuditLogLevel.WARNING,
+        eventType: AuditEventType.ADMIN_ACTION,
+        userId: session.user.id,
+        userRole: 'admin',
+        targetResourceId: (await params).id,
+        targetResourceType: 'user',
+        action: 'view_user_details',
+        description: 'Attempted to view non-existent user',
+        success: false,
+      });
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
+
+    // Log successful user view
+    await auditLogger.logFromRequest(request, {
+      level: AuditLogLevel.INFO,
+      eventType: AuditEventType.ADMIN_ACTION,
+      userId: session.user.id,
+      userRole: 'admin',
+      targetUserId: user.id,
+      targetResourceId: user.id,
+      targetResourceType: 'user',
+      action: 'view_user_details',
+      description: `Admin viewed user details for ${user.name} (${user.email})`,
+      success: true,
+      metadata: {
+        viewedUserRole: user.role,
+        viewedUserBanned: user.banned,
+      },
+    });
 
     // Transform user data to match expected format
     const transformedUser = {
@@ -97,9 +136,9 @@ export async function GET(
       banExpires: user.banExpires,
     };
 
-    return NextResponse.json(transformedUser);
+    return Response.json(transformedUser);
   } catch (error) {
-    console.error('Error fetching user:', error);
+    logger.error('Error fetching user:', error as Error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -115,6 +154,14 @@ export async function PATCH(
     const session = await getSession(request);
 
     if (!session?.user || session.user.role !== 'admin') {
+      await auditLogger.logFromRequest(request, {
+        level: AuditLogLevel.WARNING,
+        eventType: AuditEventType.UNAUTHORIZED_ACCESS,
+        userId: session?.user?.id,
+        action: 'update_user',
+        description: 'Unauthorized attempt to update user',
+        success: false,
+      });
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -141,9 +188,63 @@ export async function PATCH(
     if (address !== undefined) updateData.address = address;
 
     const { id } = await params;
+    
+    // Get original user data for audit logging
+    const originalUser = await prisma.user.findUnique({
+      where: { id },
+      select: { id: true, name: true, email: true, role: true, banned: true },
+    });
+
+    if (!originalUser) {
+      await auditLogger.logFromRequest(request, {
+        level: AuditLogLevel.WARNING,
+        eventType: AuditEventType.ADMIN_ACTION,
+        userId: session.user.id,
+        userRole: 'admin',
+        targetResourceId: id,
+        targetResourceType: 'user',
+        action: 'update_user',
+        description: 'Attempted to update non-existent user',
+        success: false,
+      });
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     const user = await prisma.user.update({
       where: { id },
       data: updateData,
+    });
+
+    // Determine what changed for audit logging
+    const changes: string[] = [];
+    if (role && role !== originalUser.role) changes.push(`role: ${originalUser.role} → ${role}`);
+    if (typeof banned === 'boolean' && banned !== originalUser.banned) {
+      changes.push(`banned: ${originalUser.banned} → ${banned}`);
+      if (banned && banReason) changes.push(`ban reason: ${banReason}`);
+    }
+    if (name && name !== originalUser.name) changes.push(`name: ${originalUser.name} → ${name}`);
+    if (email && email !== originalUser.email) changes.push(`email: ${originalUser.email} → ${email}`);
+
+    // Log the user update
+    await auditLogger.logFromRequest(request, {
+      level: AuditLogLevel.INFO,
+      eventType: banned ? AuditEventType.USER_SUSPENDED : AuditEventType.USER_UPDATED,
+      userId: session.user.id,
+      userRole: 'admin',
+      targetUserId: user.id,
+      targetResourceId: user.id,
+      targetResourceType: 'user',
+      action: banned ? 'ban_user' : 'update_user',
+      description: `Admin ${banned ? 'banned' : 'updated'} user ${originalUser.name} (${originalUser.email})${changes.length > 0 ? '. Changes: ' + changes.join(', ') : ''}`,
+      success: true,
+      metadata: {
+        originalData: {
+          role: originalUser.role,
+          banned: originalUser.banned,
+        },
+        newData: updateData,
+        changes,
+      },
     });
 
     return NextResponse.json({ 
@@ -152,7 +253,23 @@ export async function PATCH(
       user 
     });
   } catch (error) {
-    console.error('Error updating user:', error);
+    logger.error('Error updating user:', error);
+    
+    // Log the error
+    const session = await getSession(request);
+    await auditLogger.logFromRequest(request, {
+      level: AuditLogLevel.ERROR,
+      eventType: AuditEventType.ADMIN_ACTION,
+      userId: session?.user?.id,
+      userRole: 'admin',
+      targetResourceId: (await params).id,
+      targetResourceType: 'user',
+      action: 'update_user',
+      description: 'Failed to update user due to system error',
+      success: false,
+      errorMessage: error instanceof Error ? error.message : String(error),
+    });
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

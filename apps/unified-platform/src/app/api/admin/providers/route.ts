@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import { getSession } from '@/lib/auth';
+import { logger } from '../../../../lib/production-logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -84,7 +85,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error fetching providers:', error);
+    logger.error('Error fetching providers:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

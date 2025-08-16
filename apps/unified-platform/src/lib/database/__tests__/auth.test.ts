@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi, Mock } from 'vitest';
 import { auth } from '../auth';
 import { sendEmail } from '../email-service';
-import { getAuthMessages, detectLanguage } from '@repo/utils/i18n';
+import { getAuthMessages, detectLanguage } from '@/lib/utils/i18n';
 
 // Mock the email service
 vi.mock('../email-service', () => ({
@@ -9,7 +9,7 @@ vi.mock('../email-service', () => ({
 }));
 
 // Mock the i18n utilities
-vi.mock('@repo/utils/i18n', () => ({
+vi.mock('@lib/utils/i18n', () => ({
   getAuthMessages: vi.fn(),
   detectLanguage: vi.fn(),
 }));

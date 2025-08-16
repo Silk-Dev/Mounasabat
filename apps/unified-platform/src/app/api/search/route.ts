@@ -3,9 +3,11 @@ import { validateSearchFilters, searchWithMonitoring, SearchOptions } from '@/li
 import { SearchAnalytics } from '@/lib/search-analytics';
 import type { SearchFilters } from '@/types';
 import { auth } from '@/lib/auth';
+import { logger } from '../../../lib/production-logger';
+import { withApiMiddleware } from '@/lib/api-middleware';
+import { ApiResponseBuilder } from '@/lib/api-response';
 
-export async function GET(request: NextRequest) {
-  try {
+async function handleGET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     
     // Extract search parameters with better validation
@@ -49,7 +51,7 @@ export async function GET(request: NextRequest) {
           };
         }
       } catch (dateError) {
-        console.warn('Invalid date format in search parameters:', { startDate, endDate });
+        logger.warn('Invalid date format in search parameters:', { startDate, endDate });
       }
     }
 
@@ -80,8 +82,7 @@ export async function GET(request: NextRequest) {
 
     // Check if we have any meaningful search criteria
     if (Object.keys(validatedFilters).length === 0) {
-      return NextResponse.json({
-        success: true,
+      return ApiResponseBuilder.success({
         results: [],
         total: 0,
         page: options.page,
@@ -89,8 +90,7 @@ export async function GET(request: NextRequest) {
         hasMore: false,
         totalPages: 0,
         filters: validatedFilters,
-        message: 'No search criteria provided'
-      });
+      }, 'No search criteria provided');
     }
 
     // Get user information for analytics
@@ -121,8 +121,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Add search metadata
-    const response = {
-      success: true,
+    const responseData = {
       ...searchResponse,
       filters: validatedFilters,
       metadata: {
@@ -134,26 +133,10 @@ export async function GET(request: NextRequest) {
       }
     };
 
-    return NextResponse.json(response);
-
-  } catch (error) {
-    console.error('Search API error:', error);
-    
-    const errorResponse = {
-      success: false,
-      error: 'Internal server error',
-      message: 'An error occurred while searching for services',
-      data: [],
-      total: 0,
-      filters: {}
-    };
-    
-    return NextResponse.json(errorResponse, { status: 500 });
-  }
+    return ApiResponseBuilder.success(responseData, 'Search completed successfully');
 }
 
-export async function POST(request: NextRequest) {
-  try {
+async function handlePOST(request: NextRequest) {
     const body = await request.json();
     const { filters: rawFilters, options: rawOptions } = body;
     
@@ -192,8 +175,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({
-      success: true,
+    const responseData = {
       ...searchResponse,
       filters,
       metadata: {
@@ -203,24 +185,18 @@ export async function POST(request: NextRequest) {
         sortBy: options.sortBy,
         responseTime,
       }
-    });
+    };
 
-  } catch (error) {
-    console.error('Search API error:', error);
-    
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Internal server error',
-        message: 'An error occurred while searching for services',
-        results: [],
-        total: 0,
-        page: 1,
-        limit: 12,
-        hasMore: false,
-        totalPages: 0,
-      },
-      { status: 500 }
-    );
-  }
+    return ApiResponseBuilder.success(responseData, 'Search completed successfully');
 }
+
+// Export wrapped handlers
+export const GET = withApiMiddleware(handleGET, {
+  component: 'search_api',
+  logRequests: true,
+});
+
+export const POST = withApiMiddleware(handlePOST, {
+  component: 'search_api',
+  logRequests: true,
+});

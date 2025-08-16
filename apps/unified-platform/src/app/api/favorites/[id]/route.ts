@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@/../../packages/database/src/generated/client';
+import { logger } from '../../../../lib/production-logger';
 
 const prisma = new PrismaClient();
 
@@ -38,7 +39,7 @@ export async function DELETE(
       message: 'Favorite removed',
     });
   } catch (error) {
-    console.error('Error removing favorite:', error);
+    logger.error('Error removing favorite:', error);
     return NextResponse.json(
       { error: 'Failed to remove favorite' },
       { status: 500 }

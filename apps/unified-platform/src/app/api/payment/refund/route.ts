@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
+import { logger } from '../../../../lib/production-logger';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2023-10-16',
@@ -138,7 +139,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Refund processing error:', error);
+    logger.error('Refund processing error:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -207,7 +208,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Refund retrieval error:', error);
+    logger.error('Refund retrieval error:', error);
 
     if (error instanceof Stripe.errors.StripeError) {
       return NextResponse.json(

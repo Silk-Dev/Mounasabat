@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { logger } from '../../../../lib/production-logger';
+import { getSession } from '@/lib/auth';
+import { auditLogger, AuditEventType, AuditLogLevel } from '@/lib/audit-logger';
 
 const prisma = new PrismaClient();
 
@@ -91,7 +94,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error fetching reviews for admin:', error);
+    logger.error('Error fetching reviews for admin:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch reviews' },
       { status: 500 }
@@ -102,31 +105,62 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/reviews - Bulk actions on reviews
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession(request);
+
+    if (!session?.user || session.user.role !== 'admin') {
+      await auditLogger.logFromRequest(request, {
+        level: AuditLogLevel.WARNING,
+        eventType: AuditEventType.unauthorized_access,
+        userId: session?.user?.id,
+        action: 'bulk_moderate_reviews',
+        description: 'Unauthorized attempt to perform bulk review actions',
+        success: false,
+      });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json();
     const { action, reviewIds, reason } = body;
 
     if (!action || !reviewIds || !Array.isArray(reviewIds)) {
+      await auditLogger.logFromRequest(request, {
+        level: AuditLogLevel.WARNING,
+        eventType: AuditEventType.admin_action,
+        userId: session.user.id,
+        userRole: 'admin',
+        action: 'bulk_moderate_reviews',
+        description: 'Invalid bulk review action request',
+        success: false,
+        metadata: { action, reviewIds, reason },
+      });
       return NextResponse.json(
         { success: false, error: 'Invalid request data' },
         { status: 400 }
       );
     }
 
+    // Get review details before performing actions for audit logging
+    const reviewsToProcess = await prisma.review.findMany({
+      where: { id: { in: reviewIds } },
+      include: {
+        user: {
+          select: { id: true, name: true, email: true },
+        },
+        provider: {
+          select: { id: true, name: true },
+        },
+      },
+    });
+
     let result;
     switch (action) {
       case 'delete':
-        // Get reviews before deletion to update provider ratings
-        const reviewsToDelete = await prisma.review.findMany({
-          where: { id: { in: reviewIds } },
-          select: { id: true, providerId: true },
-        });
-
         result = await prisma.review.deleteMany({
           where: { id: { in: reviewIds } },
         });
 
         // Update provider ratings
-        const providerIds = [...new Set(reviewsToDelete.map(r => r.providerId).filter(Boolean))];
+        const providerIds = [...new Set(reviewsToProcess.map(r => r.providerId).filter(Boolean))];
         for (const providerId of providerIds) {
           if (providerId) {
             await updateProviderRating(providerId);
@@ -149,11 +183,44 @@ export async function POST(request: NextRequest) {
         break;
 
       default:
+        await auditLogger.logFromRequest(request, {
+          level: AuditLogLevel.WARNING,
+          eventType: AuditEventType.admin_action,
+          userId: session.user.id,
+          userRole: 'admin',
+          action: 'bulk_moderate_reviews',
+          description: `Invalid bulk review action: ${action}`,
+          success: false,
+          metadata: { action, reviewIds, reason },
+        });
         return NextResponse.json(
           { success: false, error: 'Invalid action' },
           { status: 400 }
         );
     }
+
+    // Log the bulk action
+    await auditLogger.logFromRequest(request, {
+      level: AuditLogLevel.INFO,
+      eventType: AuditEventType.admin_action,
+      userId: session.user.id,
+      userRole: 'admin',
+      action: `bulk_${action}_reviews`,
+      description: `Admin performed bulk ${action} on ${result.count} review(s)${reason ? `. Reason: ${reason}` : ''}`,
+      success: true,
+      metadata: {
+        action,
+        reason,
+        reviewCount: result.count,
+        reviewIds,
+        affectedReviews: reviewsToProcess.map(r => ({
+          id: r.id,
+          rating: r.rating,
+          reviewerName: r.user.name,
+          providerName: r.provider?.name,
+        })),
+      },
+    });
 
     return NextResponse.json({
       success: true,
@@ -161,7 +228,21 @@ export async function POST(request: NextRequest) {
       message: `Successfully ${action}d ${result.count} review(s)`,
     });
   } catch (error) {
-    console.error('Error performing bulk action on reviews:', error);
+    logger.error('Error performing bulk action on reviews:', error);
+    
+    // Log the error
+    const session = await getSession(request);
+    await auditLogger.logFromRequest(request, {
+      level: AuditLogLevel.ERROR,
+      eventType: AuditEventType.admin_action,
+      userId: session?.user?.id,
+      userRole: 'admin',
+      action: 'bulk_moderate_reviews',
+      description: 'Failed to perform bulk review action due to system error',
+      success: false,
+      errorMessage: error instanceof Error ? error.message : String(error),
+    });
+
     return NextResponse.json(
       { success: false, error: 'Failed to perform action' },
       { status: 500 }

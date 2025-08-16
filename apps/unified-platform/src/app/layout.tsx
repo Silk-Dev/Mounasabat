@@ -3,7 +3,9 @@ import { Inter } from 'next/font/google';
 import { AuthProvider } from '@/lib/auth-context';
 import ErrorBoundary from '@/components/error/ErrorBoundary';
 import PerformanceProvider from '@/components/providers/PerformanceProvider';
+import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
+import { logger } from '../lib/production-logger';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -50,10 +52,10 @@ export default function RootLayout({
                 window.addEventListener('load', function() {
                   navigator.serviceWorker.register('/sw.js')
                     .then(function(registration) {
-                      console.log('SW registered: ', registration);
+                      logger.info('SW registered: ', registration);
                     })
                     .catch(function(registrationError) {
-                      console.log('SW registration failed: ', registrationError);
+                      logger.info('SW registration failed: ', registrationError);
                     });
                 });
               }
@@ -71,6 +73,7 @@ export default function RootLayout({
               <div id="root">
                 {children}
               </div>
+              <Toaster />
             </AuthProvider>
           </PerformanceProvider>
         </ErrorBoundary>

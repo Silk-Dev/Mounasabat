@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
+import { logger } from '@/lib/production-logger';
 import { 
   Card, 
   CardContent, 
@@ -96,10 +97,10 @@ export default function PlatformPage() {
       if (response.ok) {
         setCategories(data.categories);
       } else {
-        console.error('Error fetching categories:', data.error);
+        logger.error('Error fetching categories:', data.error);
       }
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      logger.error('Error fetching categories:', error);
     }
   };
 
@@ -112,10 +113,10 @@ export default function PlatformPage() {
         setFeaturedProviders(data.featuredProviders);
         setFeaturedServices(data.featuredServices);
       } else {
-        console.error('Error fetching featured content:', data.error);
+        logger.error('Error fetching featured content:', data.error);
       }
     } catch (error) {
-      console.error('Error fetching featured content:', error);
+      logger.error('Error fetching featured content:', error);
     }
   };
 

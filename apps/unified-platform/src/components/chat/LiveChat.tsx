@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { websocketService, ChatMessage } from '@/lib/websocket';
 import { format, isToday, isYesterday } from 'date-fns';
+import { logger } from '@/lib/production-logger';
 
 interface LiveChatProps {
   conversationId: string;
@@ -85,7 +86,7 @@ export function LiveChat({
         setMessages(data.messages || []);
       }
     } catch (error) {
-      console.error('Failed to load chat history:', error);
+      logger.error('Failed to load chat history:', error);
     }
   };
 
@@ -112,7 +113,7 @@ export function LiveChat({
         method: 'POST'
       });
     } catch (error) {
-      console.error('Failed to mark message as read:', error);
+      logger.error('Failed to mark message as read:', error);
     }
   };
 

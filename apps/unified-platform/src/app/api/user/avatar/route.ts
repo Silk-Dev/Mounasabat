@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@/../../packages/database/src/generated/client';
+import { logger } from '../../../../lib/production-logger';
 
 const prisma = new PrismaClient();
 
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
       message: 'Profile picture updated successfully',
     });
   } catch (error) {
-    console.error('Error uploading avatar:', error);
+    logger.error('Error uploading avatar:', error);
     return NextResponse.json(
       { error: 'Failed to upload avatar' },
       { status: 500 }

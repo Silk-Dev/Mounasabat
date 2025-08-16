@@ -6,6 +6,7 @@ import { Button } from '../ui';
 import { Progress } from '../ui';
 import { Badge } from '../ui';
 import { Alert, AlertDescription } from '../ui';
+import { logger } from '@/lib/production-logger';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -23,7 +24,7 @@ import { CustomerForm } from './CustomerForm';
 import { PaymentForm } from './PaymentForm';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useBookingErrorHandler } from '@/lib/hooks/useErrorHandler';
-import { LoadingState, BookingFormSkeleton } from '@/components/ui/loading';
+import { LoadingState, BookingFormSkeleton, LoadingButton, FormLoadingOverlay } from '@/components/ui/loading';
 import BookingErrorBoundary from '@/components/error/BookingErrorBoundary';
 import type { 
   BookingFlow, 
@@ -281,7 +282,7 @@ function BookingWizardContent({
       setBookingData(prev => ({ ...prev, paymentInfo }));
       onBookingComplete(confirmation);
     } catch (error) {
-      console.error('Booking creation error:', error);
+      logger.error('Booking creation error:', error);
       setError('An unexpected error occurred. Please contact support.');
     } finally {
       setLoading(false);
@@ -400,26 +401,27 @@ function BookingWizardContent({
         <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4">
           <div className="flex gap-3">
             {getCurrentStepIndex() > 0 && (
-              <Button
+              <LoadingButton
                 variant="outline"
                 onClick={handlePrevious}
-                disabled={loading}
+                loading={loading}
                 className="flex-1 h-12"
               >
                 <ChevronLeft className="w-4 h-4 mr-2" />
                 Previous
-              </Button>
+              </LoadingButton>
             )}
 
             {getCurrentStepIndex() < steps.length - 1 ? (
-              <Button
+              <LoadingButton
                 onClick={handleNext}
-                disabled={!canProceedToNext() || loading}
+                loading={loading}
+                disabled={!canProceedToNext()}
                 className="flex-1 h-12"
               >
                 Next
                 <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
+              </LoadingButton>
             ) : (
               <div className="flex-1 flex items-center justify-center">
                 <Badge variant="secondary" className="px-4 py-2">
@@ -517,34 +519,35 @@ function BookingWizardContent({
           <div className="flex justify-between items-center">
             <div>
               {getCurrentStepIndex() > 0 && (
-                <Button
+                <LoadingButton
                   variant="outline"
                   onClick={handlePrevious}
-                  disabled={loading}
+                  loading={loading}
                 >
                   <ChevronLeft className="w-4 h-4 mr-2" />
                   Previous
-                </Button>
+                </LoadingButton>
               )}
             </div>
 
             <div className="flex gap-3">
-              <Button
+              <LoadingButton
                 variant="outline"
                 onClick={onBookingCancel}
-                disabled={loading}
+                loading={loading}
               >
                 Cancel
-              </Button>
+              </LoadingButton>
 
               {getCurrentStepIndex() < steps.length - 1 ? (
-                <Button
+                <LoadingButton
                   onClick={handleNext}
-                  disabled={!canProceedToNext() || loading}
+                  loading={loading}
+                  disabled={!canProceedToNext()}
                 >
                   Next
                   <ChevronRight className="w-4 h-4 ml-2" />
-                </Button>
+                </LoadingButton>
               ) : (
                 <Badge variant="secondary" className="px-4 py-2">
                   Complete payment to finish

@@ -15,7 +15,6 @@ import {
   ConnectionErrorEmptyState,
   ErrorEmptyState,
   SuccessEmptyState,
-  ComingSoonEmptyState,
   MaintenanceEmptyState
 } from '../empty-states';
 
@@ -198,14 +197,7 @@ describe('Empty State Components', () => {
     });
   });
 
-  describe('ComingSoonEmptyState', () => {
-    it('renders with development message', () => {
-      render(<ComingSoonEmptyState />);
-      
-      expect(screen.getByText('Coming Soon')).toBeInTheDocument();
-      expect(screen.getByText(/This feature is currently under development/)).toBeInTheDocument();
-    });
-  });
+  // ComingSoonEmptyState removed - no longer needed as all features are implemented
 
   describe('MaintenanceEmptyState', () => {
     it('renders with maintenance message', () => {

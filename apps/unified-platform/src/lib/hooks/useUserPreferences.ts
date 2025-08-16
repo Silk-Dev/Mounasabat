@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { UserPreferences } from '@/types';
+import { logger } from '../production-logger';
 
 interface UseUserPreferencesReturn {
   preferences: UserPreferences | null;
@@ -168,7 +169,7 @@ export function useGuestPreferences() {
         const parsed = JSON.parse(stored);
         setPreferences({ ...defaultPreferences, ...parsed });
       } catch (error) {
-        console.error('Failed to parse guest preferences:', error);
+        logger.error('Failed to parse guest preferences:', error);
       }
     }
   }, []);
@@ -220,7 +221,7 @@ export function usePreferenceSync() {
         localStorage.removeItem('guestPreferences');
       }
     } catch (error) {
-      console.error('Failed to sync guest preferences:', error);
+      logger.error('Failed to sync guest preferences:', error);
     }
   }, []);
 

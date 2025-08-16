@@ -22,6 +22,7 @@ import {
   Eye
 } from 'lucide-react';
 import Link from 'next/link';
+import { logger } from '@/lib/production-logger';
 import { BookingStatus } from '@/types';
 
 interface BookingWithRelations {
@@ -109,7 +110,7 @@ export default function ProviderBookingsPage() {
         setBookings(data.bookings || []);
       }
     } catch (error) {
-      console.error('Error fetching bookings:', error);
+      logger.error('Error fetching bookings:', error);
     } finally {
       setLoading(false);
     }
@@ -129,7 +130,7 @@ export default function ProviderBookingsPage() {
         fetchBookings(); // Refresh the list
       }
     } catch (error) {
-      console.error('Error updating booking status:', error);
+      logger.error('Error updating booking status:', error);
     }
   };
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@/../../packages/database/src/generated/client';
+import { logger } from '../../../../../lib/production-logger';
 
 const prisma = new PrismaClient();
 
@@ -63,7 +64,7 @@ export async function GET(
       offset,
     });
   } catch (error) {
-    console.error('Error fetching user reviews:', error);
+    logger.error('Error fetching user reviews:', error);
     return NextResponse.json(
       { error: 'Failed to fetch reviews' },
       { status: 500 }

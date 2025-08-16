@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { notificationService } from '@/lib/notification-service';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
+import { logger } from '../../../../lib/production-logger';
 
 export async function DELETE(
   request: NextRequest,
@@ -17,7 +18,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error deleting notification:', error);
+    logger.error('Error deleting notification:', error);
     return NextResponse.json(
       { error: 'Failed to delete notification' },
       { status: 500 }

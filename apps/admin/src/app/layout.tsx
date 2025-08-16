@@ -2,6 +2,7 @@ import "@mounasabet/ui/styles.css";
 import React from "react";
 import Head from "next/head";
 import Link from "next/link";
+import { Toaster } from "@mounasabet/ui";
 
 export default function RootLayout({
   children,
@@ -56,6 +57,7 @@ export default function RootLayout({
             <main className="flex-1 p-4 bg-gray-100">{children}</main>
           </div>
         </div>
+        <Toaster />
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Button } from '@/components/ui';
@@ -8,7 +8,11 @@ import { Badge } from '@/components/ui';
 import { Input } from '@/components/ui';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui';
 import { Switch } from '@/components/ui';
-import { 
+import { toast } from 'sonner';
+import { logger } from '@/lib/production-logger';
+import { LoadingButton, FormLoadingOverlay, LoadingState } from '@/components/ui/loading';
+import { useUserFeedback } from '@/hooks/useUserFeedback';
+import {
   Calendar,
   Clock,
   Plus,
@@ -49,8 +53,17 @@ export default function ProviderAvailabilityPage() {
   const [specialDates, setSpecialDates] = useState<SpecialDate[]>([]);
   const [newSpecialDate, setNewSpecialDate] = useState('');
   const [newSpecialDateReason, setNewSpecialDateReason] = useState('');
+  
+  const feedback = useUserFeedback();
 
-  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  // Use Intl.DateTimeFormat to get localized day names
+  const dayNames = useMemo(() => {
+    const formatter = new Intl.DateTimeFormat('en-US', { weekday: 'long' });
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(2024, 0, i); // Start from Sunday (Jan 0, 2024 was a Sunday)
+      return formatter.format(date);
+    });
+  }, []);
 
   useEffect(() => {
     if (session?.user) {
@@ -96,7 +109,7 @@ export default function ProviderAvailabilityPage() {
         }
       }
     } catch (error) {
-      console.error('Error fetching availability:', error);
+      logger.error('Error fetching availability:', error);
     } finally {
       setLoading(false);
     }
@@ -118,13 +131,13 @@ export default function ProviderAvailabilityPage() {
 
       if (response.ok) {
         // Show success message
-        alert('Availability updated successfully!');
+        toast.success('Availability updated successfully!');
       } else {
-        alert('Failed to update availability');
+        toast.error('Failed to update availability');
       }
     } catch (error) {
-      console.error('Error saving availability:', error);
-      alert('Failed to update availability');
+      logger.error('Error saving availability:', error);
+      toast.error('Failed to update availability');
     } finally {
       setSaving(false);
     }
@@ -223,14 +236,23 @@ export default function ProviderAvailabilityPage() {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Availability Management</h1>
         <div className="flex gap-4">
-          <Button variant="outline" onClick={fetchAvailability}>
+          <LoadingButton
+            variant="outline"
+            onClick={fetchAvailability}
+            loading={loading}
+            loadingText="Refreshing..."
+          >
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
-          </Button>
-          <Button onClick={saveAvailability} disabled={saving}>
+          </LoadingButton>
+          <LoadingButton
+            onClick={saveAvailability}
+            loading={saving}
+            loadingText="Saving..."
+          >
             <Save className="mr-2 h-4 w-4" />
-            {saving ? 'Saving...' : 'Save Changes'}
-          </Button>
+            Save Changes
+          </LoadingButton>
         </div>
       </div>
 

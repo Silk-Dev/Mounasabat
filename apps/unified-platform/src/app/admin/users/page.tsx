@@ -54,6 +54,7 @@ import {
   Calendar,
   AlertTriangle,
 } from 'lucide-react';
+import { logger } from '@/lib/production-logger';
 
 interface User {
   id: string;
@@ -154,10 +155,10 @@ export default function UsersPage() {
         setUsers(data.users);
         setTotalPages(data.pagination.pages);
       } else {
-        console.error('Error fetching users:', data.error);
+        logger.error('Error fetching users:', data.error);
       }
     } catch (error) {
-      console.error('Error fetching users:', error);
+      logger.error('Error fetching users:', error);
     } finally {
       setLoading(false);
     }
@@ -172,10 +173,10 @@ export default function UsersPage() {
         setSelectedUser(data.user);
         setShowUserDetail(true);
       } else {
-        console.error('Error fetching user detail:', data.error);
+        logger.error('Error fetching user detail:', data.error);
       }
     } catch (error) {
-      console.error('Error fetching user detail:', error);
+      logger.error('Error fetching user detail:', error);
     }
   };
 
@@ -197,10 +198,10 @@ export default function UsersPage() {
           fetchUserDetail(userId);
         }
       } else {
-        console.error('Error updating user role:', data.error);
+        logger.error('Error updating user role:', data.error);
       }
     } catch (error) {
-      console.error('Error updating user role:', error);
+      logger.error('Error updating user role:', error);
     }
   };
 
@@ -226,10 +227,10 @@ export default function UsersPage() {
           fetchUserDetail(userId);
         }
       } else {
-        console.error('Error banning user:', data.error);
+        logger.error('Error banning user:', data.error);
       }
     } catch (error) {
-      console.error('Error banning user:', error);
+      logger.error('Error banning user:', error);
     }
   };
 
@@ -251,10 +252,10 @@ export default function UsersPage() {
           fetchUserDetail(userId);
         }
       } else {
-        console.error('Error unbanning user:', data.error);
+        logger.error('Error unbanning user:', data.error);
       }
     } catch (error) {
-      console.error('Error unbanning user:', error);
+      logger.error('Error unbanning user:', error);
     }
   };
 

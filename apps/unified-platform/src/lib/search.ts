@@ -5,6 +5,7 @@ import { memoryCache } from './cache';
 import { prisma } from './prisma';
 import { SearchAnalytics } from './search-analytics';
 import { CategoryService } from './categories';
+import { logger } from './production-logger';
 
 export interface SearchOptions {
   page?: number;
@@ -45,7 +46,7 @@ export async function searchServices(
     // Use database search
     allResults = await searchServicesFromDatabase(filters, sortBy);
   } catch (error) {
-    console.error('Database search failed:', error);
+    logger.error('Database search failed:', error);
     // Throw error instead of returning empty results to allow proper error handling
     throw new Error('Search service temporarily unavailable. Please try again.');
   }
@@ -320,7 +321,7 @@ export async function getPopularSearches(): Promise<string[]> {
     const popularQueries = await SearchAnalytics.getPopularQueries(7);
     return popularQueries.map(({ query }) => query);
   } catch (error) {
-    console.error('Failed to get popular searches:', error);
+    logger.error('Failed to get popular searches:', error);
     return [];
   }
 }
@@ -330,7 +331,7 @@ export async function getTrendingCategories() {
   try {
     return await CategoryService.getTrendingCategories();
   } catch (error) {
-    console.error('Failed to get trending categories:', error);
+    logger.error('Failed to get trending categories:', error);
     return [];
   }
 }
@@ -340,7 +341,7 @@ export async function getServiceCategories() {
   try {
     return await CategoryService.getAllCategories();
   } catch (error) {
-    console.error('Failed to get service categories:', error);
+    logger.error('Failed to get service categories:', error);
     return [];
   }
 }
@@ -372,7 +373,7 @@ export class SearchOptimizer {
 
       return suggestions;
     } catch (error) {
-      console.error('Failed to get search suggestions:', error);
+      logger.error('Failed to get search suggestions:', error);
       return [];
     }
   }
@@ -388,16 +389,16 @@ export class SearchOptimizer {
         
         try {
           await searchServices(filters, options);
-          console.log(`Preloaded results for query: ${query}`);
+          logger.info(`Preloaded results for query: ${query}`);
         } catch (error) {
-          console.error(`Failed to preload results for query: ${query}`, error);
+          logger.error(`Failed to preload results for query: ${query}`, error);
         }
       });
 
       await Promise.all(preloadPromises);
-      console.log('Popular search results preloaded successfully');
+      logger.info('Popular search results preloaded successfully');
     } catch (error) {
-      console.error('Failed to preload popular results:', error);
+      logger.error('Failed to preload popular results:', error);
     }
   }
 }
@@ -481,12 +482,12 @@ export async function searchWithMonitoring(
     const responseTime = Date.now() - startTime;
 
     // Log performance metrics (could be enhanced to store in database)
-    console.log(`Search performance: ${responseTime}ms, ${response.results.length} results, fromCache: ${fromCache}`);
+    logger.info(`Search performance: ${responseTime}ms, ${response.results.length} results, fromCache: ${fromCache}`);
 
     return response;
   } catch (error) {
     const responseTime = Date.now() - startTime;
-    console.error(`Search failed after ${responseTime}ms:`, error);
+    logger.error(`Search failed after ${responseTime}ms:`, error);
     throw error;
   }
 }

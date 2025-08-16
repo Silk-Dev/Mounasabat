@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
+import { logger } from '@/lib/production-logger';
+
 import {
   Elements,
   CardElement,
@@ -17,6 +19,8 @@ import { Input } from '../ui';
 import { Label } from '../ui';
 import { Loader2, CreditCard, Shield, AlertCircle, Lock, CheckCircle } from 'lucide-react';
 import type { SelectedService, CustomerInfo, EventDetails, PaymentInfo } from '../../types';
+import { LoadingButton, FormLoadingOverlay } from '@/components/ui/loading';
+import { useUserFeedback } from '@/hooks/useUserFeedback';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
 
@@ -56,6 +60,8 @@ function PaymentFormContent({
   const [clientSecret, setClientSecret] = useState<string>('');
   const [paymentIntentId, setPaymentIntentId] = useState<string>('');
   const [cardholderName, setCardholderName] = useState('');
+  
+  const feedback = useUserFeedback();
 
   // Calculate payment summary
   useEffect(() => {
@@ -119,7 +125,7 @@ function PaymentFormContent({
       setClientSecret(data.clientSecret);
       setPaymentIntentId(data.paymentIntentId);
     } catch (error) {
-      console.error('Error creating payment intent:', error);
+      logger.error('Error creating payment intent:', error);
       setError(error instanceof Error ? error.message : 'Failed to initialize payment');
     }
   };

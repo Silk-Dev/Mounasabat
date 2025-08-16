@@ -6,7 +6,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import { createDatabaseMonitor, runMonitoringCheck } from '@/lib/database/monitoring';
-import { isMonitoringEnabled } from '../../../../../deployment.config.js';
+import { isMonitoringEnabled } from '../../../../../../deployment.config';
+import { logger } from '@/lib/production-logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -74,12 +75,12 @@ export async function GET(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Monitoring API error:', error);
+    logger.error('Monitoring API error:', error as Error);
     
     return NextResponse.json({
       success: false,
       message: 'Internal server error',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined,
     }, { status: 500 });
   }
 }
@@ -142,12 +143,12 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Monitoring API error:', error);
+    logger.error('Monitoring API error:', error as Error);
     
     return NextResponse.json({
       success: false,
       message: 'Internal server error',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined,
     }, { status: 500 });
   }
 }

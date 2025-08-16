@@ -5,6 +5,8 @@ import { Review, ReviewForm, ReviewInvitation } from '@/components/reviews';
 import { ReviewSection } from '@/components/provider';
 import { Card, CardContent, CardHeader, CardTitle, Button, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
 import { Star, Users, Award, TrendingUp } from 'lucide-react';
+import { toast } from 'sonner';
+import { logger } from '@/lib/production-logger';
 
 // Demo data fetched from database
 import { useDataLoader } from '@/hooks/useDataLoader';
@@ -16,7 +18,7 @@ const fetchDemoReviews = async () => {
     const data = await response.json();
     return data.reviews || [];
   } catch (error) {
-    console.error('Failed to fetch demo reviews:', error);
+    logger.error('Failed to fetch demo reviews:', error);
     return [];
   }
 };
@@ -28,7 +30,7 @@ const fetchDemoBooking = async () => {
     const data = await response.json();
     return data.bookings?.[0] || null;
   } catch (error) {
-    console.error('Failed to fetch demo booking:', error);
+    logger.error('Failed to fetch demo booking:', error);
     return null;
   }
 };
@@ -46,9 +48,9 @@ export default function ReviewsDemoPage() {
   const totalReviews = reviews?.length || 0;
 
   const handleReviewSubmit = async (reviewData: any) => {
-    console.log('Review submitted:', reviewData);
+    logger.info('Review submitted:', reviewData);
     // In a real app, this would call the API
-    alert('Review submitted successfully!');
+    toast.success('Review submitted successfully!');
     setShowReviewForm(false);
   };
 
@@ -166,9 +168,9 @@ export default function ReviewsDemoPage() {
                   key={review.id}
                   review={review}
                   currentUserId="user-1"
-                  onEdit={(review) => console.log('Edit review:', review)}
-                  onDelete={(reviewId) => console.log('Delete review:', reviewId)}
-                  onFlag={(reviewId, reason) => console.log('Flag review:', reviewId, reason)}
+                  onEdit={(review) => logger.info('Edit review:', review)}
+                  onDelete={(reviewId) => logger.info('Delete review:', reviewId)}
+                  onFlag={(reviewId, reason) => logger.info('Flag review:', reviewId, reason)}
                 />
               ))
             ) : (
@@ -215,7 +217,7 @@ export default function ReviewsDemoPage() {
               ) : booking ? (
                 <ReviewInvitation
                   booking={booking}
-                  onReviewSubmitted={() => console.log('Review submitted from invitation')}
+                  onReviewSubmitted={() => logger.info('Review submitted from invitation')}
                 />
               ) : (
                 <div className="text-center py-4 text-gray-500">

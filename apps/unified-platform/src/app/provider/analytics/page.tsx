@@ -15,6 +15,7 @@ import {
   PieChart,
   Activity
 } from 'lucide-react';
+import { logger } from '@/lib/production-logger';
 
 interface AnalyticsData {
   revenue: {
@@ -72,7 +73,7 @@ export default function ProviderAnalyticsPage() {
         setAnalytics(data);
       }
     } catch (error) {
-      console.error('Error fetching analytics:', error);
+      logger.error('Error fetching analytics:', error);
     } finally {
       setLoading(false);
     }

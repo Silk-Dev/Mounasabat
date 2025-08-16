@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import { getSession } from '@/lib/auth';
+import { logger } from '../../../../../lib/production-logger';
+import { auditLogger, AuditEventType, AuditLogLevel } from '@/lib/audit-logger';
 
 export async function GET(
   request: NextRequest,
@@ -53,7 +55,7 @@ export async function GET(
 
     return NextResponse.json({ issue });
   } catch (error) {
-    console.error('Error fetching issue:', error);
+    logger.error('Error fetching issue:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -97,6 +99,35 @@ export async function PATCH(
     }
 
     const { id } = await params;
+    
+    // Get original issue data for audit logging
+    const originalIssue = await prisma.issue.findUnique({
+      where: { id },
+      select: { 
+        id: true, 
+        title: true, 
+        status: true, 
+        priority: true, 
+        assignedToUserId: true,
+        reportedByUserId: true,
+      },
+    });
+
+    if (!originalIssue) {
+      await auditLogger.logFromRequest(request, {
+        level: AuditLogLevel.WARNING,
+        eventType: AuditEventType.admin_action,
+        userId: session.user.id,
+        userRole: 'admin',
+        targetResourceId: id,
+        targetResourceType: 'issue',
+        action: 'update_issue',
+        description: 'Attempted to update non-existent issue',
+        success: false,
+      });
+      return NextResponse.json({ error: 'Issue not found' }, { status: 404 });
+    }
+
     const issue = await prisma.issue.update({
       where: { id },
       data: updateData,
@@ -118,13 +149,45 @@ export async function PATCH(
       },
     });
 
+    // Determine what changed for audit logging
+    const changes: string[] = [];
+    if (status && status !== originalIssue.status) changes.push(`status: ${originalIssue.status} → ${status}`);
+    if (priority && priority !== originalIssue.priority) changes.push(`priority: ${originalIssue.priority} → ${priority}`);
+    if (assignedToUserId && assignedToUserId !== originalIssue.assignedToUserId) {
+      changes.push(`assigned to: ${originalIssue.assignedToUserId || 'unassigned'} → ${assignedToUserId}`);
+    }
+
+    // Log the issue update
+    await auditLogger.logFromRequest(request, {
+      level: AuditLogLevel.INFO,
+      eventType: AuditEventType.admin_action,
+      userId: session.user.id,
+      userRole: 'admin',
+      targetUserId: originalIssue.reportedByUserId || undefined,
+      targetResourceId: issue.id,
+      targetResourceType: 'issue',
+      action: 'update_issue',
+      description: `Admin updated issue "${originalIssue.title}"${changes.length > 0 ? '. Changes: ' + changes.join(', ') : ''}`,
+      success: true,
+      metadata: {
+        originalData: {
+          status: originalIssue.status,
+          priority: originalIssue.priority,
+          assignedToUserId: originalIssue.assignedToUserId,
+        },
+        newData: updateData,
+        changes,
+        issueTitle: originalIssue.title,
+      },
+    });
+
     return NextResponse.json({ 
       success: true, 
       message: 'Issue updated successfully',
       issue 
     });
   } catch (error) {
-    console.error('Error updating issue:', error);
+    logger.error('Error updating issue:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

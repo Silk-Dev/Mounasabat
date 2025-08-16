@@ -13,6 +13,9 @@ import { Switch } from '@/components/ui';
 import { Badge } from '@/components/ui';
 import { ArrowLeft, Plus, X, Upload } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
+import { logger } from '@/lib/production-logger';
+import { LoadingButton, FormLoadingOverlay } from '@/components/ui/loading';
 
 const SERVICE_CATEGORIES = [
   'Wedding Planning',
@@ -117,12 +120,12 @@ export default function NewServicePage() {
     e.preventDefault();
     
     if (!formData.name || !formData.category || !formData.description) {
-      alert('Please fill in all required fields');
+      toast.error('Please fill in all required fields');
       return;
     }
 
     if (formData.pricingType === 'FIXED' && !formData.basePrice) {
-      alert('Please set a base price for fixed pricing');
+      toast.error('Please set a base price for fixed pricing');
       return;
     }
 
@@ -138,14 +141,15 @@ export default function NewServicePage() {
       });
 
       if (response.ok) {
+        toast.success('Service created successfully!');
         router.push('/provider/services');
       } else {
         const error = await response.json();
-        alert(error.message || 'Failed to create service');
+        toast.error(error.message || 'Failed to create service');
       }
     } catch (error) {
-      console.error('Error creating service:', error);
-      alert('Failed to create service');
+      logger.error('Error creating service:', error);
+      toast.error('Failed to create service');
     } finally {
       setLoading(false);
     }
@@ -163,7 +167,8 @@ export default function NewServicePage() {
         <h1 className="text-3xl font-bold">Create New Service</h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="max-w-4xl">
+      <FormLoadingOverlay isLoading={loading} message="Creating your service...">
+        <form onSubmit={handleSubmit} className="max-w-4xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Form */}
           <div className="lg:col-span-2 space-y-6">
@@ -427,9 +432,14 @@ export default function NewServicePage() {
 
             {/* Actions */}
             <div className="space-y-3">
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Creating...' : 'Create Service'}
-              </Button>
+              <LoadingButton 
+                type="submit" 
+                className="w-full" 
+                loading={loading}
+                loadingText="Creating..."
+              >
+                Create Service
+              </LoadingButton>
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/provider/services">
                   Cancel
@@ -439,6 +449,7 @@ export default function NewServicePage() {
           </div>
         </div>
       </form>
+      </FormLoadingOverlay>
     </div>
   );
 }

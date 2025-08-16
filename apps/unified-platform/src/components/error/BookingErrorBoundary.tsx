@@ -5,6 +5,7 @@ import ErrorBoundary, { ErrorBoundaryFallbackProps } from './ErrorBoundary';
 import { Calendar, RefreshCw, ArrowLeft, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { errorHandler } from '@/lib/production-error-handler';
 
 const BookingErrorFallback: React.FC<ErrorBoundaryFallbackProps> = ({ error, retry }) => {
   const handleSaveProgress = () => {
@@ -76,12 +77,15 @@ const BookingErrorBoundary: React.FC<BookingErrorBoundaryProps> = ({ children })
       fallback={BookingErrorFallback}
       section="booking"
       onError={(error, errorInfo) => {
-        // Log booking-specific error context
+        // Use the production error handler for booking errors
         const bookingProgress = sessionStorage.getItem('bookingProgress');
-        console.error('Booking error:', {
-          error: error.message,
-          bookingProgress: bookingProgress ? JSON.parse(bookingProgress) : null,
-          componentStack: errorInfo.componentStack,
+        errorHandler.handleClientError(error, {
+          component: 'booking',
+          metadata: {
+            bookingProgress: bookingProgress ? JSON.parse(bookingProgress) : null,
+            componentStack: errorInfo.componentStack,
+            errorBoundary: true,
+          },
         });
       }}
     >

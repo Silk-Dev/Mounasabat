@@ -5,6 +5,7 @@ import { Review as ReviewType } from '@/types';
 import { Card, CardContent, Badge, Button, Alert, AlertDescription } from '@/components/ui';
 import { Star, ThumbsUp, Flag, MoreHorizontal, Edit, Trash2, Shield } from 'lucide-react';
 import Image from 'next/image';
+import { logger } from '@/lib/production-logger';
 
 interface ReviewProps {
   review: ReviewType;
@@ -81,7 +82,7 @@ const Review: React.FC<ReviewProps> = ({
         await onDelete(review.id);
       }
     } catch (error) {
-      console.error('Error deleting review:', error);
+      logger.error('Error deleting review:', error);
     } finally {
       setIsDeleting(false);
     }
@@ -97,7 +98,7 @@ const Review: React.FC<ReviewProps> = ({
       setShowFlagDialog(false);
       setFlagReason('');
     } catch (error) {
-      console.error('Error flagging review:', error);
+      logger.error('Error flagging review:', error);
     }
   };
 
@@ -107,7 +108,7 @@ const Review: React.FC<ReviewProps> = ({
         await onVerify(review.id);
       }
     } catch (error) {
-      console.error('Error verifying review:', error);
+      logger.error('Error verifying review:', error);
     }
   };
 

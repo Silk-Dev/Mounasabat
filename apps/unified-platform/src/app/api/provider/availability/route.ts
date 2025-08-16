@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
+import { logger } from '../../../../lib/production-logger';
 
 const timeSlotSchema = z.object({
   id: z.string(),
@@ -162,7 +163,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error fetching availability:', error);
+    logger.error('Error fetching availability:', error);
     return NextResponse.json(
       { 
         success: false,
@@ -202,7 +203,7 @@ export async function POST(request: NextRequest) {
 
     // In a real implementation, you would save to a provider_availability table
     // For now, we'll just return success
-    console.log('Saving availability for provider:', providerId, validatedData);
+    logger.info('Saving availability for provider:', providerId, validatedData);
 
     return NextResponse.json({
       success: true,
@@ -210,7 +211,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error saving availability:', error);
+    logger.error('Error saving availability:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

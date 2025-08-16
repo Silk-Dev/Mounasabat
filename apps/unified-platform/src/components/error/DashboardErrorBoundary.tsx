@@ -91,8 +91,7 @@ const DashboardErrorBoundary: React.FC<DashboardErrorBoundaryProps> = ({ childre
       section="dashboard"
       onError={(error, errorInfo) => {
         // Log dashboard-specific error context
-        console.error('Dashboard error:', {
-          error: error.message,
+        logger.componentError('DashboardErrorBoundary', error, {
           userRole: localStorage.getItem('userRole'),
           dashboardFilters: sessionStorage.getItem('dashboardFilters'),
           componentStack: errorInfo.componentStack,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import { getSession } from '@/lib/auth';
+import { logger } from '../../../../lib/production-logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -83,7 +84,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error fetching issues:', error);
+    logger.error('Error fetching issues:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -134,7 +135,7 @@ export async function POST(request: NextRequest) {
       issue 
     });
   } catch (error) {
-    console.error('Error creating issue:', error);
+    logger.error('Error creating issue:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

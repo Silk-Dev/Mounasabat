@@ -1,5 +1,6 @@
 import { createCipher, createDecipher, randomBytes, scrypt, createHash } from 'crypto';
 import { promisify } from 'util';
+import { logger } from './production-logger';
 
 const scryptAsync = promisify(scrypt);
 
@@ -49,7 +50,7 @@ export class DataEncryption {
       const result = Buffer.concat([iv, tag, Buffer.from(encrypted, 'hex')]);
       return result.toString('base64');
     } catch (error) {
-      console.error('Encryption error:', error);
+      logger.error('Encryption error:', error);
       throw new Error('Failed to encrypt data');
     }
   }
@@ -74,7 +75,7 @@ export class DataEncryption {
       
       return decrypted;
     } catch (error) {
-      console.error('Decryption error:', error);
+      logger.error('Decryption error:', error);
       throw new Error('Failed to decrypt data');
     }
   }
@@ -141,7 +142,7 @@ export class DataEncryption {
           decrypted[field] = await this.decrypt(decrypted[field]);
           delete decrypted[`${field}_encrypted`];
         } catch (error) {
-          console.error(`Failed to decrypt ${field}:`, error);
+          logger.error(`Failed to decrypt ${field}:`, error);
           // Keep encrypted value if decryption fails
         }
       }
@@ -206,7 +207,7 @@ export class SecureSession {
         needsRefresh,
       };
     } catch (error) {
-      console.error('Session validation error:', error);
+      logger.error('Session validation error:', error);
       return null;
     }
   }

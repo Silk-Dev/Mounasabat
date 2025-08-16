@@ -1,6 +1,7 @@
 // Booking utilities for the unified platform
 import type { Booking, BookingStatus, SelectedService } from '@/types';
 import { z } from 'zod';
+import { logger } from './production-logger';
 
 // Validation schema for booking data
 const bookingDataSchema = z.object({
@@ -44,7 +45,7 @@ export async function createBooking(bookingData: any): Promise<Booking> {
 
     return result.booking;
   } catch (error) {
-    console.error('Error creating booking:', error);
+    logger.error('Error creating booking:', error);
     throw error;
   }
 }
@@ -67,7 +68,7 @@ export async function updateBookingStatus(bookingId: string, status: BookingStat
 
     return result.booking;
   } catch (error) {
-    console.error('Error updating booking status:', error);
+    logger.error('Error updating booking status:', error);
     throw error;
   }
 }

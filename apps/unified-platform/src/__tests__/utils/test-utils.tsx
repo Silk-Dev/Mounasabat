@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from '../../lib/auth-context';
+import { AuthProvider } from '@/lib/auth-context';
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({

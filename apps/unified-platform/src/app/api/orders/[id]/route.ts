@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
+import { logger } from '../../../../lib/production-logger';
 
 const updateOrderSchema = z.object({
   status: z.enum(['PENDING', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'REFUNDED']).optional(),
@@ -100,7 +101,7 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('Order retrieval error:', error);
+    logger.error('Order retrieval error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -195,7 +196,7 @@ export async function PATCH(
     });
 
   } catch (error) {
-    console.error('Order update error:', error);
+    logger.error('Order update error:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -301,7 +302,7 @@ export async function DELETE(
     });
 
   } catch (error) {
-    console.error('Order cancellation error:', error);
+    logger.error('Order cancellation error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

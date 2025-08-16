@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { logger } from '../../../../../lib/production-logger';
+import { PDFGenerationService, type InvoiceData } from '../../../../../lib/pdf-generation-puppeteer';
 
 export async function GET(
   request: NextRequest,
@@ -76,13 +78,13 @@ export async function GET(
       
       // Company information (your business)
       company: {
-        name: 'Mounasabet Event Services',
-        address: '123 Business Street',
-        city: 'Tunis',
-        country: 'Tunisia',
-        email: 'billing@mounasabet.com',
-        phone: '+216 XX XXX XXX',
-        taxId: 'TN123456789',
+        name: process.env.COMPANY_NAME || 'Mounasabet',
+        address: process.env.COMPANY_ADDRESS || '',
+        city: process.env.COMPANY_CITY || '',
+        country: process.env.COMPANY_COUNTRY || 'Tunisia',
+        email: process.env.COMPANY_EMAIL || process.env.SUPPORT_EMAIL || '',
+        phone: process.env.COMPANY_PHONE || '',
+        taxId: process.env.COMPANY_TAX_ID || '',
       },
 
       // Customer information
@@ -161,7 +163,7 @@ export async function GET(
       ],
 
       // Footer notes
-      notes: 'Thank you for choosing Mounasabet Event Services. We look forward to making your event memorable!',
+      notes: `Thank you for choosing ${process.env.COMPANY_NAME || 'Mounasabet'}. We look forward to making your event memorable!`,
     };
 
     return NextResponse.json({
@@ -170,7 +172,7 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('Invoice generation error:', error);
+    logger.error('Invoice generation error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -178,36 +180,87 @@ export async function GET(
   }
 }
 
-// Generate PDF invoice (placeholder for future implementation)
+// Generate PDF invoice
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const { format = 'json' } = await request.json();
+    const body = await request.json();
+    const { format = 'json', download = false } = body;
 
-    // For now, return the same JSON data
-    // In the future, this could generate a PDF using libraries like puppeteer or jsPDF
-    
+    // Get invoice data first
     const invoiceResponse = await GET(request, { params: Promise.resolve({ id }) });
-    const invoiceData = await invoiceResponse.json();
+    const responseData = await invoiceResponse.json();
 
-    if (format === 'pdf') {
-      // TODO: Implement PDF generation
-      return NextResponse.json({
-        success: false,
-        error: 'PDF generation not yet implemented',
-        message: 'PDF invoice generation will be available in a future update',
-      });
+    if (!responseData.success) {
+      return invoiceResponse;
     }
 
+    const invoiceData = responseData.invoice as InvoiceData;
+
+    if (format === 'pdf') {
+      try {
+        // Validate invoice data
+        if (!PDFGenerationService.validateInvoiceData(invoiceData)) {
+          return NextResponse.json({
+            success: false,
+            error: 'Invalid invoice data for PDF generation',
+          }, { status: 400 });
+        }
+
+        // Generate PDF
+        const pdfBuffer = await PDFGenerationService.generateInvoicePDF(invoiceData);
+
+        // Set appropriate headers for PDF response
+        const headers = new Headers({
+          'Content-Type': 'application/pdf',
+          'Content-Length': pdfBuffer.length.toString(),
+        });
+
+        // If download is requested, set download headers
+        if (download) {
+          headers.set('Content-Disposition', `attachment; filename="invoice-${invoiceData.invoiceNumber}.pdf"`);
+        } else {
+          headers.set('Content-Disposition', `inline; filename="invoice-${invoiceData.invoiceNumber}.pdf"`);
+        }
+
+        return new NextResponse(pdfBuffer, {
+          status: 200,
+          headers,
+        });
+
+      } catch (pdfError) {
+        logger.error('PDF generation failed', pdfError, { 
+          orderId: id,
+          invoiceNumber: invoiceData.invoiceNumber 
+        });
+
+        // Return fallback response with error details
+        return NextResponse.json({
+          success: false,
+          error: 'PDF generation failed',
+          message: 'Unable to generate PDF at this time. Please try again later or contact support.',
+          fallback: {
+            invoiceData: responseData.invoice,
+            downloadUrl: null,
+          }
+        }, { status: 500 });
+      }
+    }
+
+    // Return JSON format by default
     return invoiceResponse;
 
   } catch (error) {
-    console.error('Invoice generation error:', error);
+    logger.error('Invoice generation error:', error, { orderId: await params.then(p => p.id) });
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        success: false,
+        error: 'Internal server error',
+        message: 'An unexpected error occurred while processing your request.'
+      },
       { status: 500 }
     );
   }

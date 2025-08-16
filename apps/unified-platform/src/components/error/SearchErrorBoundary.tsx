@@ -63,8 +63,7 @@ const SearchErrorBoundary: React.FC<SearchErrorBoundaryProps> = ({ children }) =
       section="search"
       onError={(error, errorInfo) => {
         // Log search-specific error context
-        console.error('Search error:', {
-          error: error.message,
+        logger.componentError('SearchErrorBoundary', error, {
           filters: localStorage.getItem('searchFilters'),
           query: localStorage.getItem('searchQuery'),
           componentStack: errorInfo.componentStack,

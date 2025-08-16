@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui';
 import { Star, MapPin, Verified } from 'lucide-react';
 import { ResponsiveImage } from '@/components/ui/ResponsiveImage';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { logger } from '@/lib/production-logger';
 
 export default function HomePage() {
   const router = useRouter();
@@ -39,7 +40,7 @@ export default function HomePage() {
         router.push(`/search?${queryString}`);
       }
     } catch (error) {
-      console.error('Search error:', error);
+      logger.error('Search error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Search failed. Please try again.';
       setSearchError(errorMessage);
       setSearchResults([]);

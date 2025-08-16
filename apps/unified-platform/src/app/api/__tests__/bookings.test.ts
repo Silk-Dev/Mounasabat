@@ -26,7 +26,7 @@ jest.mock('@/lib/prisma', () => ({
 
 // Mock auth
 jest.mock('@/lib/auth', () => ({
-  auth.api.getSession: jest.fn(),
+  "auth.api.getSession": jest.fn(),
   requireAuth: jest.fn(),
 }));
 

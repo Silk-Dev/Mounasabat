@@ -1,16 +1,55 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@/../../packages/database/src/generated/client';
+import { logger } from '../../../../lib/production-logger';
+import { withPublicSecurity, withAuthSecurity, createAPIResponse, sanitizeRequestBody } from '@/lib/api-security-middleware';
+import { z } from 'zod';
+import { InputSanitizer } from '@/lib/security';
 
 const prisma = new PrismaClient();
 
-export async function GET(request: NextRequest) {
+// Validation schema for user preferences
+const preferencesSchema = z.object({
+  userId: z.string().uuid('Invalid user ID format'),
+  language: z.string().min(2).max(5).regex(/^[a-z]{2}(-[A-Z]{2})?$/, 'Invalid language format').optional(),
+  currency: z.enum(['USD', 'EUR', 'GBP']).optional(),
+  notifications: z.object({
+    email: z.boolean().optional(),
+    sms: z.boolean().optional(),
+    push: z.boolean().optional(),
+    marketing: z.boolean().optional(),
+  }).optional(),
+  searchPreferences: z.object({
+    defaultLocation: z.string().max(200).transform(InputSanitizer.sanitizeGeneral).optional(),
+    preferredCategories: z.array(z.string().max(100).transform(InputSanitizer.sanitizeGeneral)).max(20).optional(),
+    priceRange: z.object({
+      min: z.number().min(0).max(1000000).optional(),
+      max: z.number().min(0).max(1000000).optional(),
+    }).optional(),
+    sortBy: z.enum(['price', 'rating', 'distance', 'popularity']).optional(),
+  }).optional(),
+  privacy: z.object({
+    profileVisible: z.boolean().optional(),
+    showReviews: z.boolean().optional(),
+    allowMessages: z.boolean().optional(),
+  }).optional(),
+});
+
+async function handleGET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
 
     if (!userId) {
       return NextResponse.json(
-        { error: 'User ID is required' },
+        createAPIResponse(false, null, 'User ID is required'),
+        { status: 400 }
+      );
+    }
+
+    // Validate userId format
+    if (!z.string().uuid().safeParse(userId).success) {
+      return NextResponse.json(
+        createAPIResponse(false, null, 'Invalid user ID format'),
         { status: 400 }
       );
     }
@@ -25,14 +64,7 @@ export async function GET(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    if (!user.preferences) {
-      return NextResponse.json(
-        { error: 'Preferences not found' },
+        createAPIResponse(false, null, 'User not found'),
         { status: 404 }
       );
     }
@@ -66,30 +98,26 @@ export async function GET(request: NextRequest) {
       updatedAt: new Date(),
     };
 
-    return NextResponse.json({
-      success: true,
-      preferences,
-    });
+    return NextResponse.json(createAPIResponse(true, preferences));
   } catch (error) {
-    console.error('Error fetching preferences:', error);
+    logger.error('Error fetching preferences:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch preferences' },
+      createAPIResponse(false, null, 'Failed to fetch preferences'),
       { status: 500 }
     );
   }
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const data = await request.json();
-    const { userId, ...preferencesData } = data;
+export const GET = withPublicSecurity(handleGET);
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
-      );
-    }
+async function handlePOST(request: NextRequest) {
+  try {
+    const rawData = await request.json();
+    const sanitizedData = sanitizeRequestBody(rawData);
+    
+    // Validate the request data
+    const validatedData = preferencesSchema.parse(sanitizedData);
+    const { userId, ...preferencesData } = validatedData;
 
     // Update user with preferences
     const updatedUser = await prisma.user.update({
@@ -108,26 +136,43 @@ export async function POST(request: NextRequest) {
       ...preferencesData,
     };
 
-    return NextResponse.json({
-      success: true,
-      preferences,
-    });
+    return NextResponse.json(createAPIResponse(true, preferences, undefined, 'Preferences created successfully'));
   } catch (error) {
-    console.error('Error creating preferences:', error);
+    logger.error('Error creating preferences:', error);
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        createAPIResponse(false, null, 'Invalid request data', 'Please check your input and try again'),
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Failed to create preferences' },
+      createAPIResponse(false, null, 'Failed to create preferences'),
       { status: 500 }
     );
   }
 }
 
-export async function PATCH(request: NextRequest) {
+export const POST = withAuthSecurity(handlePOST);
+
+async function handlePATCH(request: NextRequest) {
   try {
-    const { userId, updates } = await request.json();
+    const rawData = await request.json();
+    const sanitizedData = sanitizeRequestBody(rawData);
+    const { userId, updates } = sanitizedData;
 
     if (!userId) {
       return NextResponse.json(
-        { error: 'User ID is required' },
+        createAPIResponse(false, null, 'User ID is required'),
+        { status: 400 }
+      );
+    }
+
+    // Validate userId format
+    if (!z.string().uuid().safeParse(userId).success) {
+      return NextResponse.json(
+        createAPIResponse(false, null, 'Invalid user ID format'),
         { status: 400 }
       );
     }
@@ -140,7 +185,7 @@ export async function PATCH(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'User not found' },
+        createAPIResponse(false, null, 'User not found'),
         { status: 404 }
       );
     }
@@ -166,30 +211,26 @@ export async function PATCH(request: NextRequest) {
       ...updatedPreferences,
     };
 
-    return NextResponse.json({
-      success: true,
-      preferences,
-    });
+    return NextResponse.json(createAPIResponse(true, preferences, undefined, 'Preferences updated successfully'));
   } catch (error) {
-    console.error('Error updating preferences:', error);
+    logger.error('Error updating preferences:', error);
     return NextResponse.json(
-      { error: 'Failed to update preferences' },
+      createAPIResponse(false, null, 'Failed to update preferences'),
       { status: 500 }
     );
   }
 }
 
-export async function PUT(request: NextRequest) {
-  try {
-    const data = await request.json();
-    const { userId, ...preferencesData } = data;
+export const PATCH = withAuthSecurity(handlePATCH);
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
-      );
-    }
+async function handlePUT(request: NextRequest) {
+  try {
+    const rawData = await request.json();
+    const sanitizedData = sanitizeRequestBody(rawData);
+    
+    // Validate the request data
+    const validatedData = preferencesSchema.parse(sanitizedData);
+    const { userId, ...preferencesData } = validatedData;
 
     // Replace all preferences
     await prisma.user.update({
@@ -208,15 +249,22 @@ export async function PUT(request: NextRequest) {
       ...preferencesData,
     };
 
-    return NextResponse.json({
-      success: true,
-      preferences,
-    });
+    return NextResponse.json(createAPIResponse(true, preferences, undefined, 'Preferences reset successfully'));
   } catch (error) {
-    console.error('Error resetting preferences:', error);
+    logger.error('Error resetting preferences:', error);
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        createAPIResponse(false, null, 'Invalid request data', 'Please check your input and try again'),
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Failed to reset preferences' },
+      createAPIResponse(false, null, 'Failed to reset preferences'),
       { status: 500 }
     );
   }
 }
+
+export const PUT = withAuthSecurity(handlePUT);

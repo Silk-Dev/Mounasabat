@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { logger } from '../../../../lib/production-logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error subscribing to push notifications:', error);
+    logger.error('Error subscribing to push notifications:', error);
     return NextResponse.json(
       { error: 'Failed to subscribe to push notifications' },
       { status: 500 }

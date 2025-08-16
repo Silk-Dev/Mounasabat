@@ -11,6 +11,7 @@ import {
   Star,
   Calendar
 } from 'lucide-react';
+import { logger } from '@/lib/production-logger';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Button } from '@/components/ui';
 import type { SearchFilters } from '@/types';
@@ -55,7 +56,7 @@ export const SearchInitialState: React.FC<{ className?: string }> = ({ className
               className="text-xs"
               onClick={() => {
                 // This would trigger a search - implementation depends on parent component
-                console.log(`Search for: ${term}`);
+                logger.info(`Search for: ${term}`);
               }}
             >
               {term}

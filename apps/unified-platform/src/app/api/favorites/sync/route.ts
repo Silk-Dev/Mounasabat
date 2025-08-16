@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@/../../packages/database/src/generated/client';
+import { logger } from '../../../../lib/production-logger';
 
 const prisma = new PrismaClient();
 
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
 
         syncedFavorites.push(favorite);
       } catch (error) {
-        console.error(`Failed to sync favorite ${favoriteKey}:`, error);
+        logger.error(`Failed to sync favorite ${favoriteKey}:`, error);
         // Continue with other favorites
       }
     }
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
       message: `Synced ${syncedFavorites.length} favorites`,
     });
   } catch (error) {
-    console.error('Error syncing favorites:', error);
+    logger.error('Error syncing favorites:', error);
     return NextResponse.json(
       { error: 'Failed to sync favorites' },
       { status: 500 }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePerformanceMonitor } from '@/lib/performance-monitor';
+import { logger } from '@/lib/production-logger';
 
 interface PerformanceMetrics {
   total: number;
@@ -61,7 +62,7 @@ export default function PerformanceDashboard() {
         setServerMetrics(data);
       }
     } catch (error) {
-      console.error('Error fetching performance metrics:', error);
+      logger.error('Error fetching performance metrics:', error);
     } finally {
       setLoading(false);
     }

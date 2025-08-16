@@ -19,6 +19,7 @@ import {
   Plus
 } from 'lucide-react';
 import Link from 'next/link';
+import { logger } from '@/lib/production-logger';
 
 interface DashboardMetrics {
   totalBookings: number;
@@ -82,7 +83,7 @@ export default function ProviderDashboardPage() {
         throw new Error(data.error || 'Failed to fetch metrics');
       }
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      logger.error('Error fetching dashboard data:', error);
       setError(error instanceof Error ? error.message : 'Failed to load dashboard data');
     } finally {
       setLoading(false);

@@ -1,5 +1,6 @@
 import "@mounasabet/ui/styles.css";
 import { AuthProvider, createAuthClient } from "better-auth/react";
+import { Toaster } from "@mounasabet/ui";
 
 const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:3000/api/auth",
@@ -13,7 +14,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuthProvider client={authClient}>{children}</AuthProvider>
+        <AuthProvider client={authClient}>
+          {children}
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

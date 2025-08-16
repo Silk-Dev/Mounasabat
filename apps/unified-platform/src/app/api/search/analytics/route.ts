@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SearchAnalytics } from '@/lib/search-analytics';
+import { logger } from '../../../../lib/production-logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -72,7 +73,7 @@ export async function GET(request: NextRequest) {
         );
     }
   } catch (error) {
-    console.error('Search analytics API error:', error);
+    logger.error('Search analytics API error:', error);
     
     return NextResponse.json(
       {
@@ -112,7 +113,7 @@ export async function POST(request: NextRequest) {
         );
     }
   } catch (error) {
-    console.error('Search analytics API error:', error);
+    logger.error('Search analytics API error:', error);
     
     return NextResponse.json(
       {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { notificationService } from '@/lib/notification-service';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
+import { logger } from '../../../../../lib/production-logger';
 
 export async function PUT(
   request: NextRequest,
@@ -17,7 +18,7 @@ export async function PUT(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error marking notification as read:', error);
+    logger.error('Error marking notification as read:', error);
     return NextResponse.json(
       { error: 'Failed to mark notification as read' },
       { status: 500 }

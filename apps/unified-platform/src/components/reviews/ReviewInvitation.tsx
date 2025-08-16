@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, Button, Alert, AlertDescription } from '@/components/ui';
 import { Star, Calendar, MapPin, User } from 'lucide-react';
 import ReviewForm from './ReviewForm';
+import { logger } from '@/lib/production-logger';
 
 interface ReviewInvitationProps {
   booking: {
@@ -64,7 +65,7 @@ const ReviewInvitation: React.FC<ReviewInvitationProps> = ({
         onReviewSubmitted();
       }
     } catch (error) {
-      console.error('Error submitting review:', error);
+      logger.error('Error submitting review:', error);
       throw error;
     } finally {
       setIsSubmitting(false);

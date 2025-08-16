@@ -5,6 +5,7 @@ import { Card } from '@/components/ui';
 import { Button } from '@/components/ui';
 import { Loader2 } from 'lucide-react';
 import type { SearchFilters } from '@/types';
+import { logger } from '@/lib/production-logger';
 
 interface Category {
   id: string;
@@ -53,7 +54,7 @@ export default function CategoryBrowser({
           
         setCategories(loadedCategories);
       } catch (error) {
-        console.error('Failed to load categories:', error);
+        logger.error('Failed to load categories:', error);
         setError(error instanceof Error ? error.message : 'Failed to load categories');
         setCategories([]);
       } finally {

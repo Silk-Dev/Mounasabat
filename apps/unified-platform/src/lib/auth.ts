@@ -1,5 +1,6 @@
 // Authentication utilities for the unified platform
 import { betterAuth } from 'better-auth';
+import { logger } from './production-logger';
 
 export const auth = betterAuth({
   secret: process.env.AUTH_SECRET || 'your-secret-key-change-in-production',
@@ -63,7 +64,7 @@ export async function getSession(request?: Request): Promise<Session | null> {
       },
     };
   } catch (error) {
-    console.error('Error getting session:', error);
+    logger.error('Error getting session:', error);
     return null;
   }
 }
