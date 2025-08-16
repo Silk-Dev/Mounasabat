@@ -2,7 +2,7 @@ import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals
 import * as Sentry from '@sentry/nextjs';
 import { SentryEnhancedConfig, sentryConfig } from '../lib/sentry-config';
 import { SentryDashboardService, sentryDashboard } from '../lib/sentry-dashboard';
-import { logger } from '../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 
 // Mock Sentry
 jest.mock('@sentry/nextjs', () => ({

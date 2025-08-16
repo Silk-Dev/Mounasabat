@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CSRFProtection } from '@/lib/security';
 import { auditLogger, AuditEventType } from '@/lib/audit-logger';
-import { logger } from '../../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 
 // Generate CSRF token
 export async function GET(request: NextRequest) {

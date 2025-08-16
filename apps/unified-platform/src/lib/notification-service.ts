@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { EmailService } from '@mounasabet/notifications';
-import { NotificationType } from '@prisma/client';
+import { NotificationType } from '@/generated/client';
 import { logger } from './production-logger';
 
 export interface CreateNotificationData {

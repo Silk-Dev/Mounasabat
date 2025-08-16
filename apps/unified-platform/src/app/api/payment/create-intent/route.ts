@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { z } from 'zod';
-import { logger } from '../../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 import { withApiMiddleware, withAuth } from '@/lib/api-middleware';
 import { ApiResponseBuilder } from '@/lib/api-response';
 import { validateRequiredFields } from '@/lib/api-response';

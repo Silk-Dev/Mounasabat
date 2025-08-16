@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SearchOptimizer } from '@/lib/search';
 import { SearchAnalytics } from '@/lib/search-analytics';
-import { logger } from '../../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 
 export async function GET(request: NextRequest) {
     try {

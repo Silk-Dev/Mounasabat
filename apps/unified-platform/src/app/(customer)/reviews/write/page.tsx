@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ReviewForm } from '@/components/reviews';
 import { Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';

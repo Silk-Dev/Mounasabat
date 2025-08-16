@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { logger } from '../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 
 interface CSRFTokenData {
   token: string;

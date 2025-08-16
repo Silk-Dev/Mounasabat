@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { notificationService } from '@/lib/notification-service';
+// import { notificationService } from '@/lib/notification-service';
 import { auth } from '@/lib/auth';
-import { logger } from '../../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 
 export async function PUT(request: NextRequest) {
   try {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { logger } from '../../../../../lib/production-logger';
-import { PDFGenerationService, type InvoiceData } from '../../../../../lib/pdf-generation-puppeteer';
+import { logger } from '@/lib/production-logger';
+import { PDFGenerationService, type InvoiceData } from '@/lib/pdf-generation-puppeteer';
 
 export async function GET(
   request: NextRequest,

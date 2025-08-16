@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { format, addDays, startOfDay, endOfDay } from 'date-fns';
-import { logger } from '../../../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 
 export async function GET(
   request: NextRequest,

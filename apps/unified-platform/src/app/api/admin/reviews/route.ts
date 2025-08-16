@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { logger } from '../../../../lib/production-logger';
+import { PrismaClient } from '@/generated/client';
+import { logger } from '@/lib/production-logger';
 import { getSession } from '@/lib/auth';
 import { auditLogger, AuditEventType, AuditLogLevel } from '@/lib/audit-logger';
 

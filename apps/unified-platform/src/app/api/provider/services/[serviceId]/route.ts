@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
-import { logger } from '../../../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 
 const updateServiceSchema = z.object({
   name: z.string().min(1, 'Service name is required').optional(),

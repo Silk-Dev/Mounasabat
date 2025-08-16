@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/../../packages/database/src/generated/client';
-import { logger } from '../../../../lib/production-logger';
+import { PrismaClient } from '@/generated/client';
+import { logger } from '@/lib/production-logger';
 import { withPublicSecurity, withAuthSecurity, createAPIResponse, sanitizeRequestBody } from '@/lib/api-security-middleware';
 import { z } from 'zod';
 import { InputSanitizer } from '@/lib/security';

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { logger } from '../../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 
 // Store performance metrics
 export async function POST(request: NextRequest) {

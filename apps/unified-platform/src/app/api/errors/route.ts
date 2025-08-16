@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-import { logger } from '../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 
 const ErrorLogSchema = z.object({
   id: z.string(),

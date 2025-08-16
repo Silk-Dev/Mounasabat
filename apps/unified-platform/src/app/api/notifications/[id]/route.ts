@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { notificationService } from '@/lib/notification-service';
+// import { notificationService } from '@/lib/notification-service';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
-import { logger } from '../../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 
 export async function DELETE(
   request: NextRequest,

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/../../packages/database/src/generated/client';
-import { logger } from '../../../../../lib/production-logger';
+import { PrismaClient } from '@/generated/client';
+import { logger } from '@/lib/production-logger';
 
 const prisma = new PrismaClient();
 

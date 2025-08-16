@@ -21,7 +21,7 @@ module.exports = async () => {
     
     // Run database migrations for test environment
     execSync('npx prisma migrate deploy', {
-      cwd: path.join(__dirname, '../../../..', 'packages/database'),
+      cwd: path.join(__dirname),
       stdio: 'inherit',
       env: {
         ...process.env,
@@ -32,7 +32,7 @@ module.exports = async () => {
     // Run base seed only (no demo data for real data tests)
     console.log('🌱 Seeding base data...');
     execSync('npx prisma db seed -- --base-only', {
-      cwd: path.join(__dirname, '../../../..', 'packages/database'),
+      cwd: path.join(__dirname),
       stdio: 'inherit',
       env: {
         ...process.env,

@@ -3,7 +3,7 @@
  * Monitors empty states, missing data, and data integrity
  */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/generated/client';
 import { isMonitoringEnabled } from '../../../../../deployment.config';
 import { logger } from '../production-logger';
 

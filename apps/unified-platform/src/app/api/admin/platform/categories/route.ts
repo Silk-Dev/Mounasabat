@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import { getSession } from '@/lib/auth';
-import { logger } from '../../../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 
 // Get all service categories with statistics
 export async function GET(request: NextRequest) {

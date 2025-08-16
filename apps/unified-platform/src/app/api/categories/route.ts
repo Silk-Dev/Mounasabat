@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { CategoryService } from '@/lib/categories';
-import { logger } from '../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 import { withApiMiddleware } from '@/lib/api-middleware';
 import { ApiResponseBuilder } from '@/lib/api-response';
 
@@ -105,8 +105,15 @@ async function handleGET(request: NextRequest) {
   }, 'Categories retrieved successfully');
 }
 
-// Export wrapped handler with proper error handling
-export const GET = withApiMiddleware(handleGET, {
-  component: 'categories_api',
-  logRequests: true,
-});
+// GET /api/categories - Get all categories
+export async function GET(request: NextRequest) {
+  try {
+    return await handleGET(request);
+  } catch (error) {
+    logger.error('Error in categories GET:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch categories' },
+      { status: 500 }
+    );
+  }
+}

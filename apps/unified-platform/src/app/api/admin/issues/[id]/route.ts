@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import { getSession } from '@/lib/auth';
-import { logger } from '../../../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 import { auditLogger, AuditEventType, AuditLogLevel } from '@/lib/audit-logger';
 
 export async function GET(

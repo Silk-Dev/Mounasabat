@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth';
 import { auditLogger, AuditEventType, AuditLogLevel } from '@/lib/audit-logger';
 import { withRateLimit } from '@/lib/rate-limiter';
 import { z } from 'zod';
-import { logger } from '../../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 
 // Validation schema for audit log queries
 const auditLogQuerySchema = z.object({

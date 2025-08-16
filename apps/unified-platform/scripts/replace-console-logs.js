@@ -75,7 +75,7 @@ function hasConsoleStatements(content) {
 function addLoggerImport(content, filePath) {
   // Check if logger import already exists
   if (content.includes("from '@/lib/production-logger'") || 
-      content.includes("from '../lib/production-logger'") ||
+      content.includes("from '@/lib/production-logger'") ||
       content.includes("from './production-logger'")) {
     return content;
   }

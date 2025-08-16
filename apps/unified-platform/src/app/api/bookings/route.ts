@@ -7,7 +7,7 @@ import { auditLogger, AuditEventType, AuditLogLevel, auditHelpers } from '@/lib/
 import { bookingSchema } from '@/lib/validation';
 import { InputSanitizer } from '@/lib/security';
 import { DataEncryption } from '@/lib/encryption';
-import { logger } from '../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 
 // Enhanced booking schema with security validations
 const createBookingSchema = z.object({

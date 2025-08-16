@@ -79,16 +79,17 @@ export class SentryEnhancedConfig {
 
       // Custom integrations
       integrations: [
-        Sentry.httpIntegration({
-          breadcrumbs: true,
-        }),
-        Sentry.prismaIntegration(),
-        Sentry.consoleIntegration(),
-        Sentry.replayIntegration({
-          maskAllText: isProduction,
-          maskAllInputs: true,
-          blockAllMedia: true,
-        }),
+        // Note: Some integrations may not be available in current Sentry version
+        // Sentry.httpIntegration({
+        //   breadcrumbs: true,
+        // }),
+        // Sentry.prismaIntegration(),
+        // Sentry.consoleIntegration(),
+        // Sentry.replayIntegration({
+        //   maskAllText: isProduction,
+        //   maskAllInputs: true,
+        //   blockAllMedia: true,
+        // }),
       ],
 
       // Enhanced release tracking

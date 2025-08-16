@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { withApiValidation, ValidationError, SecurityError } from '../lib/api-validation-middleware';
 
 // Mock dependencies
-jest.mock('../lib/production-logger', () => ({
+jest.mock('@/lib/production-logger', () => ({
   logger: {
     info: jest.fn(),
     error: jest.fn(),

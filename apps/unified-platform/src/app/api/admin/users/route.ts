@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
 import { getSession } from '@/lib/auth';
-import { logger } from '../../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 import { withAdminAuth } from '@/lib/api-middleware';
 import { ApiResponseBuilder } from '@/lib/api-response';
 
@@ -107,7 +107,21 @@ async function handleGET(request: NextRequest) {
   }, 'Users retrieved successfully');
 }
 
-// Export wrapped handler with admin authentication
-export const GET = withAdminAuth(handleGET, {
-  component: 'admin_users_api',
-});
+// GET /api/admin/users - Get all users with admin authentication
+export async function GET(request: NextRequest) {
+  try {
+    const session = await getSession(request);
+
+    if (!session?.user || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    return await handleGET(request);
+  } catch (error) {
+    logger.error('Error in admin users GET:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch users' },
+      { status: 500 }
+    );
+  }
+}

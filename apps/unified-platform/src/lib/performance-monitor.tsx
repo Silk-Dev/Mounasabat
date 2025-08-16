@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Performance monitoring utilities
 export class PerformanceMonitor {
@@ -228,8 +228,6 @@ export class PerformanceMonitor {
 }
 
 // React hook for performance monitoring
-import { useEffect, useState } from 'react';
-
 export function usePerformanceMonitor() {
   const [monitor] = useState(() => PerformanceMonitor.getInstance());
   const [metrics, setMetrics] = useState<any>({});

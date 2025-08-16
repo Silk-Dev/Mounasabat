@@ -4,10 +4,10 @@ import { logger } from '../../../../../../lib/production-logger';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { messageId: string } }
+  { params }: { params: Promise<{ messageId: string }> }
 ) {
   try {
-    const { messageId } = params;
+    const { messageId } = await params;
 
     // Mark message as read
     await prisma.chatMessage.update({

@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { logger } from '../../../../lib/production-logger';
+import { PrismaClient } from '@/generated/client';
+import { logger } from '@/lib/production-logger';
 
 const prisma = new PrismaClient();
 
 // GET /api/reviews/[id] - Get a specific review
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const review = await prisma.review.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: {
@@ -58,7 +59,7 @@ export async function GET(
 // PUT /api/reviews/[id] - Update a review
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json();
@@ -142,7 +143,7 @@ export async function PUT(
 // DELETE /api/reviews/[id] - Delete a review
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { searchParams } = new URL(request.url);

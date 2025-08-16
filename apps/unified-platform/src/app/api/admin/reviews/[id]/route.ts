@@ -1,23 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { logger } from '../../../../../lib/production-logger';
+import { PrismaClient } from '@/generated/client';
+import { logger } from '@/lib/production-logger';
 import { getSession } from '@/lib/auth';
 import { auditLogger, AuditEventType, AuditLogLevel } from '@/lib/audit-logger';
+import { id } from 'date-fns/locale';
 
 const prisma = new PrismaClient();
 
 // PUT /api/admin/reviews/[id] - Admin update review
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getSession(request);
 
     if (!session?.user || session.user.role !== 'admin') {
       await auditLogger.logFromRequest(request, {
         level: AuditLogLevel.WARNING,
-        eventType: AuditEventType.unauthorized_access,
+        eventType: AuditEventType.UNAUTHORIZED_ACCESS,
         userId: session?.user?.id,
         action: 'moderate_review',
         description: 'Unauthorized attempt to moderate review',
@@ -30,7 +32,7 @@ export async function PUT(
     const { action, reason, isVerified } = body;
 
     const review = await prisma.review.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: { id: true, name: true, email: true },
@@ -44,10 +46,10 @@ export async function PUT(
     if (!review) {
       await auditLogger.logFromRequest(request, {
         level: AuditLogLevel.WARNING,
-        eventType: AuditEventType.admin_action,
+        eventType: AuditEventType.ADMIN_ACTION,
         userId: session.user.id,
         userRole: 'admin',
-        targetResourceId: params.id,
+        targetResourceId: id,
         targetResourceType: 'review',
         action: 'moderate_review',
         description: 'Attempted to moderate non-existent review',
@@ -89,7 +91,7 @@ export async function PUT(
     }
 
     const updatedReview = await prisma.review.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         user: {
@@ -118,7 +120,7 @@ export async function PUT(
     // Log the review moderation action
     await auditLogger.logFromRequest(request, {
       level: AuditLogLevel.INFO,
-      eventType: AuditEventType.admin_action,
+      eventType: AuditEventType.ADMIN_ACTION,
       userId: session.user.id,
       userRole: 'admin',
       targetUserId: review.userId,
@@ -149,10 +151,10 @@ export async function PUT(
     const session = await getSession(request);
     await auditLogger.logFromRequest(request, {
       level: AuditLogLevel.ERROR,
-      eventType: AuditEventType.admin_action,
+      eventType: AuditEventType.ADMIN_ACTION,
       userId: session?.user?.id,
       userRole: 'admin',
-      targetResourceId: params.id,
+      targetResourceId: id,
       targetResourceType: 'review',
       action: 'moderate_review',
       description: 'Failed to moderate review due to system error',
@@ -170,15 +172,16 @@ export async function PUT(
 // DELETE /api/admin/reviews/[id] - Admin delete review
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getSession(request);
 
     if (!session?.user || session.user.role !== 'admin') {
       await auditLogger.logFromRequest(request, {
         level: AuditLogLevel.WARNING,
-        eventType: AuditEventType.unauthorized_access,
+        eventType: AuditEventType.UNAUTHORIZED_ACCESS,
         userId: session?.user?.id,
         action: 'delete_review',
         description: 'Unauthorized attempt to delete review',
@@ -191,7 +194,7 @@ export async function DELETE(
     const reason = searchParams.get('reason');
 
     const review = await prisma.review.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: { id: true, name: true, email: true },
@@ -205,10 +208,10 @@ export async function DELETE(
     if (!review) {
       await auditLogger.logFromRequest(request, {
         level: AuditLogLevel.WARNING,
-        eventType: AuditEventType.admin_action,
+        eventType: AuditEventType.ADMIN_ACTION,
         userId: session.user.id,
         userRole: 'admin',
-        targetResourceId: params.id,
+        targetResourceId: id,
         targetResourceType: 'review',
         action: 'delete_review',
         description: 'Attempted to delete non-existent review',
@@ -232,7 +235,7 @@ export async function DELETE(
     // Log the deletion with audit trail
     await auditLogger.logFromRequest(request, {
       level: AuditLogLevel.INFO,
-      eventType: AuditEventType.admin_action,
+      eventType: AuditEventType.ADMIN_ACTION,
       userId: session.user.id,
       userRole: 'admin',
       targetUserId: review.userId,
@@ -265,10 +268,10 @@ export async function DELETE(
     const session = await getSession(request);
     await auditLogger.logFromRequest(request, {
       level: AuditLogLevel.ERROR,
-      eventType: AuditEventType.admin_action,
+      eventType: AuditEventType.ADMIN_ACTION,
       userId: session?.user?.id,
       userRole: 'admin',
-      targetResourceId: params.id,
+      targetResourceId: id,
       targetResourceType: 'review',
       action: 'delete_review',
       description: 'Failed to delete review due to system error',

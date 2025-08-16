@@ -3,7 +3,7 @@ import { validateSearchFilters, searchWithMonitoring, SearchOptions } from '@/li
 import { SearchAnalytics } from '@/lib/search-analytics';
 import type { SearchFilters } from '@/types';
 import { auth } from '@/lib/auth';
-import { logger } from '../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 import { withApiMiddleware } from '@/lib/api-middleware';
 import { ApiResponseBuilder } from '@/lib/api-response';
 

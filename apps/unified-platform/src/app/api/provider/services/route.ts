@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
-import { logger } from '../../../../lib/production-logger';
+import { logger } from '@/lib/production-logger';
 import { withProviderSecurity, withPublicSecurity, createAPIResponse, sanitizeRequestBody } from '@/lib/api-security-middleware';
 import { InputSanitizer } from '@/lib/security';
 
