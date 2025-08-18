@@ -41,6 +41,7 @@
     "perf:test": "npm run test:performance"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.2.1",
     "@prisma/client": "5.8.0",
     "@radix-ui/react-accordion": "^1.2.11",
@@ -80,6 +81,7 @@
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.23.5",
+    "gsap": "^3.13.0",
     "input-otp": "^1.4.2",
     "ioredis": "^5.4.1",
     "isomorphic-dompurify": "^2.26.0",
@@ -88,6 +90,7 @@
     "next-themes": "^0.4.6",
     "puppeteer": "^24.16.1",
     "react": "^19.1.0",
+    "react-date-range": "^2.0.1",
     "react-day-picker": "^9.8.1",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.62.0",
@@ -97,6 +100,7 @@
     "socket.io-client": "^4.8.1",
     "sonner": "^2.0.7",
     "stripe": "^14.24.0",
+    "swiper": "^11.2.10",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2",

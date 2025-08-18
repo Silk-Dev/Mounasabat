@@ -4,20 +4,10 @@ import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { 
-  MagnifyingGlassIcon, 
   ChevronDownIcon,
   BuildingOfficeIcon,
   WrenchScrewdriverIcon,
-  UserGroupIcon,
-  CakeIcon,
-  CameraIcon,
-  HeartIcon,
-  MusicalNoteIcon,
-  PaintBrushIcon,
-  ArrowRightIcon,
-  MapPinIcon,
-  CalendarIcon
-} from "@heroicons/react/24/outline";
+  UserGroupIcon} from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 export default function Header() {
