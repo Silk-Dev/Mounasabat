@@ -14,13 +14,26 @@
   },
   "devDependencies": {
     "@mounasabet/eslint-config": "*",
+    "@types/react-date-range": "^1.4.10",
     "eslint": "^8.57.0",
     "prettier": "^3.3.2",
     "turbo": "^2.0.4"
   },
   "dependencies": {
-    "framer-motion": "^12.23.5",
+    "@heroicons/react": "^2.2.0",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.11",
+    "gsap": "^3.13.0",
     "lucide-react": "^0.525.0",
-    "react-icons": "^5.5.0"
+    "ogl": "^1.0.11",
+    "react-countup": "^6.5.3",
+    "react-date-range": "^2.0.1",
+    "react-datepicker": "^8.4.0",
+    "react-icons": "^5.5.0",
+    "react-intersection-observer": "^9.16.0",
+    "react-scroll-parallax": "^3.4.5",
+    "react-select": "^5.10.2",
+    "react-tilt": "^1.0.2",
+    "swiper": "^11.2.10"
   }
 }
