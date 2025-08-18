@@ -23,6 +23,11 @@ import Link from "next/link";
 export default function Header() {
   const pathname = usePathname();
   const isAboutPage = pathname === "/a-propos";
+  const isSearchPage = [
+    '/recherche/etablissement',
+    '/recherche/materiel',
+    '/recherche/service'
+  ].some(route => pathname.startsWith(route));
 
   const [scrolled, setScrolled] = useState(false);
   const [showEventMenu, setShowEventMenu] = useState(false);
@@ -38,6 +43,8 @@ export default function Header() {
 
   // Close menu when clicking outside
   useEffect(() => {
+    if (typeof document === 'undefined') return;
+    
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
       const menuElement = document.querySelector('.event-menu-dropdown');
@@ -62,6 +69,9 @@ export default function Header() {
 
   // Handle scroll with throttling for better performance
   useEffect(() => {
+    // Vérifier si on est côté client avant d'accéder à window
+    if (typeof window === 'undefined') return;
+    
     let lastScrollY = window.scrollY;
     let ticking = false;
 
@@ -86,10 +96,12 @@ export default function Header() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [scrolled]); // Added scrolled back to dependency array
+  }, [scrolled]);
 
   // Close search dropdown when clicking outside
   useEffect(() => {
+    if (typeof document === 'undefined') return;
+    
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setShowSearchDropdown(false);
@@ -108,7 +120,9 @@ export default function Header() {
         fixed top-0 left-0 w-full z-50 transition-all duration-300
         ${scrolled 
           ? "bg-white/30 backdrop-blur-sm shadow-sm text-[#222]" 
-          : "bg-transparent text-white"
+          : isSearchPage 
+            ? "bg-transparent text-[#222]"
+            : "bg-transparent text-white"
         }
       `}
     >
@@ -123,8 +137,8 @@ export default function Header() {
               onClick={toggleEventMenu}
               className="event-menu-button hover:text-[#1CCFC9] transition flex items-center bg-transparent border-none cursor-pointer text-current"
             >
-              Organiser un événement ▼
-            </button>
+              Organiser un événement <ChevronDownIcon className="w-4 h-4 ml-1" />
+            </button> 
             <div 
               className={`event-menu-dropdown absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md transition-all duration-200 ${
                 showEventMenu ? 'opacity-100 visible' : 'opacity-0 invisible'
@@ -173,7 +187,7 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <a
             href="/connexion"
-            className="inline-flex items-center justify-center bg-[#F45B5B] text-white px-8 py-4 rounded-full font-semibold hover:bg-[#d63d3d] transition-colors text-lg"
+            className="inline-flex items-center justify-center bg-[#F45B5B] text-white px-7 py-3 rounded-full font-medium hover:bg-[#d63d3d] transition-colors text-[15px] tracking-wide"
           >
             Connexion
           </a>

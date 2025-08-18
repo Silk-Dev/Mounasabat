@@ -3,46 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
-
-function RechercheHeader() {
-  return (
-    <header className="bg-[#3A3A3A] fixed top-0 left-0 w-full z-50">
-      <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-2">
-          <Link href="/">
-            <img src="/logoo.png" alt="Monasabet Logo" className="h-16 w-auto cursor-pointer" />
-          </Link>
-        </div>
-        <ul className="flex gap-8 text-base font-semibold text-white mb-2 md:mb-0">
-          <li>
-            <a href="/" className="hover:text-[#1CCFC9] transition">Accueil</a>
-          </li>
-          <li className="relative group">
-            <a href="#" className="hover:text-[#1CCFC9] transition flex items-center">
-              Organiser un événement ▼
-            </a>
-            <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
-              <a href="/lieux" className="block px-4 py-2 text-[#3A3A3A] hover:bg-[#1CCFC9] hover:text-white">Lieux de réception</a>
-              <a href="/prestataires" className="block px-4 py-2 text-[#3A3A3A] hover:bg-[#1CCFC9] hover:text-white">Prestataires de services</a>
-            </div>
-          </li>
-          <li>
-            <a href="/idees-conseils" className="hover:text-[#1CCFC9] transition">Idées & Conseils</a>
-          </li>
-          <li>
-            <a href="/a-propos" className="hover:text-[#1CCFC9] transition">À propos</a>
-          </li>
-          <li>
-            <a href="/contact" className="hover:text-[#1CCFC9] transition">Contact</a>
-          </li>
-        </ul>
-        <a href="/connexion" className="ml-4 flex items-center gap-2 bg-[#F45B5B] text-white px-6 py-4 rounded-full font-bold shadow hover:bg-[#d63d3d] transition">
-          Connexion
-        </a>
-      </nav>
-    </header>
-  );
-}
+import Header from "@/app/components/Header";
 
 interface Materiel {
   nom: string;
@@ -51,7 +12,7 @@ interface Materiel {
   note: number;
   prix: string;
   description: string;
-  evenement: string; // Added evenement field
+  evenement: string;
 }
 
 function CarteMateriel({ m }: { m: Materiel }) {
@@ -82,7 +43,7 @@ function CarteMateriel({ m }: { m: Materiel }) {
           </div>
         </div>
         <div className="flex justify-end mt-2">
-          <button className="bg-[#1BA3A9] text-white px-5 py-2 rounded hover:bg-[#148b8f] transition font-semibold">
+          <button className="bg-[#F16462] text-white px-5 py-2 rounded hover:bg-[#e04e4c] transition font-semibold">
             Voir le profil
           </button>
         </div>
@@ -99,7 +60,7 @@ const mockMateriels: Materiel[] = [
     prix: "500 TND",
     image: "/tente.jpg",
     description: "Grande tente pour événements extérieurs, résistante et élégante.",
-    evenement: "mariage", // Added evenement field
+    evenement: "mariage",
   },
   {
     nom: "Sonorisation Pro",
@@ -108,7 +69,7 @@ const mockMateriels: Materiel[] = [
     prix: "800 TND",
     image: "/sound.jpg",
     description: "Pack complet sono et lumières pour vos soirées et mariages.",
-    evenement: "mariage", // Added evenement field
+    evenement: "mariage",
   },
   {
     nom: "Voiture de mariage",
@@ -117,7 +78,7 @@ const mockMateriels: Materiel[] = [
     prix: "1200 TND",
     image: "/voiture.jpg",
     description: "Voiture de luxe avec chauffeur pour un mariage inoubliable.",
-    evenement: "mariage", // Added evenement field
+    evenement: "mariage",
   },
   {
     nom: "Tables & Chaises",
@@ -126,7 +87,7 @@ const mockMateriels: Materiel[] = [
     prix: "300 TND",
     image: "/tables.jpg",
     description: "Location de tables et chaises pour tous types d'événements.",
-    evenement: "mariage", // Added evenement field
+    evenement: "mariage",
   },
 ];
 
@@ -140,7 +101,7 @@ export default function MaterielPage() {
 
   return (
     <div className="bg-white min-h-screen text-[#3A3A3A]">
-      <RechercheHeader />
+      <Header />
       <div className="bg-white pt-24 pb-8">
         <div className="max-w-6xl mx-auto px-6">
           <div className="max-w-4xl mx-auto">
@@ -179,7 +140,7 @@ export default function MaterielPage() {
                 />
                 <button
                   type="submit"
-                  className="bg-[#1BA3A9] text-white font-bold px-6 py-3 rounded hover:bg-[#148b8f] transition"
+                  className="bg-[#F16462] text-white font-bold px-6 py-3 rounded hover:bg-[#e04e4c] transition"
                 >
                   Rechercher
                 </button>

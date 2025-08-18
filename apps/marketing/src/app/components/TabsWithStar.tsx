@@ -21,7 +21,7 @@ export default function TabsWithStar({
           {categories.map((cat, idx) => (
             <div key={cat} className="flex flex-col items-center">
               <button
-                className={`px-6 py-2 font-bold text-[20px] leading-tight ${selected === idx ? "text-[#8B2C3B] bg-blue-100" : "text-[#8B2C3B] bg-white"} border border-[#8B2C3B] rounded-t-xl rounded-b-none shadow-sm transition-colors duration-200 focus:outline-none`}
+                className={`px-6 py-2 font-bold text-[20px] leading-tight ${selected === idx ? "text-white bg-[#F16462]" : "text-[#8B2C3B] bg-white"} border border-[#8B2C3B] rounded-t-xl rounded-b-none shadow-sm transition-colors duration-200 focus:outline-none`}
                 style={{
                   borderBottomLeftRadius: 0,
                   borderBottomRightRadius: 0,

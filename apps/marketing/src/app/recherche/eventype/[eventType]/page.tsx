@@ -356,7 +356,7 @@ export default function Page({ params }: { params: any }) {
                     </div>
                   </div>
                   <div className="flex justify-end mt-2">
-                    <button className="bg-[#1BA3A9] text-white px-5 py-2 rounded hover:bg-[#148b8f] transition font-semibold">
+                    <button className="bg-[#F16462] text-white px-5 py-2 rounded hover:bg-[#e04e4c] transition font-semibold">
                       Voir le profil
                     </button>
                   </div>

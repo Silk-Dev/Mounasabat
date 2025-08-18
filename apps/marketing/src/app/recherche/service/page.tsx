@@ -1,290 +1,453 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
-
-function RechercheHeader() {
-  return (
-    <header className="bg-[#3A3A3A] fixed top-0 left-0 w-full z-50">
-      <nav className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-2">
-          <Link href="/">
-            <img src="/logoo.png" alt="Monasabet Logo" className="h-16 w-auto cursor-pointer" />
-          </Link>
-        </div>
-        <ul className="flex gap-8 text-base font-semibold text-white mb-2 md:mb-0">
-          <li>
-            <a href="/" className="hover:text-[#1CCFC9] transition">Accueil</a>
-          </li>
-          <li className="relative group">
-            <a href="#" className="hover:text-[#1CCFC9] transition flex items-center">
-              Organiser un événement ▼
-            </a>
-            <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
-              <a href="/lieux" className="block px-4 py-2 text-[#3A3A3A] hover:bg-[#1CCFC9] hover:text-white">Lieux de réception</a>
-              <a href="/prestataires" className="block px-4 py-2 text-[#3A3A3A] hover:bg-[#1CCFC9] hover:text-white">Prestataires de services</a>
-            </div>
-          </li>
-          <li>
-            <a href="/idees-conseils" className="hover:text-[#1CCFC9] transition">Idées & Conseils</a>
-          </li>
-          <li>
-            <a href="/a-propos" className="hover:text-[#1CCFC9] transition">À propos</a>
-          </li>
-          <li>
-            <a href="/contact" className="hover:text-[#1CCFC9] transition">Contact</a>
-          </li>
-        </ul>
-        <a href="/connexion" className="ml-4 flex items-center gap-2 bg-[#F45B5B] text-white px-6 py-4 rounded-full font-bold shadow hover:bg-[#d63d3d] transition">
-          Connexion
-        </a>
-      </nav>
-    </header>
-  );
-}
+import Header from "@/app/components/Header";
 
 interface Service {
+  id: string;
   nom: string;
   image: string;
   type: string;
   note: number;
   prix: string;
+  ville: string;
+  disponible: boolean;
+  categories: string[];
   description: string;
 }
 
-function CarteService({ s }: { s: Service }) {
+function CarteService({ service }: { service: Service }) {
   return (
-    <div className="bg-white rounded-xl shadow flex flex-col md:flex-row w-full min-h-[180px] overflow-hidden">
-      <div className="relative w-full md:w-56 h-40 md:h-auto flex-shrink-0">
+    <div className="flex flex-col rounded-lg overflow-hidden transition-all duration-200 hover:shadow-md">
+      {/* Image */}
+      <div className="relative aspect-[4/3] w-full">
         <Image
-          src={s.image}
-          alt={s.nom}
+          src={service.image}
+          alt={service.nom}
           fill
-          style={{ objectFit: "cover" }}
-          className="md:static md:w-56 md:h-40"
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
       </div>
-      <div className="flex-1 flex flex-col justify-between p-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-bold text-lg">{s.nom}</h3>
-          </div>
-          <div className="text-sm text-gray-600 mb-2">{s.type}</div>
-          <p className="text-sm text-gray-700 mb-2 line-clamp-2">{s.description}</p>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-yellow-400">{"⭐".repeat(Math.round(s.note))}</span>
-            <span className="text-xs text-gray-600">({s.note})</span>
-          </div>
-          <div className="flex items-center gap-4 mb-2">
-            <span className="font-semibold text-base">{s.prix}</span>
-          </div>
-        </div>
-        <div className="flex justify-end mt-2">
-          <button className="bg-[#1BA3A9] text-white px-5 py-2 rounded hover:bg-[#148b8f] transition font-semibold">
-            Voir le profil
-          </button>
-        </div>
+      
+      {/* Service Name */}
+      <div className="p-3">
+        <h3 className="font-medium text-gray-900 text-sm">{service.nom}</h3>
       </div>
     </div>
   );
 }
 
 const mockServices: Service[] = [
+  // Photographes
   {
-    nom: "DJ Animation",
-    type: "DJ / Animation",
+    id: "1",
+    nom: "Studio Photo Créatif",
+    type: "Photographie",
     note: 4.8,
-    prix: "900 TND",
-    image: "/dj.jpg",
-    description: "DJ professionnel pour animer vos soirées et mariages.",
+    prix: "1500 TND",
+    ville: "Tunis",
+    image: "/photographe1.jpg",
+    disponible: true,
+    categories: ["photographe"],
+    description: "Photographe professionnel spécialisé dans les mariages et événements.",
   },
   {
-    nom: "Photographe Pro",
-    type: "Photographe",
+    id: "2",
+    nom: "Momentum Photos",
+    type: "Photographie",
+    note: 4.9,
+    prix: "2500 TND",
+    ville: "Sousse",
+    image: "/Photographes.jpg",
+    disponible: true,
+    categories: ["photographe", "video"],
+    description: "Reportage photo professionnel pour capturer les moments inoubliables de votre mariage.",
+  },
+  
+  // DJ & Musique
+  {
+    id: "3",
+    nom: "DJ Sami",
+    type: "DJ",
     note: 4.7,
-    prix: "1200 TND",
-    image: "/photographer.jpg",
-    description: "Photographe expérimenté pour immortaliser vos événements.",
+    prix: "1800 TND",
+    ville: "Tunis",
+    image: "/dj1.jpg",
+    disponible: true,
+    categories: ["dj", "musique"],
+    description: "Animation musicale moderne avec DJ professionnel et sonorisation complète.",
   },
+  
+  // Traiteurs
   {
-    nom: "Coiffeuse & Maquilleuse",
-    type: "Beauté",
-    note: 4.5,
-    prix: "600 TND",
-    image: "/coiffeuse.jpg",
-    description: "Coiffure et maquillage à domicile pour mariée et invitées.",
-  },
-  {
-    nom: "Traiteur Gourmand",
+    id: "4",
+    nom: "Traiteur Gourmet",
     type: "Traiteur",
     note: 4.6,
-    prix: "2000 TND",
-    image: "/food.jpg",
-    description: "Service traiteur haut de gamme pour tous types d'événements.",
+    prix: "1800 TND",
+    ville: "Hammamet",
+    image: "/Traiteurs.jpg",
+    disponible: true,
+    categories: ["traiteur", "nourriture"],
+    description: "Cuisine raffinée pour vos événements spéciaux. Menus personnalisables.",
   },
+  
+  // Décoration
+  {
+    id: "5",
+    nom: "Fleurs & Décors",
+    type: "Décoration",
+    note: 4.8,
+    prix: "2200 TND",
+    ville: "Tunis",
+    image: "/decoration1.jpg",
+    disponible: true,
+    categories: ["decoration", "fleurs"],
+    description: "Décoration florale et scénographie sur mesure pour votre événement.",
+  },
+  
+  // Salles
+  {
+    id: "6",
+    nom: "Palais des Fêtes",
+    type: "Salle",
+    note: 4.9,
+    prix: "5000 TND",
+    ville: "Sousse",
+    image: "/salle1.jpg",
+    disponible: true,
+    categories: ["salle", "reception"],
+    description: "Magnifique salle de réception avec vue sur la mer pour votre grand jour.",
+  },
+  
+  // Robes de mariée
+  {
+    id: "7",
+    nom: "Rêve de Mariée",
+    type: "Robe",
+    note: 4.9,
+    prix: "3500 TND",
+    ville: "Tunis",
+    image: "/robe1.jpg",
+    disponible: true,
+    categories: ["robe", "mariage"],
+    description: "Collection exclusive de robes de mariée signées par les plus grands créateurs.",
+  },
+  
+  // Costumes
+  {
+    id: "8",
+    nom: "Le Smoking",
+    type: "Costume",
+    note: 4.7,
+    prix: "1200 TND",
+    ville: "Tunis",
+    image: "/costume1.jpg",
+    disponible: true,
+    categories: ["costume", "mariage"],
+    description: "Costumes sur mesure pour le marié et ses témoins.",
+  },
+  
+  // Coiffure
+  {
+    id: "9",
+    nom: "Salon Élégance",
+    type: "Coiffure",
+    note: 4.8,
+    prix: "300 TND",
+    ville: "Sousse",
+    image: "/coiffure1.jpg",
+    disponible: true,
+    categories: ["coiffure", "beaute"],
+    description: "Coiffures de mariage élégantes réalisées par des professionnels.",
+  },
+  
+  // Maquillage
+  {
+    id: "10",
+    nom: "Beauté Pure",
+    type: "Maquillage",
+    note: 4.9,
+    prix: "400 TND",
+    ville: "Tunis",
+    image: "/maquillage1.jpg",
+    disponible: true,
+    categories: ["maquillage", "beaute"],
+    description: "Maquillage professionnel pour une beauté éclatante le jour J.",
+  },
+  
+  // Voitures de luxe
+  {
+    id: "11",
+    nom: "Prestige Cars",
+    type: "Voiture",
+    note: 4.7,
+    prix: "1500 TND",
+    ville: "Hammamet",
+    image: "/voiture1.jpg",
+    disponible: true,
+    categories: ["voiture", "transport"],
+    description: "Location de voitures de luxe pour votre mariage avec chauffeur.",
+  },
+  
+  // Pâtisserie
+  {
+    id: "12",
+    nom: "Délices & Gourmandises",
+    type: "Pâtisserie",
+    note: 5.0,
+    prix: "1200 TND",
+    ville: "Tunis",
+    image: "/patisserie1.jpg",
+    disponible: true,
+    categories: ["patisserie", "traiteur"],
+    description: "Pièces montées et desserts raffinés pour votre réception.",
+  },
+  
+  // Musiciens
+  {
+    id: "13",
+    nom: "Quatuor Classique",
+    type: "Musique",
+    note: 4.9,
+    prix: "2000 TND",
+    ville: "Sousse",
+    image: "/musiciens1.jpg",
+    disponible: true,
+    categories: ["musique", "animation"],
+    description: "Animation musicale classique pour votre cérémonie et cocktail.",
+  },
+  
+  // Vidéastes
+  {
+    id: "14",
+    nom: "Motion Story",
+    type: "Vidéaste",
+    note: 4.8,
+    prix: "2800 TND",
+    ville: "Tunis",
+    image: "/videaste1.jpg",
+    disponible: true,
+    categories: ["video", "photographe"],
+    description: "Film de mariage cinématique pour revivre les émotions de votre journée.",
+  },
+  
+  // Lieux insolites
+  {
+    id: "15",
+    nom: "Le Jardin Secret",
+    type: "Lieu Insolite",
+    note: 4.9,
+    prix: "4500 TND",
+    ville: "Hammamet",
+    image: "/lieu1.jpg",
+    disponible: true,
+    categories: ["salle", "lieu-insolite"],
+    description: "Cadre exceptionnel pour un mariage romantique et intime.",
+  },
+  
+  // Éclairage
+  {
+    id: "16",
+    nom: "Lumière d'Été",
+    type: "Éclairage",
+    note: 4.7,
+    prix: "1800 TND",
+    ville: "Tunis",
+    image: "/eclairage1.jpg",
+    disponible: true,
+    categories: ["eclairage", "decoration"],
+    description: "Mise en lumière professionnelle pour sublimer votre réception.",
+  },
+  
+  // Invitations
+  {
+    id: "17",
+    nom: "Cartes & Co",
+    type: "Invitations",
+    note: 4.8,
+    prix: "800 TND",
+    ville: "Sousse",
+    image: "/invitations1.jpg",
+    disponible: true,
+    categories: ["invitations", "papeterie"],
+    description: "Création sur mesure de vos faire-part et supports de communication.",
+  },
+  
+  // Animation
+  {
+    id: "18",
+    nom: "Show Time",
+    type: "Animation",
+    note: 4.9,
+    prix: "3200 TND",
+    ville: "Tunis",
+    image: "/animation1.jpg",
+    disponible: true,
+    categories: ["animation", "spectacle"],
+    description: "Spectacles et animations pour une soirée inoubliable.",
+  },
+  
+  // Fleuriste
+  {
+    id: "19",
+    nom: "Fleurs d'Exception",
+    type: "Fleuriste",
+    note: 4.8,
+    prix: "1500 TND",
+    ville: "Hammamet",
+    image: "/fleuriste1.jpg",
+    disponible: true,
+    categories: ["fleurs", "decoration"],
+    description: "Compositions florales uniques pour votre mariage.",
+  },
+  
+  // Photobooth
+  {
+    id: "20",
+    nom: "Smile Box",
+    type: "Photobooth",
+    note: 4.7,
+    prix: "1200 TND",
+    ville: "Tunis",
+    image: "/photobooth1.jpg",
+    disponible: true,
+    categories: ["animation", "photo"],
+    description: "Photobooth amusant avec accessoires pour des souvenirs inoubliables.",
+  }
 ];
 
-// --- Composant Établissement ---
-function ContenuEtablissement() {
-  // Copie ici le contenu principal de apps/marketing/src/app/recherche/etablissement/page.tsx
-  // (enlève le header, garde juste la barre de recherche, sidebar, résultats, etc.)
-  return (
-    <div>
-      {/* ...colle ici le JSX de la page établissement, sans le header... */}
-    </div>
-  );
-}
+const types = ["DJ / Animation", "Photographie", "Beauté", "Traiteur", "Décoration"];
+const villes = ["Tunis", "Sousse", "Hammamet", "Sfax", "Djerba"];
+const categories = [
+  "animation",
+  "musique",
+  "photo",
+  "video",
+  "beaute",
+  "coiffure",
+  "traiteur",
+  "nourriture",
+  "decoration",
+  "fleurs",
+];
 
-// --- Composant Matériel ---
-function ContenuMateriel() {
-  // Copie ici le contenu principal de apps/marketing/src/app/recherche/materiel/page.tsx
-  return (
-    <div>
-      {/* ...colle ici le JSX de la page matériel, sans le header... */}
-    </div>
-  );
-}
-
-// --- Composant Service ---
-function ContenuService() {
-  // Copie ici le contenu principal de apps/marketing/src/app/recherche/service/page.tsx
-  return (
-    <div>
-      {/* ...colle ici le JSX de la page service, sans le header... */}
-    </div>
-  );
-}
+const serviceCategories = [
+  { id: 1, name: 'Photographe', emoji: '📸' },
+  { id: 2, name: 'DJ', emoji: '🎧' },
+  { id: 3, name: 'Traiteur', emoji: '🍽️' },
+  { id: 4, name: 'Salle', emoji: '🏛️' },
+  { id: 5, name: 'Décoration', emoji: '🎨' },
+  { id: 6, name: 'Fleuriste', emoji: '🌸' },
+  { id: 7, name: 'Animation', emoji: '🎭' },
+  { id: 8, name: 'Costume', emoji: '👔' },
+  { id: 9, name: 'Robe', emoji: '👰' },
+  { id: 10, name: 'Coiffure', emoji: '💇' },
+  { id: 11, name: 'Maquillage', emoji: '💄' },
+  { id: 12, name: 'Voiture', emoji: '🚗' },
+  { id: 13, name: 'Pâtisserie', emoji: '🍰' },
+  { id: 14, name: 'Musiciens', emoji: '🎻' },
+  { id: 15, name: 'Vidéaste', emoji: '🎥' },
+  { id: 16, name: 'Lieu insolite', emoji: '🏰' },
+  { id: 17, name: 'Éclairage', emoji: '💡' },
+  { id: 18, name: 'Invitations', emoji: '✉️' },
+];
 
 export default function ServicePage() {
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+
+  // Filtrer les services en fonction de la recherche et de la catégorie sélectionnée
+  const filteredServices = mockServices.filter(service => {
+    const matchesSearch = service.nom.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = !selectedCategory || 
+      service.categories.some(cat => 
+        cat.toLowerCase() === serviceCategories.find(c => c.id === selectedCategory)?.name.toLowerCase()
+      );
+    return matchesSearch && matchesCategory;
+  });
 
   return (
-    <div className="bg-white min-h-screen text-[#3A3A3A]">
-      <RechercheHeader />
-      <div className="bg-white pt-24 pb-8">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white shadow-lg rounded-lg p-4 border border-gray-300">
-              <form className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <select className="px-4 py-3 border border-gray-300 rounded focus:ring-2 focus:ring-[#F16462] text-gray-600 placeholder-gray-500">
-                  <option value="" disabled>Type de service</option>
-                  <option value="dj">DJ / Animation</option>
-                  <option value="photo">Photographe</option>
-                  <option value="beaute">Beauté</option>
-                  <option value="traiteur">Traiteur</option>
-                </select>
-                <select className="px-4 py-3 border border-gray-300 rounded focus:ring-2 focus:ring-[#F16462] text-gray-600 placeholder-gray-500">
-                  <option value="" disabled>Prix</option>
-                  <option value="0-500">0-500 TND</option>
-                  <option value="500-1000">500-1000 TND</option>
-                  <option value="1000-2000">1000-2000 TND</option>
-                  <option value="2000+">2000+ TND</option>
-                </select>
-                <input
-                  type="date"
-                  placeholder="jj/mm/aaaa"
-                  className="px-4 py-3 border border-gray-300 rounded focus:ring-2 focus:ring-[#F16462] text-gray-600 placeholder-gray-500"
-                />
-                <button
-                  type="submit"
-                  className="bg-[#1BA3A9] text-white font-bold px-6 py-3 rounded hover:bg-[#148b8f] transition"
-                >
-                  Rechercher
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-white">
+      <Header />
 
-      <div className="flex">
-        {/* Sidebar des filtres */}
-        <div className="w-80 bg-white border-r p-6">
-          <h2 className="text-xl font-bold mb-6 text-[#3A3A3A]">Filtres</h2>
-          {/* Type de service */}
-          <div className="mb-6">
-            <h3 className="font-semibold mb-3 text-[#3A3A3A]">Type de service</h3>
-            <div className="space-y-2">
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                <span className="text-sm text-[#3A3A3A]">DJ / Animation</span>
-              </label>
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                <span className="text-sm text-[#3A3A3A]">Photographe</span>
-              </label>
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                <span className="text-sm text-[#3A3A3A]">Beauté</span>
-              </label>
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                <span className="text-sm text-[#3A3A3A]">Traiteur</span>
-              </label>
+      <main className="container mx-auto px-4 pb-12">
+        {/* Barre de recherche */}
+        <div className="max-w-2xl mx-auto mb-8 px-4">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-7 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </div>
+            <input
+              type="text"
+              placeholder="Rechercher un service..."
+              className="block w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-[#F16462] focus:border-transparent text-base shadow-sm"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
-          {/* Prix */}
-          <div className="mb-6">
-            <h3 className="font-semibold mb-3 text-[#3A3A3A]">Prix</h3>
-            <div className="space-y-2">
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                <span className="text-sm text-[#3A3A3A]">0-500 TND</span>
-              </label>
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                <span className="text-sm text-[#3A3A3A]">500-1000 TND</span>
-              </label>
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                <span className="text-sm text-[#3A3A3A]">1000-2000 TND</span>
-              </label>
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                <span className="text-sm text-[#3A3A3A]">2000+ TND</span>
-              </label>
-            </div>
-          </div>
-          {/* Disponibilité */}
-          <div className="mb-6">
-            <h3 className="font-semibold mb-3 text-[#3A3A3A]">Disponibilité</h3>
-            <label className="flex items-center">
-              <input type="checkbox" className="mr-2" />
-              <span className="text-sm text-[#3A3A3A]">Disponible le 10/08/2025</span>
-            </label>
-          </div>
-          {/* Note */}
-          <div className="mb-6">
-            <h3 className="font-semibold mb-3 text-[#3A3A3A]">Note</h3>
-            <div className="space-y-2">
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                <span className="text-sm text-[#3A3A3A]">⭐ 4.0 + et plus</span>
-              </label>
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                <span className="text-sm text-[#3A3A3A]">⭐ 3.0 + et plus</span>
-              </label>
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                <span className="text-sm text-[#3A3A3A]">⭐ 2.0 + et plus</span>
-              </label>
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                <span className="text-sm text-[#3A3A3A]">⭐ 1.0 + et plus</span>
-              </label>
+        </div>
+
+        {/* Categories horizontal scroll */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4 px-2">Catégories</h2>
+          <div className="relative">
+            <div className="flex space-x-4 pb-4 overflow-x-auto scrollbar-hide">
+              {serviceCategories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
+                  className={`flex flex-col items-center flex-shrink-0 w-24 ${selectedCategory === category.id ? 'text-[#F16462]' : 'text-gray-700'} hover:text-[#F16462] transition-colors`}
+                >
+                  <div className={`w-16 h-16 rounded-full mb-2 flex items-center justify-center text-3xl ${selectedCategory === category.id ? 'bg-[#FEF0EF]' : 'bg-gray-50'}`}>
+                    {category.emoji}
+                  </div>
+                  <span className="text-xs font-medium text-center">{category.name}</span>
+                </button>
+              ))}
             </div>
           </div>
         </div>
-        {/* Zone des résultats */}
-        <div className="flex-1 p-6 bg-gray-50">
-          <div className="flex flex-col gap-6 w-full px-4">
-            {mockServices.map((s: Service, i: number) => (
-              <CarteService key={i} s={s} />
-            ))}
-          </div>
+
+        {/* Services Grid */}
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6 px-4">Tous les services</h2>
+          
+          {filteredServices.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 px-4">
+              {filteredServices.map((service) => (
+                <CarteService key={service.id} service={service} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <svg
+                className="mx-auto h-12 w-12 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1}
+                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                Aucun service trouvé
+              </h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Essayez de modifier vos critères de recherche.
+              </p>
+            </div>
+          )}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
+  
