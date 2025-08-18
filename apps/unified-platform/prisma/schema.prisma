@@ -1,0 +1,931 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+enum EventStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  PAID
+  DELIVERED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum OrderType {
+  BOOKING
+  PRODUCT
+  CONCIERGE
+}
+
+enum ConversationStatus {
+  ACTIVE
+  CLOSED
+  ARCHIVED
+}
+
+enum QuoteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  REVISED
+  EXPIRED
+}
+
+enum MessageType {
+  TEXT
+  QUOTE
+  FILE
+  SYSTEM
+}
+
+enum PricingType {
+  FIXED
+  QUOTE
+}
+
+enum IssueStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum IssuePriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ConciergeStatus {
+  PENDING
+  QUOTED
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum NotificationType {
+  EMAIL
+  SMS
+  IN_APP
+  PUSH
+}
+
+model Event {
+  id          String      @id @default(uuid())
+  name        String
+  description String?
+  type        String // e.g., 'Wedding', 'Birthday', 'Corporate'
+  status      EventStatus @default(DRAFT)
+  startDate   DateTime?
+  endDate     DateTime?
+
+  // Template relationship
+  templateId String?
+  template   Template? @relation("EventTemplate", fields: [templateId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  bookings  Booking[]
+  orders    Order[]   @relation("EventOrders")
+
+  @@index([templateId])
+  @@index([type])
+  @@index([status])
+}
+
+model User {
+  id             String    @id
+  name           String
+  email          String
+  emailVerified  Boolean
+  image          String?
+  createdAt      DateTime
+  updatedAt      DateTime
+  sessions       Session[]
+  accounts       Account[]
+  bookings       Booking[]
+  provider       Provider? // Optional, as not all users will be providers
+  reportedIssues Issue[]   @relation(name: "ReportedIssues")
+  assignedIssues Issue[]   @relation(name: "AssignedIssues")
+
+  // Enhanced user fields
+  language    String?   @default("fr")
+  phoneNumber String?
+  address     String?
+  preferences Json?
+  role        String?
+  banned      Boolean?
+  banReason   String?
+  banExpires  DateTime?
+
+  // New relationships
+  favorites         Favorite[]
+  orders            Order[]
+  reviews           Review[]
+  sentMessages      Message[]          @relation("MessageSender")
+  conversations     Conversation[]     @relation("ConversationUser")
+  conciergeRequests ConciergeRequest[]
+  notifications     Notification[]
+
+  // Chat relationships
+  sentChatMessages     ChatMessage[] @relation("ChatMessageSender")
+  receivedChatMessages ChatMessage[] @relation("ChatMessageReceiver")
+
+  // Search analytics
+  searchAnalytics SearchAnalytics[]
+
+  // Audit log relationships
+  auditLogs       AuditLog[] @relation("AuditLogUser")
+  targetAuditLogs AuditLog[] @relation("AuditLogTargetUser")
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+model Provider {
+  id           String  @id @default(uuid())
+  userId       String  @unique
+  user         User    @relation(fields: [userId], references: [id])
+  name         String
+  description  String?
+  contactEmail String?
+  phoneNumber  String?
+  address      String?
+  website      String?
+
+  // Enhanced provider fields
+  businessLicense String?
+  taxId           String?
+  bankAccount     String?
+  isVerified      Boolean  @default(false)
+  rating          Float?
+  reviewCount     Int      @default(0)
+  location        Json? // Store lat/lng for location-based search
+  coverageAreas   String[] // Areas they serve
+
+  // Legacy field for backward compatibility
+  services String[] // Array of strings, e.g., ["Wedding Planning", "Catering"]
+
+  // New relationships
+  serviceOfferings  Service[]
+  packages          Package[]
+  reviews           Review[]
+  favorites         Favorite[]
+  conversations     Conversation[]     @relation("ConversationProvider")
+  quotes            Quote[]
+  availabilitySlots AvailabilitySlot[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([location])
+  @@index([isVerified])
+  @@index([rating])
+}
+
+model Booking {
+  id              String         @id @default(uuid())
+  eventId         String
+  event           Event          @relation(fields: [eventId], references: [id])
+  userId          String
+  user            User           @relation(fields: [userId], references: [id])
+  providerId      String
+  serviceId       String?
+  service         Service?       @relation("ServiceBookings", fields: [serviceId], references: [id])
+  startTime       DateTime
+  endTime         DateTime
+  status          BookingStatus  @default(PENDING)
+  paymentIntentId String?        @unique
+  paymentStatus   PaymentStatus? @default(UNPAID)
+  totalAmount     Float          @default(0)
+  customerInfo    Json?
+  specialRequests String?
+
+  // Relationships
+  bookingServices BookingService[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([providerId])
+  @@index([serviceId])
+  @@index([status])
+}
+
+model Issue {
+  id               String        @id @default(uuid())
+  title            String
+  description      String?
+  status           IssueStatus   @default(OPEN)
+  priority         IssuePriority @default(MEDIUM)
+  reportedByUserId String?
+  reportedByUser   User?         @relation(name: "ReportedIssues", fields: [reportedByUserId], references: [id])
+  assignedToUserId String?
+  assignedToUser   User?         @relation(name: "AssignedIssues", fields: [assignedToUserId], references: [id])
+  orderId          String?
+  order            Order?        @relation(fields: [orderId], references: [id])
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  resolvedAt       DateTime?
+
+  @@index([status])
+  @@index([priority])
+}
+
+// New models for enhanced functionality
+
+model Service {
+  id           String      @id @default(uuid())
+  providerId   String
+  provider     Provider    @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?
+  category     String
+  images       String[]
+  pricingType  PricingType @default(FIXED)
+  basePrice    Float?
+  priceUnit    String? // "per_hour", "per_day", "fixed"
+  location     String?
+  coverageArea String[]
+  isActive     Boolean     @default(true)
+
+  // Relationships
+  bookings          Booking[]          @relation("ServiceBookings")
+  reviews           Review[]
+  packageItems      PackageItem[]
+  conversations     Conversation[]     @relation("ServiceConversations")
+  availabilitySlots AvailabilitySlot[] @relation("ServiceAvailability")
+  bookingServices   BookingService[]   @relation("BookingServiceItems")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([pricingType])
+  @@index([isActive])
+  @@index([providerId])
+}
+
+model Product {
+  id             String   @id @default(uuid())
+  name           String
+  description    String?
+  category       String
+  basePrice      Float
+  images         String[]
+  isCustomizable Boolean  @default(false)
+  isActive       Boolean  @default(true)
+  inventory      Int?
+
+  // Relationships
+  customizationOptions CustomizationOption[]
+  orderItems           OrderItem[]
+  favorites            Favorite[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([isActive])
+}
+
+model CustomizationOption {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String
+  type      String // "text", "image", "color", "size"
+  options   Json? // Available options for this customization
+  priceAdd  Float? // Additional price for this customization
+  required  Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Template {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  eventType   String
+  version     Int     @default(1)
+  isActive    Boolean @default(true)
+
+  // Relationships
+  items  TemplateItem[]
+  events Event[]        @relation("EventTemplate")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventType])
+  @@index([isActive])
+}
+
+model TemplateItem {
+  id          String   @id @default(uuid())
+  templateId  String
+  template    Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  category    String
+  name        String
+  description String?
+  isRequired  Boolean  @default(false)
+  order       Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([templateId])
+}
+
+model Package {
+  id          String   @id @default(uuid())
+  providerId  String
+  provider    Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  totalPrice  Float
+  discount    Float?
+  isActive    Boolean  @default(true)
+
+  // Relationships
+  items  PackageItem[]
+  orders Order[]       @relation("PackageOrders")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([providerId])
+  @@index([isActive])
+}
+
+model PackageItem {
+  id        String  @id @default(uuid())
+  packageId String
+  package   Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  quantity  Int     @default(1)
+  price     Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Conversation {
+  id         String             @id @default(uuid())
+  userId     String
+  user       User               @relation("ConversationUser", fields: [userId], references: [id])
+  providerId String
+  provider   Provider           @relation("ConversationProvider", fields: [providerId], references: [id])
+  serviceId  String?
+  service    Service?           @relation("ServiceConversations", fields: [serviceId], references: [id])
+  status     ConversationStatus @default(ACTIVE)
+
+  // Relationships
+  messages Message[]
+  quotes   Quote[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([providerId])
+  @@index([status])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation("MessageSender", fields: [senderId], references: [id])
+  content        String
+  attachments    String[]
+  messageType    MessageType  @default(TEXT)
+
+  createdAt DateTime @default(now())
+
+  @@index([conversationId])
+  @@index([senderId])
+}
+
+model Quote {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  providerId     String
+  provider       Provider     @relation(fields: [providerId], references: [id])
+  totalAmount    Float
+  status         QuoteStatus  @default(PENDING)
+  validUntil     DateTime
+  notes          String?
+
+  // Relationships
+  items QuoteItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([conversationId])
+  @@index([providerId])
+  @@index([status])
+}
+
+model QuoteItem {
+  id          String @id @default(uuid())
+  quoteId     String
+  quote       Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  description String
+  quantity    Int
+  unitPrice   Float
+  totalPrice  Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  orderType   OrderType
+  status      OrderStatus @default(PENDING)
+  totalAmount Float
+
+  // Optional relationships based on order type
+  packageId String?
+  package   Package? @relation("PackageOrders", fields: [packageId], references: [id])
+  eventId   String?
+  event     Event?   @relation("EventOrders", fields: [eventId], references: [id])
+
+  // Relationships
+  items    OrderItem[]
+  payments Payment[]
+  tracking OrderTracking[]
+  issues   Issue[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([orderType])
+  @@index([status])
+}
+
+model OrderItem {
+  id            String   @id @default(uuid())
+  orderId       String
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String?
+  product       Product? @relation(fields: [productId], references: [id])
+  name          String
+  description   String?
+  quantity      Int
+  unitPrice     Float
+  totalPrice    Float
+  customization Json? // Store customization details
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  orderId         String
+  order           Order         @relation(fields: [orderId], references: [id])
+  amount          Float
+  currency        String        @default("TND")
+  status          PaymentStatus @default(UNPAID)
+  paymentMethod   String?
+  stripePaymentId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([status])
+}
+
+model OrderTracking {
+  id          String   @id @default(uuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status      String
+  description String?
+  timestamp   DateTime @default(now())
+  updatedBy   String?
+
+  @@index([orderId])
+}
+
+model Review {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  providerId String?
+  provider   Provider? @relation(fields: [providerId], references: [id])
+  serviceId  String?
+  service    Service?  @relation(fields: [serviceId], references: [id])
+  rating     Int // 1-5 stars
+  comment    String?
+  isVerified Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([providerId])
+  @@index([serviceId])
+  @@index([rating])
+}
+
+model Favorite {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  providerId String?
+  provider   Provider? @relation(fields: [providerId], references: [id])
+  productId  String?
+  product    Product?  @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, providerId])
+  @@unique([userId, productId])
+  @@index([userId])
+}
+
+model ConciergeRequest {
+  id          String          @id @default(uuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id])
+  eventType   String
+  description String
+  budget      Float?
+  eventDate   DateTime?
+  location    String?
+  status      ConciergeStatus @default(PENDING)
+  adminNotes  String?
+  quote       Json?
+  totalAmount Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Notification {
+  id      String           @id @default(uuid())
+  userId  String
+  user    User             @relation(fields: [userId], references: [id])
+  type    NotificationType
+  title   String
+  message String
+  isRead  Boolean          @default(false)
+  data    Json? // Additional data for the notification
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+}
+
+// Real-time chat messages
+model ChatMessage {
+  id             String    @id @default(uuid())
+  conversationId String
+  senderId       String
+  sender         User      @relation("ChatMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId     String
+  receiver       User      @relation("ChatMessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  content        String
+  type           String    @default("text") // text, image, file
+  metadata       Json?
+  readAt         DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([createdAt])
+}
+
+// Provider availability slots
+model AvailabilitySlot {
+  id          String   @id @default(uuid())
+  providerId  String
+  provider    Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  serviceId   String?
+  service     Service? @relation("ServiceAvailability", fields: [serviceId], references: [id], onDelete: Cascade)
+  date        DateTime
+  startTime   String
+  endTime     String
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([providerId])
+  @@index([serviceId])
+  @@index([date])
+  @@index([providerId, date])
+}
+
+// Junction table for booking services (many-to-many)
+model BookingService {
+  id             String   @id @default(uuid())
+  bookingId      String
+  booking        Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  serviceId      String
+  service        Service  @relation("BookingServiceItems", fields: [serviceId], references: [id], onDelete: Cascade)
+  quantity       Int      @default(1)
+  unitPrice      Float
+  totalPrice     Float
+  customizations Json?
+  createdAt      DateTime @default(now())
+
+  @@index([bookingId])
+  @@index([serviceId])
+}
+
+// Error logging model
+model ErrorLog {
+  id          String   @id @default(uuid())
+  message     String
+  stack       String?
+  level       String // 'error', 'warn', 'info'
+  context     Json // Store error context as JSON
+  fingerprint String   @unique
+  count       Int      @default(1)
+  firstSeen   DateTime @default(now())
+  lastSeen    DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([level])
+  @@index([fingerprint])
+  @@index([lastSeen])
+}
+
+// Performance metrics model
+model PerformanceMetric {
+  id        String   @id @default(uuid())
+  type      String // 'LCP', 'FID', 'CLS', 'Navigation', 'APIRequest', etc.
+  data      String // JSON string containing metric data
+  userAgent String?
+  url       String
+  sessionId String
+  timestamp DateTime
+  createdAt DateTime @default(now())
+
+  @@index([type])
+  @@index([url])
+  @@index([timestamp])
+  @@index([sessionId])
+  @@index([type, timestamp])
+}
+
+// Categories model for service/product categorization
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @db.VarChar(100)
+  slug        String   @unique @db.VarChar(100)
+  icon        String?  @db.VarChar(50)
+  description String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  @@index([isActive])
+  @@index([sortOrder])
+  @@index([isActive, sortOrder])
+}
+
+// Search analytics model for tracking search queries
+model SearchAnalytics {
+  id          String   @id @default(uuid())
+  query       String   @db.VarChar(255)
+  filters     Json?
+  resultCount Int?
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+
+  @@index([query])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+// System settings model for platform configuration
+model SystemSettings {
+  key         String   @id @db.VarChar(100)
+  value       Json
+  description String?
+  isPublic    Boolean  @default(false)
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  @@index([isPublic])
+}
+
+// System alerts for monitoring and alerting
+model SystemAlert {
+  id          String   @id @default(cuid())
+  type        String   @db.VarChar(100)
+  severity    String   @db.VarChar(20) // ERROR, WARNING, INFO
+  message     String
+  metadata    Json?
+  environment String   @db.VarChar(50)
+  resolved    Boolean  @default(false)
+  resolvedAt  DateTime?
+  resolvedBy  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  @@index([type, severity])
+  @@index([environment, createdAt])
+  @@index([resolved, createdAt])
+  @@map("system_alerts")
+}
+
+// Audit log levels enum
+enum AuditLogLevel {
+  info
+  warning
+  error
+  critical
+}
+
+// Audit event types enum
+enum AuditEventType {
+  // Authentication events
+  user_login
+  user_logout
+  user_login_failed
+  password_reset
+  password_changed
+  
+  // User management
+  user_created
+  user_updated
+  user_deleted
+  user_suspended
+  user_activated
+  
+  // Provider management
+  provider_approved
+  provider_rejected
+  provider_suspended
+  provider_verified
+  
+  // Service management
+  service_created
+  service_updated
+  service_deleted
+  service_approved
+  service_rejected
+  
+  // Booking events
+  booking_created
+  booking_updated
+  booking_cancelled
+  booking_completed
+  
+  // Payment events
+  payment_processed
+  payment_failed
+  refund_processed
+  
+  // Security events
+  security_violation
+  rate_limit_exceeded
+  unauthorized_access
+  suspicious_activity
+  
+  // Admin actions
+  admin_action
+  system_config_changed
+  data_export
+  data_import
+}
+
+// Audit logs model for tracking administrative actions and security events
+model AuditLog {
+  id                 String         @id @default(uuid())
+  timestamp          DateTime       @default(now())
+  level              AuditLogLevel
+  eventType          AuditEventType
+  userId             String?
+  user               User?          @relation("AuditLogUser", fields: [userId], references: [id], onDelete: SetNull)
+  userRole           String?
+  targetUserId       String?
+  targetUser         User?          @relation("AuditLogTargetUser", fields: [targetUserId], references: [id], onDelete: SetNull)
+  targetResourceId   String?
+  targetResourceType String?
+  action             String
+  description        String
+  metadata           Json?
+  ipAddress          String?
+  userAgent          String?
+  sessionId          String?
+  success            Boolean
+  errorMessage       String?
+  requestId          String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @default(now()) @updatedAt
+
+  @@index([timestamp])
+  @@index([level])
+  @@index([eventType])
+  @@index([userId])
+  @@index([targetUserId])
+  @@index([targetResourceType])
+  @@index([success])
+  @@index([sessionId])
+  @@index([level, timestamp])
+  @@index([eventType, timestamp])
+  @@index([userId, timestamp])
+  @@map("audit_logs")
+}
