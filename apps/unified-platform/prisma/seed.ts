@@ -1,5 +1,5 @@
+import { SeedManager } from "@/lib/database/seed-manager";
 import { PrismaClient } from "../src/generated/client";
-import { SeedManager } from "../src/seed-manager";
 
 const prisma = new PrismaClient();
 const seedManager = new SeedManager(prisma);

@@ -43,8 +43,6 @@ const nextConfig = {
       '@radix-ui/react-tabs',
       '@radix-ui/react-tooltip',
     ],
-    // Disable static generation
-    isrMemoryCacheSize: 0,
   },
   // Experimental section moved below
   // Security headers

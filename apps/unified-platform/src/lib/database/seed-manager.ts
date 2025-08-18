@@ -1,6 +1,6 @@
-import { PrismaClient } from "./generated/client";
-import seedBase from "../prisma/seed-base";
-import seedDemo from "../prisma/seed-demo";
+import { PrismaClient } from "../../generated/client";
+import seedBase from "../../../prisma/seed-base";
+import seedDemo from "../../../prisma/seed-demo";
 import { logger } from '../production-logger';
 
 const prisma = new PrismaClient();

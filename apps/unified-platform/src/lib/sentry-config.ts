@@ -106,7 +106,6 @@ export class SentryEnhancedConfig {
           },
           runtime: {
             name: 'node',
-            version: process.version,
           },
         },
       },
