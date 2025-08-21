@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { EmailService } from '@mounasabet/notifications';
+import { EmailService } from './email-service';
 import { NotificationType } from '@/generated/client';
 import { logger } from './production-logger';
 

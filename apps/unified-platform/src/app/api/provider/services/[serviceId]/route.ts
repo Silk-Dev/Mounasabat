@@ -18,10 +18,8 @@ const updateServiceSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { serviceId: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ serviceId: string }> }) {
+  const params = await props.params;
   try {
     const { serviceId } = params;
 
@@ -86,10 +84,8 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { serviceId: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ serviceId: string }> }) {
+  const params = await props.params;
   try {
     const { serviceId } = params;
     const body = await request.json();
@@ -155,10 +151,8 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { serviceId: string } }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ serviceId: string }> }) {
+  const params = await props.params;
   try {
     const { serviceId } = params;
 

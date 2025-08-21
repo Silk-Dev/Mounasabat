@@ -3,10 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { format, addDays, startOfDay, endOfDay } from 'date-fns';
 import { logger } from '@/lib/production-logger';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { providerId: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ providerId: string }> }) {
+  const params = await props.params;
   try {
     const { providerId } = params;
     const { searchParams } = new URL(request.url);
@@ -97,10 +95,8 @@ export async function GET(
   }
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { providerId: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ providerId: string }> }) {
+  const params = await props.params;
   try {
     const { providerId } = params;
     const body = await request.json();

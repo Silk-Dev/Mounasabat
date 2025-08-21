@@ -4,7 +4,7 @@ import { SearchAnalytics } from '@/lib/search-analytics';
 import type { SearchFilters } from '@/types';
 import { auth } from '@/lib/auth';
 import { logger } from '@/lib/production-logger';
-import { withApiMiddleware } from '@/lib/api-middleware';
+
 import { ApiResponseBuilder } from '@/lib/api-response';
 
 async function handleGET(request: NextRequest) {
@@ -190,13 +190,6 @@ async function handlePOST(request: NextRequest) {
     return ApiResponseBuilder.success(responseData, 'Search completed successfully');
 }
 
-// Export wrapped handlers
-export const GET = withApiMiddleware(handleGET, {
-  component: 'search_api',
-  logRequests: true,
-});
-
-export const POST = withApiMiddleware(handlePOST, {
-  component: 'search_api',
-  logRequests: true,
-});
+// Export handlers directly
+export const GET = handleGET;
+export const POST = handlePOST;

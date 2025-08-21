@@ -181,10 +181,8 @@ export async function GET(
 }
 
 // Generate PDF invoice
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const { id } = await params;
     const body = await request.json();

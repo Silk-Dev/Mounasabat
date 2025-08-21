@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { healthCheckService } from '@/lib/health-check-service';
 import { logger } from '@/lib/production-logger';
-import { withApiMiddleware } from '@/lib/api-middleware';
 import { ApiResponseBuilder } from '@/lib/api-response';
 
 async function handleGET(request: NextRequest) {
@@ -186,18 +185,7 @@ function getHealthRecommendations(healthCheck: any): string[] {
   return recommendations;
 }
 
-// Export wrapped handlers
-export const GET = withApiMiddleware(handleGET, {
-  component: 'health_api',
-  logRequests: false, // Don't log health check requests to avoid noise
-});
-
-export const HEAD = withApiMiddleware(handleHEAD, {
-  component: 'health_ping_api',
-  logRequests: false, // Don't log ping requests
-});
-
-export const POST = withApiMiddleware(handlePOST, {
-  component: 'service_health_api',
-  logRequests: false,
-});
+// Export handlers directly
+export const GET = handleGET;
+export const HEAD = handleHEAD;
+export const POST = handlePOST;

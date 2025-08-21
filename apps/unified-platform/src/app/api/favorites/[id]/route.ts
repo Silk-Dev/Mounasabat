@@ -6,10 +6,10 @@ const prisma = new PrismaClient();
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const favoriteId = params.id;
+    const {id: favoriteId} = await params;
 
     if (!favoriteId) {
       return NextResponse.json(

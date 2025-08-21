@@ -1,4 +1,4 @@
-import { PrismaClient } from "../src/generated/client";
+import { PrismaClient, PricingType } from "../src/generated/client";
 
 const prisma = new PrismaClient();
 
@@ -249,7 +249,7 @@ async function seedDemo() {
           "https://images.unsplash.com/photo-1555244162-803834f70033?w=800",
           "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800"
         ],
-        pricingType: "FIXED",
+        pricingType: PricingType.FIXED,
         basePrice: 55.0,
         priceUnit: "per_person",
         location: "Sfax, Tunisia",
@@ -265,7 +265,7 @@ async function seedDemo() {
         images: [
           "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800"
         ],
-        pricingType: "QUOTE",
+        pricingType: PricingType.QUOTE,
         location: "Sfax, Tunisia",
         coverageArea: ["Sfax", "Kairouan"],
         isActive: true,
@@ -281,7 +281,7 @@ async function seedDemo() {
           "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800",
           "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800"
         ],
-        pricingType: "FIXED",
+        pricingType: PricingType.FIXED,
         basePrice: 2200.0,
         priceUnit: "per_venue",
         location: "Sousse, Tunisia",
@@ -297,7 +297,7 @@ async function seedDemo() {
         images: [
           "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800"
         ],
-        pricingType: "FIXED",
+        pricingType: PricingType.FIXED,
         basePrice: 350.0,
         priceUnit: "per_event",
         location: "Sousse, Tunisia",

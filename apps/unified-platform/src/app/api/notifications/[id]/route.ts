@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { notificationService } from '@/lib/notification-service';
+import { notificationService } from '@/lib/notification-service';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { logger } from '@/lib/production-logger';
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({headers: await headers()});
@@ -14,7 +14,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await notificationService.deleteNotification(params.id, session.user.id);
+    const { id } = await params;
+    await notificationService.deleteNotification(id, session.user.id);
 
     return NextResponse.json({ success: true });
   } catch (error) {

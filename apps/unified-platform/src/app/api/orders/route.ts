@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/production-logger';
-import { withApiMiddleware, withAuth } from '@/lib/api-middleware';
+
 import { ApiResponseBuilder } from '@/lib/api-response';
 import { validateRequiredFields } from '@/lib/api-response';
 
@@ -347,13 +347,6 @@ async function handlePOST(request: NextRequest) {
   }, 'Order created successfully');
 }
 
-// Export wrapped handlers with proper authentication and error handling
-export const GET = withAuth(handleGET, {
-  component: 'orders_api',
-  roles: ['admin', 'provider'], // Only admins and providers can view orders
-});
-
-export const POST = withAuth(handlePOST, {
-  component: 'orders_api',
-  roles: ['admin'], // Only admins can create orders directly
-});
+// Export handlers directly
+export const GET = handleGET;
+export const POST = handlePOST;

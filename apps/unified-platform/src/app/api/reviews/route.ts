@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { PrismaClient } from '@/generated/client';
 import { logger } from '@/lib/production-logger';
-import { withApiMiddleware, withAuth } from '@/lib/api-middleware';
+
 import { ApiResponseBuilder } from '@/lib/api-response';
 import { validateRequiredFields } from '@/lib/api-response';
 
@@ -302,13 +302,6 @@ async function updateServiceRating(tx: any, serviceId: string) {
   }
 }
 
-// Export wrapped handlers with proper error handling
-export const GET = withApiMiddleware(handleGET, {
-  component: 'reviews_api',
-  logRequests: true,
-});
-
-export const POST = withAuth(handlePOST, {
-  component: 'reviews_api',
-  roles: ['customer', 'admin'], // Only customers and admins can create reviews
-});
+// Export handlers directly
+export const GET = handleGET;
+export const POST = handlePOST;

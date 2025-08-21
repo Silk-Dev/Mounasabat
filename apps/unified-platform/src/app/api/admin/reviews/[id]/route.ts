@@ -170,10 +170,8 @@ export async function PUT(
 }
 
 // DELETE /api/admin/reviews/[id] - Admin delete review
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const { id } = await params;
     const session = await getSession(request);

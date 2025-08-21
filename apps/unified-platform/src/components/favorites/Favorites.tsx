@@ -94,7 +94,7 @@ export function Favorites({ userId }: FavoritesProps) {
                 onClick={handleCompare}
                 disabled={selectedItems.length < 2}
               >
-                <Compare className="h-4 w-4 mr-2" />
+                <GitCompare className="h-4 w-4 mr-2" />
                 Compare ({selectedItems.length})
               </Button>
               <Button

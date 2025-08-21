@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
 import { logger } from '@/lib/production-logger';
-import { withApiMiddleware } from '@/lib/api-middleware';
+
 import { ApiResponseBuilder } from '@/lib/api-response';
 
 // Validation schema for query parameters
@@ -234,8 +234,5 @@ async function handleGET(request: NextRequest) {
   }, 'Providers retrieved successfully');
 }
 
-// Export wrapped handler with proper error handling
-export const GET = withApiMiddleware(handleGET, {
-  component: 'providers_api',
-  logRequests: true,
-});
+// Export handler directly
+export const GET = handleGET;

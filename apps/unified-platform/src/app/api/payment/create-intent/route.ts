@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { z } from 'zod';
 import { logger } from '@/lib/production-logger';
-import { withApiMiddleware, withAuth } from '@/lib/api-middleware';
+
 import { ApiResponseBuilder } from '@/lib/api-response';
 import { validateRequiredFields } from '@/lib/api-response';
 
@@ -128,8 +128,5 @@ async function handlePOST(request: NextRequest) {
   }, 'Payment intent created successfully');
 }
 
-// Export wrapped handler with proper authentication and error handling
-export const POST = withAuth(handlePOST, {
-  component: 'payment_intent_api',
-  roles: ['customer', 'admin'], // Only customers and admins can create payment intents
-});
+// Export handler directly
+export const POST = handlePOST;

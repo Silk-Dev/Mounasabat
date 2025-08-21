@@ -3,10 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { logger } from '@/lib/production-logger';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { providerId: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ providerId: string }> }) {
+  const params = await props.params;
   try {
     const { providerId } = params;
     const now = new Date();

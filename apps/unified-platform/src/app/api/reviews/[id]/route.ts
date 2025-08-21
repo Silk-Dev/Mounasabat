@@ -57,10 +57,8 @@ export async function GET(
 }
 
 // PUT /api/reviews/[id] - Update a review
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const body = await request.json();
     const { rating, comment, userId } = body;
@@ -141,10 +139,8 @@ export async function PUT(
 }
 
 // DELETE /api/reviews/[id] - Delete a review
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');

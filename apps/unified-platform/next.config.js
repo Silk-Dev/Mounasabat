@@ -44,7 +44,6 @@ const nextConfig = {
       '@radix-ui/react-tooltip',
     ],
   },
-  // Experimental section moved below
   // Security headers
   async headers() {
     return [
