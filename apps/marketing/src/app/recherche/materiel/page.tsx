@@ -56,34 +56,50 @@ function StarRating({ rating }: { rating: number }) {
 
 function CarteMateriel({ m, reviewCounts }: { m: Materiel; reviewCounts: ReviewCounts }) {
   return (
-    <div className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#F16462]/30">
-      <Link href={`/materiel/${m.id}`} className="block">
-        <div className="relative pb-[100%] bg-gray-50">
-          <Image 
-            src={m.image} 
-            alt={m.nom}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-            priority={false}
-            loading="lazy"
-          />
+    <div className="group">
+      <Link href={`/materiel/${m.id}`}>
+        {/* Image container with heart icon */}
+        <div className="relative mb-2">
+          <div className="aspect-square overflow-hidden rounded-2xl">
+            <Image
+              src={m.image}
+              alt={m.nom}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105 rounded-2xl"
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              priority={false}
+            />
+          </div>
+          <button 
+            className="absolute top-3 right-3 p-2 rounded-full bg-white/80 hover:bg-white"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              // Handle save to favorites
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
           {!m.disponible && (
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center rounded-2xl">
               <span className="text-white font-medium bg-red-500 px-3 py-1 rounded-full text-sm">Indisponible</span>
             </div>
           )}
         </div>
-        <div className="p-4">
-          <h3 className="font-medium text-gray-900 mb-1 line-clamp-1">{m.nom}</h3>
-          <div className="flex items-center justify-between mb-2">
+        
+        {/* Material details */}
+        <div className="space-y-1">
+          <h3 className="font-medium text-gray-900 line-clamp-1">{m.nom}</h3>
+          <div className="flex items-center justify-between">
             <div className="flex items-center">
               <StarRating rating={m.note} />
-              <span className="text-xs text-gray-500 ml-1">({reviewCounts[m.id] || 0} avis)</span>
+              <span className="text-xs text-gray-500 ml-1">({reviewCounts[m.id] || 0})</span>
             </div>
             <span className="text-xs text-gray-500">{m.ville}</span>
           </div>
-          <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center justify-between">
             <span className="text-gray-900 font-medium">{m.prix} TND</span>
             <span className="text-xs text-gray-500">/jour</span>
           </div>
@@ -96,7 +112,7 @@ function CarteMateriel({ m, reviewCounts }: { m: Materiel; reviewCounts: ReviewC
 const mockMateriels: Materiel[] = [
   {
     id: "mat-1",
-    nom: "Tente de réception élégante",
+    nom: "Tente de réception ",
     type: "Tente/Chapiteau",
     note: 4.8,
     prix: "1 200",
@@ -122,65 +138,29 @@ const mockMateriels: Materiel[] = [
     id: "mat-3",
     nom: "Éclairage d'ambiance romantique",
     type: "Éclairage",
-    note: 4.9,
+    note: 4.5,
     prix: "850",
-    image: "/Lumière d'Été.jpg",
-    description: "Éclairage chaleureux pour créer une atmosphère intime et romantique.",
+    image: "/event-decor.jpg",
+    description: "Éclairage d'ambiance pour créer une atmosphère romantique et chaleureuse.",
     evenement: "Mariage",
     ville: "Sousse",
     disponible: true
   },
   {
     id: "mat-4",
-    nom: "Décoration florale de table",
-    type: "Décoration",
-    note: 4.8,
-    prix: "450",
-    image: "/Fleurs d'Exception.jpg",
-    description: "Centres de table élégants avec compositions florales fraîches et raffinées.",
-    evenement: "Mariage",
-    ville: "Hammamet",
-    disponible: true
-  },
-  {
-    id: "mat-5",
-    nom: "Piste de danse éclairée",
-    type: "Animation",
-    note: 4.9,
-    prix: "1 200",
-    image: "/Show Time.jpg",
-    description: "Piste de danse LED personnalisable pour illuminer votre soirée de mariage.",
+    nom: "Mobilier de réception",
+    type: "Mobilier",
+    note: 4.6,
+    prix: "2 000",
+    image: "/Salon Élégance.jpg",
+    description: "Ensemble de mobilier élégant pour vos réceptions et événements.",
     evenement: "Mariage",
     ville: "Tunis",
     disponible: true
   },
   {
-    id: "mat-6",
-    nom: "Photobooth avec accessoires",
-    type: "Animation",
-    note: 4.8,
-    prix: "950",
-    image: "/Studio Photo Créatif.jpg",
-    description: "Photobooth amusant avec accessoires pour des souvenirs mémorables.",
-    evenement: "Mariage",
-    ville: "Sousse",
-    disponible: true
-  },
-  {
-    id: "mat-7",
-    nom: "Mobilier de salon élégant",
-    type: "Mobilier",
-    note: 4.7,
-    prix: "1 500",
-    image: "/Salon Élégance.jpg",
-    description: "Ensemble de salon élégant pour votre espace détente lors de la réception.",
-    evenement: "Mariage",
-    ville: "Hammamet",
-    disponible: true
-  },
-  {
-    id: "mat-8",
-    nom: "Bar mobile élégant",
+    id: "mat-5",
+    nom: "Bar mobile",
     type: "Restauration",
     note: 4.9,
     prix: "1 800",
@@ -188,6 +168,150 @@ const mockMateriels: Materiel[] = [
     description: "Bar mobile élégant pour servir vos invités avec style lors de votre réception.",
     evenement: "Mariage",
     ville: "Tunis",
+    disponible: true
+  },
+  {
+    id: "mat-6",
+    nom: "Décoration florale",
+    type: "Décoration",
+    note: 4.8,
+    prix: "1 100",
+    image: "/floral decorations .jpg",
+    description: "Magnifiques compositions florales pour embellir votre événement.",
+    evenement: "Mariage",
+    ville: "Hammamet",
+    disponible: true
+  },
+  {
+    id: "mat-7",
+    nom: "Photobooth moderne",
+    type: "Animation",
+    note: 4.9,
+    prix: "950",
+    image: "/Smile Box.jpg",
+    description: "Photobooth moderne avec accessoires pour des souvenirs mémorables.",
+    evenement: "Anniversaire",
+    ville: "Sousse",
+    disponible: true
+  },
+  {
+    id: "mat-8",
+    nom: "Voiture de prestige",
+    type: "Transport",
+    note: 5.0,
+    prix: "2 500",
+    image: "/Prestige Cars.jpg",
+    description: "Voiture de luxe pour le grand jour ou les événements spéciaux.",
+    evenement: "Mariage",
+    ville: "Tunis",
+    disponible: true
+  },
+  {
+    id: "mat-9",
+    nom: "Structure de danse",
+    type: "Mobilier",
+    note: 4.7,
+    prix: "1 300",
+    image: "/event equipment.jpg",
+    description: "Piste de danse surélevée pour mettre en valeur vos premiers pas.",
+    evenement: "Mariage",
+    ville: "Nabeul",
+    disponible: true
+  },
+  {
+    id: "mat-10",
+    nom: "Écran géant LED",
+    type: "Audiovisuel",
+    note: 4.8,
+    prix: "2 200",
+    image: "/Motion Story.jpg",
+    description: "Écran LED haute définition pour diffuser vos vidéos et animations.",
+    evenement: "Conférence",
+    ville: "Tunis",
+    disponible: true
+  },
+  {
+    id: "mat-11",
+    nom: "Jeux d'extérieur",
+    type: "Animation",
+    note: 4.5,
+    prix: "750",
+    image: "/Anniversaire festif.jpg",
+    description: "Ensemble de jeux pour animer vos événements en plein air.",
+    evenement: "Anniversaire",
+    ville: "Bizerte",
+    disponible: true
+  },
+  {
+    id: "mat-12",
+    nom: "Tente de réception de luxe",
+    type: "Tente/Chapiteau",
+    note: 4.9,
+    prix: "2 800",
+    image: "/Tente de réception.jpg",
+    description: "Tente de réception de luxe pour vos événements les plus prestigieux.",
+    evenement: "Mariage",
+    ville: "Tunis",
+    disponible: true
+  },
+  {
+    id: "mat-13",
+    nom: "Éclairage de scène",
+    type: "Éclairage",
+    note: 4.8,
+    prix: "1 200",
+    image: "/Éclairage de scène.jpg",
+    description: "Éclairage de scène professionnel pour vos concerts et spectacles.",
+    evenement: "Concert",
+    ville: "Sfax",
+    disponible: true
+  },
+  {
+    id: "mat-14",
+    nom: "Mobilier de salon",
+    type: "Mobilier",
+    note: 4.7,
+    prix: "1 800",
+    image: "/Salon Élégance.jpg",
+    description: "Ensemble de mobilier de salon élégant pour vos réceptions et événements.",
+    evenement: "Mariage",
+    ville: "Tunis",
+    disponible: true
+  },
+  {
+    id: "mat-15",
+    nom: "Bar à cocktails",
+    type: "Restauration",
+    note: 4.9,
+    prix: "2 000",
+    image: "/Bar à cocktails.jpg",
+    description: "Bar à cocktails élégant pour servir vos invités avec style lors de votre réception.",
+    evenement: "Mariage",
+    ville: "Tunis",
+    disponible: true
+  },
+  {
+    id: "mat-16",
+    nom: "Décoration de table",
+    type: "Décoration",
+    note: 4.8,
+    prix: "900",
+    image: "/Décoration de table.jpg",
+    description: "Magnifiques décorations de table pour embellir votre événement.",
+    evenement: "Mariage",
+    ville: "Hammamet",
+    disponible: true
+  },
+  {
+    id: "mat-17",
+    nom: "Photobooth vintage",
+    type: "Animation",
+    note: 4.9,
+    prix: "1 100",
+    image: "/Photobooth vintage.jpg",
+    description: "Photobooth vintage avec accessoires pour des souvenirs mémorables.",
+    evenement: "Anniversaire",
+    ville: "Sousse",
     disponible: true
   }
 ];
@@ -271,10 +395,12 @@ export default function MaterielPage() {
     <React.Fragment>
       <div className="min-h-screen bg-white">
         <Header />
-        <main className="w-full py-6 px-10">
+        <main className="w-full px-10">
+          {/* Add margin to push content down */}
+          <div className="h-24"></div>
           <div className="w-full space-y-6">
             {/* Barre de recherche */}
-            <div className="relative">
+            <div className="relative mt-12">
               <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                 <svg className="h-5 w-5 text-[#3A3A3A]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
@@ -336,47 +462,62 @@ export default function MaterielPage() {
                     </>
                   ) : 'Tous les matériels disponibles'}
                 </h2>
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-[#3A3A3A]">Trier par :</span>
-                  <select className="px-3 py-1.5 text-sm border border-gray-200 rounded-md focus:ring-2 focus:ring-[#F16462] focus:border-transparent text-[#3A3A3A] bg-white">
+                <div className="flex items-center space-x-4">
+                  <span className="text-sm text-gray-600">Trier par :</span>
+                  <select className="border border-gray-300 rounded-md px-3 py-1 text-sm">
                     <option>Pertinence</option>
                     <option>Prix croissant</option>
                     <option>Prix décroissant</option>
                     <option>Meilleures notes</option>
                   </select>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedCategory(null);
+                      setEvenement('');
+                    }}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#F16462] hover:bg-[#e04e4c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F16462]"
+                  >
+                    Réinitialiser
+                  </button>
                 </div>
               </div>
+
+              {/* First row */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-6 mb-8">
+                {filteredMateriels.slice(0, 7).map((materiel) => (
+                  <CarteMateriel 
+                    key={materiel.id} 
+                    m={materiel} 
+                    reviewCounts={reviewCounts} 
+                  />
+                ))}
+              </div>
               
-              {filteredMateriels.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4">
-                  {filteredMateriels.map((materiel: Materiel) => (
+              {/* Second row */}
+              {filteredMateriels.length > 7 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-6 mb-8">
+                  {filteredMateriels.slice(7, 14).map((materiel) => (
                     <CarteMateriel 
                       key={materiel.id} 
-                      m={materiel}
-                      reviewCounts={reviewCounts}
+                      m={materiel} 
+                      reviewCounts={reviewCounts} 
                     />
                   ))}
                 </div>
-              ) : (
-                <div className="text-center py-12">
-                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <h3 className="mt-2 text-lg font-medium text-gray-900">Aucun matériel trouvé</h3>
-                  <p className="mt-1 text-gray-500">Essayez de modifier vos critères de recherche.</p>
-                  <div className="mt-6">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSearchQuery('');
-                        setSelectedCategory(null);
-                        setEvenement('');
-                      }}
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#F16462] hover:bg-[#e04e4c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F16462]"
-                    >
-                      Réinitialiser les filtres
-                    </button>
-                  </div>
+              )}
+              
+              {/* Third row */}
+              {filteredMateriels.length > 14 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-6">
+                  {filteredMateriels.slice(14, 21).map((materiel) => (
+                    <CarteMateriel 
+                      key={materiel.id} 
+                      m={materiel} 
+                      reviewCounts={reviewCounts} 
+                    />
+                  ))}
                 </div>
               )}
             </div>

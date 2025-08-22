@@ -68,60 +68,54 @@ interface CarteEtablissementProps {
 
 function CarteEtablissement({ e, reviewCounts }: CarteEtablissementProps) {
   return (
-    <div className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-[#F16462]/30">
-      <Link href={`/etablissement/${e.id}`} className="block h-full">
-        
-        {/* Image de l'établissement */}
-        <div className="relative pb-[75%] bg-gray-50 overflow-hidden">
-          <div className="absolute inset-0">
-            <Image 
-              src={e.image} 
+    <div className="group cursor-pointer">
+      <Link href={`/etablissement/${e.id}`}>
+        {/* Image container with heart icon */}
+        <div className="relative mb-2">
+          <div className="aspect-square overflow-hidden rounded-2xl">
+            <Image
+              src={e.image}
               alt={e.nom}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
+              className="object-cover transition-transform duration-300 group-hover:scale-105 rounded-2xl"
               sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
               priority={false}
             />
-            {/* Overlay de dégradé */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
-          
-          {/* Badge de catégorie */}
-          <div className="absolute bottom-3 left-3">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/90 text-gray-800 backdrop-blur-sm">
-              {e.type}
-            </span>
-          </div>
+          <button 
+            className="absolute top-3 right-3 p-2 rounded-full bg-white/80 hover:bg-white"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              // Handle save to favorites
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
         </div>
         
-        {/* Détails de l'établissement */}
-        <div className="p-4">
-          <h3 className="font-semibold text-gray-900 text-lg leading-tight mb-1">{e.nom}</h3>
+        {/* Property details */}
+        <div className="space-y-1">
+          <div className="flex justify-between items-start">
+            <h3 className="font-semibold text-gray-900 text-[15px] truncate">{e.nom}</h3>
+            <div className="flex items-center">
+              <svg className="w-3.5 h-3.5 text-black" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+              <span className="text-sm ml-0.5">{e.note.toFixed(1)}</span>
+            </div>
+          </div>
           
-          <p className="text-sm text-gray-500 mt-1">
-            {e.ville} • {e.capacite} pers. max
+          <p className="text-gray-500 text-sm">{e.ville}</p>
+          <p className="text-gray-500 text-sm">
+            {e.capacite} personnes • {e.type}
           </p>
           
-          <div className="mt-3 pt-3 border-t border-gray-100">
-            <div className="flex justify-between items-center">
-              <div>
-                <span className="text-sm text-gray-500">À partir de</span>
-                <div className="flex items-baseline">
-                  <span className="text-xl font-bold text-gray-900">{e.prix}</span>
-                  <span className="ml-1 text-sm text-gray-500">TND</span>
-                  <span className="text-xs text-gray-400 ml-1">/soirée</span>
-                </div>
-              </div>
-              <button 
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full text-white bg-[#F16462] hover:bg-[#e04e4c]"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                }}
-              >
-                Réserver
-              </button>
-            </div>
+          <div className="flex items-center pt-1">
+            <span className="font-semibold">{parseInt(e.prix).toLocaleString('fr-TN')} TND</span>
+            <span className="text-gray-500 text-sm ml-1">soirée</span>
           </div>
         </div>
       </Link>
@@ -130,19 +124,20 @@ function CarteEtablissement({ e, reviewCounts }: CarteEtablissementProps) {
 }
 
 const mockEtablissements: Etablissement[] = [
+  // Ligne 1
   {
     id: "etab-1",
-    nom: "Palais des Noces",
-    categorie: "Salle de réception",
+    nom: "Le Jardin Secret",
+    image: "/Le Jardin Secret.jpg",
+    categorie: "Jardin",
     type: "Salle de réception",
     ville: "Tunis",
     note: 4.8,
-    prix: "3 500",
-    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
-    description: "Salle de réception élégante et spacieuse pour mariages de rêve. Capacité jusqu'à 500 personnes.",
+    prix: "5000",
+    description: "Un cadre enchanteur pour votre réception de mariage au cœur de Tunis",
     evenement: "Mariage",
     disponible: true,
-    capacite: 500,
+    capacite: 200,
     parking: true,
     climatisation: true,
     terrasse: true,
@@ -150,51 +145,50 @@ const mockEtablissements: Etablissement[] = [
   },
   {
     id: "etab-2",
-    nom: "Villa Les Oliviers",
-    categorie: "Villa d'exception",
-    type: "Villa",
-    ville: "Sousse",
-    note: 4.9,
-    prix: "4 200",
-    image: "/Salon Élégance.jpg",
-    description: "Villa de luxe avec vue imprenable sur la mer. Idéale pour des événements intimes et prestigieux.",
-    evenement: "Mariage",
-    disponible: true,
-    capacite: 120,
-    parking: true,
-    climatisation: true,
-    terrasse: true,
-    piscine: true,
-    chambres: 8
-  },
-  {
-    id: "etab-3",
-    nom: "Domaine des Cèdres",
-    categorie: "Domaine événementiel",
-    type: "Domaine",
-    ville: "Bizerte",
-    note: 4.7,
-    prix: "5 800",
+    nom: "Palais des Fêtes",
     image: "/Palais des Fêtes.jpg",
-    description: "Domaine de charme niché dans un écrin de verdure, parfait pour des mariages romantiques.",
+    categorie: "Salle de réception",
+    type: "Salle de réception",
+    ville: "Sfax",
+    note: 4.7,
+    prix: "6500",
+    description: "Un palais somptueux pour des réceptions grandioses à Sfax",
     evenement: "Mariage",
     disponible: true,
-    capacite: 300,
+    capacite: 400,
     parking: true,
     climatisation: true,
     terrasse: true,
     piscine: false
   },
   {
+    id: "etab-3",
+    nom: "Villa Sidi Bou",
+    image: "/lieu de mariage.jpg",
+    categorie: "Villa",
+    type: "Villa d'exception",
+    ville: "Sidi Bou Saïd",
+    note: 4.9,
+    prix: "8500",
+    description: "Villa de charme avec vue imprenable sur la Méditerranée",
+    evenement: "Mariage",
+    disponible: true,
+    capacite: 120,
+    parking: true,
+    climatisation: true,
+    terrasse: true,
+    piscine: true
+  },
+  {
     id: "etab-4",
-    nom: "Résidence El Andalous",
-    categorie: "Résidence d'événements",
-    type: "Résidence",
-    ville: "Hammamet",
-    note: 4.6,
-    prix: "3 200",
-    image: "/Mariage élégant.jpg",
-    description: "Résidence de prestige au style andalou pour des réceptions raffinées et élégantes.",
+    nom: "Domaine Carthage",
+    image: "/event-decor.jpg",
+    categorie: "Domaine",
+    type: "Domaine privé",
+    ville: "Carthage",
+    note: 4.8,
+    prix: "9500",
+    description: "Domaine historique avec vue sur les ruines de Carthage",
     evenement: "Mariage",
     disponible: true,
     capacite: 250,
@@ -205,69 +199,141 @@ const mockEtablissements: Etablissement[] = [
   },
   {
     id: "etab-5",
-    nom: "Le Jardin Secret",
-    categorie: "Jardin d'événements",
-    type: "Jardin",
-    ville: "La Marsa",
+    nom: "Riad L'Étoile",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Riad",
+    type: "Riad d'exception",
+    ville: "Sousse",
     note: 4.9,
-    prix: "4 500",
-    image: "/Le Jardin Secret.jpg",
-    description: "Écrin de verdure en plein cœur de la ville pour des célébrations en plein air inoubliables.",
+    prix: "3800",
+    description: "Riad intimiste au cœur de la médina de Sousse",
     evenement: "Mariage",
-    disponible: false,
-    capacite: 400,
+    disponible: true,
+    capacite: 80,
+    parking: false,
+    climatisation: true,
+    terrasse: true,
+    piscine: true
+  },
+  {
+    id: "etab-6",
+    nom: "Les Jardins de la Médina",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Jardin",
+    type: "Jardin d'exception",
+    ville: "Monastir",
+    note: 4.6,
+    prix: "2900",
+    description: "Écrin de verdure en plein cœur de la médina de Monastir",
+    evenement: "Mariage",
+    disponible: true,
+    capacite: 250,
     parking: true,
     climatisation: false,
     terrasse: true,
     piscine: false
   },
   {
-    id: "etab-6",
-    nom: "Le Riad des Princes",
-    categorie: "Riad d'exception",
-    type: "Riad",
-    ville: "Sidi Bou Saïd",
-    note: 4.8,
-    prix: "3 800",
-    image: "/Rêve de Mariée.jpg",
-    description: "Riad de charme au style arabo-andalou pour des réceptions intimes et raffinées.",
+    id: "etab-7",
+    nom: "Le Palais Royal",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Palais",
+    type: "Palais d'exception",
+    ville: "Hammamet",
+    note: 5.0,
+    prix: "7500",
+    description: "Ancien palais rénové avec élégance à Hammamet",
     evenement: "Mariage",
     disponible: true,
-    capacite: 150,
+    capacite: 400,
+    parking: true,
+    climatisation: true,
+    terrasse: true,
+    piscine: true
+  },
+  // Ligne 2
+  {
+    id: "etab-8",
+    nom: "La Villa des Oliviers",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Villa",
+    type: "Villa de luxe",
+    ville: "Djerba",
+    note: 4.7,
+    prix: "4200",
+    description: "Villa moderne avec vue sur la mer à Djerba",
+    evenement: "Mariage",
+    disponible: true,
+    capacite: 120,
+    parking: true,
+    climatisation: true,
+    terrasse: true,
+    piscine: true
+  },
+  {
+    id: "etab-9",
+    nom: "Le Riad des Sens",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Riad",
+    type: "Riad d'exception",
+    ville: "Kairouan",
+    note: 4.8,
+    prix: "4100",
+    description: "Riad de charme aux couleurs de la Tunisie",
+    evenement: "Mariage",
+    disponible: true,
+    capacite: 100,
     parking: false,
     climatisation: true,
     terrasse: true,
-    piscine: true,
-    chambres: 6
+    piscine: true
   },
   {
-    id: "etab-7",
-    nom: "Les Voûtes de Carthage",
-    categorie: "Salle historique",
-    type: "Salle",
-    ville: "Carthage",
-    note: 4.7,
-    prix: "5 200",
-    image: "/Ambiance élégant.jpg",
-    description: "Lieu chargé d'histoire pour des mariages au charme intemporel et élégant.",
+    id: "etab-10",
+    nom: "Les Jardins de la Côte",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Jardin",
+    type: "Jardin botanique",
+    ville: "Nabeul",
+    note: 4.5,
+    prix: "3700",
+    description: "Jardin luxuriant face à la mer à Nabeul",
     evenement: "Mariage",
     disponible: true,
-    capacite: 350,
+    capacite: 180,
     parking: true,
-    climatisation: true,
+    climatisation: false,
     terrasse: true,
     piscine: false
   },
   {
-    id: "etab-8",
-    nom: "Le Phare de Sidi Bou",
-    categorie: "Salle avec vue mer",
-    type: "Salle",
-    ville: "Sidi Bou Saïd",
+    id: "etab-11",
+    nom: "Le Domaine des Oliviers",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Domaine",
+    type: "Domaine agricole",
+    ville: "Zaghouan",
     note: 4.9,
-    prix: "6 500",
-    image: "/Ambiance moderne.jpg",
-    description: "Lieu d'exception avec vue panoramique sur la mer pour des événements mémorables.",
+    prix: "5200",
+    description: "Domaine entouré d'oliviers centenaires à Zaghouan",
+    evenement: "Mariage",
+    disponible: true,
+    capacite: 350,
+    parking: true,
+    climatisation: false,
+    terrasse: true,
+    piscine: true
+  },
+  {
+    id: "etab-12",
+    nom: "La Kasbah des Oiseaux",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Riad",
+    type: "Riad d'exception",
+    ville: "Tozeur",
+    note: 4.7,
+    prix: "4800",
+    description: "Ancienne kasbah restaurée avec élégance à Tozeur",
     evenement: "Mariage",
     disponible: true,
     capacite: 200,
@@ -275,8 +341,174 @@ const mockEtablissements: Etablissement[] = [
     climatisation: true,
     terrasse: true,
     piscine: true
+  },
+  {
+    id: "etab-13",
+    nom: "Les Jardins de la Palmeraie",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Jardin",
+    type: "Jardin exotique",
+    ville: "Gabès",
+    note: 4.8,
+    prix: "3400",
+    description: "Oasis de verdure dans la palmeraie de Gabès",
+    evenement: "Mariage",
+    disponible: true,
+    capacite: 220,
+    parking: true,
+    climatisation: false,
+    terrasse: true,
+    piscine: true
+  },
+  {
+    id: "etab-14",
+    nom: "Le Palais du Désert",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Palais",
+    type: "Palais du désert",
+    ville: "Douz",
+    note: 4.9,
+    prix: "5800",
+    description: "Palais de sable aux portes du désert de Douz",
+    evenement: "Mariage",
+    disponible: true,
+    capacite: 150,
+    parking: true,
+    climatisation: true,
+    terrasse: true,
+    piscine: true
+  },
+  // Ligne 3
+  {
+    id: "etab-15",
+    nom: "La Villa Bleue",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Villa",
+    type: "Villa contemporaine",
+    ville: "Tabarka",
+    note: 4.7,
+    prix: "4600",
+    description: "Villa design avec vue sur la mer à Tabarka",
+    evenement: "Mariage",
+    disponible: true,
+    capacite: 130,
+    parking: true,
+    climatisation: true,
+    terrasse: true,
+    piscine: true
+  },
+  {
+    id: "etab-16",
+    nom: "Le Riad des Oliviers",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Riad",
+    type: "Riad traditionnel",
+    ville: "Mahdia",
+    note: 4.8,
+    prix: "4200",
+    description: "Riad paisible à deux pas de la plage de Mahdia",
+    evenement: "Mariage",
+    disponible: true,
+    capacite: 90,
+    parking: false,
+    climatisation: true,
+    terrasse: true,
+    piscine: true
+  },
+  {
+    id: "etab-17",
+    nom: "Les Jardins de l'Atlas",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Jardin",
+    type: "Jardin de montagne",
+    ville: "Le Kef",
+    note: 4.9,
+    prix: "4100",
+    description: "Écrin de verdure au pied des montagnes du Kef",
+    evenement: "Mariage",
+    disponible: true,
+    capacite: 180,
+    parking: true,
+    climatisation: false,
+    terrasse: true,
+    piscine: false
+  },
+  {
+    id: "etab-18",
+    nom: "Le Domaine des Orangers",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Domaine",
+    type: "Domaine agricole",
+    ville: "Bizerte",
+    note: 4.7,
+    prix: "4500",
+    description: "Domaine entouré d'orangers avec vue sur la mer à Bizerte",
+    evenement: "Mariage",
+    disponible: true,
+    capacite: 280,
+    parking: true,
+    climatisation: true,
+    terrasse: true,
+    piscine: true
+  },
+  {
+    id: "etab-19",
+    nom: "La Villa des Palmiers",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Villa",
+    type: "Villa d'exception",
+    ville: "Skanes",
+    note: 4.9,
+    prix: "5200",
+    description: "Villa de luxe dans un écrin de verdure à Skanes",
+    evenement: "Mariage",
+    disponible: true,
+    capacite: 160,
+    parking: true,
+    climatisation: true,
+    terrasse: true,
+    piscine: true
+  },
+  {
+    id: "etab-20",
+    nom: "Le Riad des Artistes",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Riad",
+    type: "Riad bohème",
+    ville: "Sidi Bouzid",
+    note: 4.8,
+    prix: "3800",
+    description: "Riad inspirant dédié aux artistes à Sidi Bouzid",
+    evenement: "Mariage",
+    disponible: true,
+    capacite: 110,
+    parking: false,
+    climatisation: true,
+    terrasse: true,
+    piscine: true
+  },
+  {
+    id: "etab-21",
+    nom: "Le Jardin des Sens",
+    image: "/beautiful-luxurious-wedding-ceremony-hall.jpg",
+    categorie: "Jardin",
+    type: "Jardin sensoriel",
+    ville: "Gafsa",
+    note: 4.7,
+    prix: "3100",
+    description: "Jardin paysager éveillant les sens à Gafsa",
+    evenement: "Mariage",
+    disponible: true,
+    capacite: 190,
+    parking: true,
+    climatisation: false,
+    terrasse: true,
+    piscine: true
   }
 ];
+
+// List of Tunisian cities populated from the establishments data
+const tunisianCities = Array.from(new Set(mockEtablissements.map(e => e.ville))).sort();
 
 export default function EtablissementPage() {
   const router = useRouter();
@@ -312,7 +544,7 @@ export default function EtablissementPage() {
   };
 
   // Filtrer les établissements en fonction des critères de recherche
-  const filteredEtablissements = mockEtablissements.filter((etab) => {
+  const filteredEtablissements = mockEtablissements.filter((etab: Etablissement) => {
     const searchLower = searchQuery.toLowerCase().trim();
     const matchesSearch = searchLower === '' ||
       etab.nom.toLowerCase().includes(searchLower) ||
@@ -371,33 +603,30 @@ export default function EtablissementPage() {
       <Header />
       
       {/* Main Content */}
-      <main className="w-full py-6 mt-4 px-10">
-        <div className="w-full text-[#333333]">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-[#333333]">Tous les établissements</h2>
+      <main className="w-full py-6 mt-16 px-10">
+        <div className="w-full text-[#333333] pt-8">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl font-bold text-[#333333]"></h2>
           </div>
 
           {/* Search Bar */}
-          <div className="mb-8">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <input
-                type="text"
-                className="w-full pl-10 pr-4 py-3 text-base rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#F16462] focus:bg-white focus:shadow-sm placeholder-gray-500"
-                placeholder="Rechercher un établissement ou une catégorie..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+          <div className="relative mt-12">
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-[#3A3A3A]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+              </svg>
             </div>
+            <input
+              type="text"
+              placeholder="Rechercher un etablissement ou une catégorie..."
+              className="block w-full pl-12 pr-4 py-3 border border-gray-200 rounded-full bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-[#F16462] focus:border-transparent text-[#3A3A3A] placeholder-[#9CA3AF] text-base"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
-
           {/* Category Tabs */}
           <div className="mb-8">
-            <h2 className="text-lg font-semibold mb-3 text-[#333333]">Catégories</h2>
+            <h2 className="text-lg font-semibold mb-3 text-[#333333]"></h2>
             <div className="flex flex-wrap gap-2">
               <button
                 className={`px-4 py-2 rounded-full text-sm font-medium ${
@@ -421,34 +650,36 @@ export default function EtablissementPage() {
             </div>
           </div>
 
+
           {/* Results Section */}
-          <div>
-            {/* Etablissements Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4">
-              {sortedEtablissements.map((etab) => (
-                <CarteEtablissement
-                  key={etab.id}
-                  e={etab}
-                  reviewCounts={reviewCounts}
-                />
+          {filteredEtablissements.length > 0 ? (
+            <div className="space-y-6">
+              {/* Map through the establishments in chunks of 7 */}
+              {Array.from({ length: Math.ceil(filteredEtablissements.length / 7) }).map((_, rowIndex) => (
+                <div key={rowIndex} className="grid grid-cols-7 gap-4">
+                  {filteredEtablissements.slice(rowIndex * 7, (rowIndex + 1) * 7).map((etablissement) => (
+                    <CarteEtablissement 
+                      key={etablissement.id} 
+                      e={etablissement} 
+                      reviewCounts={reviewCounts} 
+                    />
+                  ))}
+                </div>
               ))}
             </div>
-
-            {/* Empty State */}
-            {sortedEtablissements.length === 0 && (
-              <div className="text-center py-16">
-                <p className="text-gray-500">Aucun établissement trouvé</p>
-                <button
-                  onClick={resetFilters}
-                  className="mt-4 px-4 py-2 bg-[#F16462] text-white rounded-md hover:bg-[#e04e4c]"
-                >
-                  Réinitialiser les filtres
-                </button>
-              </div>
-            )}
-          </div>
+          ) : (
+            <div className="text-center py-16">
+              <p className="text-gray-500">Aucun établissement trouvé</p>
+              <button
+                onClick={resetFilters}
+                className="mt-4 px-4 py-2 bg-[#F16462] text-white rounded-md hover:bg-[#e04e4c]"
+              >
+                Réinitialiser les filtres
+              </button>
+            </div>
+          )}
         </div>
       </main>
     </div>
   );
-};
+}
