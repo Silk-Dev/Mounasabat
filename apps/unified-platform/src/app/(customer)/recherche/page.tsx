@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import Header from "@/app/components/Header";
 import { useState } from "react";
 import TabsWithStar from "@/app/components/TabsWithStar";
 
@@ -115,7 +114,6 @@ export default function Recherche() {
 
   return (
     <div className="bg-white min-h-screen text-[#3A3A3A]">
-      <Header />
       
       {/* Bannière avec barre de recherche */}
       <div className="bg-white pt-24 pb-8">

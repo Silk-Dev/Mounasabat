@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
-import Header from "@/app/components/Header";
 import { StarIcon } from "@heroicons/react/24/solid";
 
 type ReviewCounts = Record<string, number>;
@@ -72,7 +71,7 @@ function CarteEtablissement({ e, reviewCounts }: CarteEtablissementProps) {
       <Link href={`/recherche/etablissement/${e.id}`}>
         {/* Image container with heart icon */}
         <div className="relative mb-2">
-          <div className="aspect-square overflow-hidden rounded-2xl">
+          <div className="aspect-square overflow-hidden rounded-2xl relative w-full min-h-[165px]">
             <Image
               src={e.image}
               alt={e.nom}
@@ -600,7 +599,6 @@ export default function EtablissementPage() {
 
   return (
     <div className="bg-white min-h-screen">
-      <Header />
       
       {/* Main Content */}
       <main className="w-full py-6 mt-16 px-10">

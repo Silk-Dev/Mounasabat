@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Header from "../components/Header";
 import Image from "next/image";
 import { FiMail, FiPhone, FiMapPin, FiSend } from "react-icons/fi";
 
@@ -53,7 +52,6 @@ export default function Contact() {
 
   return (
     <div style={{ backgroundColor: '#FFF1E8' }}>
-      <Header />
       
       {/* Section Parallax avec image */}
       <section className="relative h-[60vh] overflow-hidden">

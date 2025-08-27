@@ -2,7 +2,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import Header from "@/app/components/Header";
 
 interface Service {
   id: string;
@@ -55,8 +54,8 @@ const CarteService = ({ service, reviewCounts }: { service: Service; reviewCount
     <Link href={`/recherche/service/${service.id}`} className="block">
       <div className="group cursor-pointer">
         <div className="relative mb-2">
-          <div className="aspect-square overflow-hidden rounded-2xl">
-            <Image
+          <div className="aspect-square overflow-hidden rounded-2xl relative w-full min-h-[165px]">
+            <Image 
               src={service.image}
               alt={service.nom}
               fill
@@ -512,7 +511,6 @@ export default function ServicePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
       <main className="w-full px-10">
         {/* Add margin to push content down */}
         <div className="h-24"></div>

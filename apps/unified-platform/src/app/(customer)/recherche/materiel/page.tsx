@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
-import Header from "@/app/components/Header";
 
 interface Materiel {
   id: string;
@@ -60,7 +59,7 @@ function CarteMateriel({ m, reviewCounts }: { m: Materiel; reviewCounts: ReviewC
       <Link href={`/recherche/materiel/${m.id}`}>
         {/* Image container with heart icon */}
         <div className="relative mb-2">
-          <div className="aspect-square overflow-hidden rounded-2xl">
+          <div className="aspect-square overflow-hidden rounded-2xl relative w-full min-h-[165px]">
             <Image
               src={m.image}
               alt={m.nom}
@@ -394,7 +393,6 @@ export default function MaterielPage() {
   return (
     <React.Fragment>
       <div className="min-h-screen bg-white">
-        <Header />
         <main className="w-full px-10">
           {/* Add margin to push content down */}
           <div className="h-24"></div>

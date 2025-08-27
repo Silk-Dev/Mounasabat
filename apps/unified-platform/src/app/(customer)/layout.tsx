@@ -11,7 +11,8 @@ import { NotificationBell } from '@/components/notifications';
 import { MobileNavigation } from '@/components/navigation/MobileNavigation';
 import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { useIsMobile } from '@/hooks/use-mobile';
-import Header from "@/components/old-marketing/Header";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 function CustomerHeader() {
   const { session, signOut, isLoading } = useAuth();
@@ -139,49 +140,8 @@ export default function CustomerLayout({
       
       {/* Mobile Navigation */}
       <MobileNavigation />
-      
-      {/* Footer - hidden on mobile */}
-      <footer className={`border-t mt-auto bg-gray-50 ${isMobile ? 'hidden' : ''}`}>
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-4">Mounasabet</h3>
-              <p className="text-sm text-gray-600">
-                Your unified event booking platform for discovering and booking amazing event services.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-medium text-gray-900 mb-4">Services</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/categories/venues" className="hover:text-gray-900">Venues</Link></li>
-                <li><Link href="/categories/catering" className="hover:text-gray-900">Catering</Link></li>
-                <li><Link href="/categories/photography" className="hover:text-gray-900">Photography</Link></li>
-                <li><Link href="/categories/entertainment" className="hover:text-gray-900">Entertainment</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-medium text-gray-900 mb-4">Support</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/help" className="hover:text-gray-900">Help Center</Link></li>
-                <li><Link href="/contact" className="hover:text-gray-900">Contact Us</Link></li>
-                <li><Link href="/terms" className="hover:text-gray-900">Terms of Service</Link></li>
-                <li><Link href="/privacy" className="hover:text-gray-900">Privacy Policy</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-medium text-gray-900 mb-4">Business</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/auth/signup?role=provider" className="hover:text-gray-900">Become a Provider</Link></li>
-                <li><Link href="/business" className="hover:text-gray-900">Business Solutions</Link></li>
-                <li><Link href="/partnerships" className="hover:text-gray-900">Partnerships</Link></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t mt-8 pt-8 text-center text-sm text-gray-600">
-            © 2025 Mounasabet. All rights reserved.
-          </div>
-        </div>
-      </footer>
+
+      <Footer />
     </div>
   );
 }

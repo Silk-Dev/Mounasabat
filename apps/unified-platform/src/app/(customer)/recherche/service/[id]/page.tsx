@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import ItemDetail from '@/app/components/ItemDetail';
+import ItemDetail from '@/components/ItemDetail';
 
 const mockServices = [
   {

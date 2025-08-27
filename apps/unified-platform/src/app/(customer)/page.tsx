@@ -7,7 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FiSearch } from "react-icons/fi";
-import Header from "@/components/old-marketing/Header";
+import Header from "@/components/Header";
 import { DateRange } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
