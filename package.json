@@ -19,7 +19,6 @@
     "verify:production": "node scripts/verify-production-config.js"
   },
   "devDependencies": {
-    "@mounasabet/eslint-config": "*",
     "@types/react-date-range": "^1.4.10",
     "eslint": "^8.57.0",
     "prettier": "^3.3.2",
