@@ -68,7 +68,7 @@ export default function ProviderRegistrationPage() {
         description: 'Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.',
       });
 
-      router.push('/login');
+      router.push('/provider/login');
     } catch (error: any) {
       toast({
         title: 'Erreur',
@@ -103,7 +103,8 @@ export default function ProviderRegistrationPage() {
                 required
                 value={formData.name}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="mt-1 block w-full"
+                placeholder="Votre nom complet"
               />
             </div>
 
@@ -117,12 +118,13 @@ export default function ProviderRegistrationPage() {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="mt-1 block w-full"
+                placeholder="votre@email.com"
               />
             </div>
 
             <div>
-              <Label htmlFor="phone">Téléphone</Label>
+              <Label htmlFor="phone">Numéro de téléphone</Label>
               <Input
                 id="phone"
                 name="phone"
@@ -130,7 +132,8 @@ export default function ProviderRegistrationPage() {
                 required
                 value={formData.phone}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="mt-1 block w-full"
+                placeholder="+216 XX XXX XXX"
               />
             </div>
 
@@ -140,16 +143,12 @@ export default function ProviderRegistrationPage() {
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="new-password"
                 required
-                minLength={8}
                 value={formData.password}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="mt-1 block w-full"
+                placeholder="••••••••"
               />
-              <p className="mt-1 text-xs text-gray-500">
-                Le mot de passe doit contenir au moins 8 caractères
-              </p>
             </div>
 
             <div>
@@ -158,55 +157,41 @@ export default function ProviderRegistrationPage() {
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
-                autoComplete="new-password"
                 required
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="mt-1 block w-full"
+                placeholder="••••••••"
               />
             </div>
-          </div>
-
-          <div className="flex items-center">
-            <input
-              id="terms"
-              name="terms"
-              type="checkbox"
-              required
-              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-            />
-            <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
-              J'accepte les{' '}
-              <Link href="/terms" className="font-medium text-indigo-600 hover:text-indigo-500">
-                conditions d'utilisation
-              </Link>{' '}
-              et la{' '}
-              <Link href="/privacy" className="font-medium text-indigo-600 hover:text-indigo-500">
-                politique de confidentialité
-              </Link>
-            </label>
           </div>
 
           <div>
             <Button
               type="submit"
+              className="w-full justify-center"
               disabled={isLoading}
-              className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              S'inscrire
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Inscription...
+                </>
+              ) : (
+                'S\'inscrire'
+              )}
             </Button>
           </div>
-        </form>
 
-        <div className="text-center text-sm">
-          <p className="text-gray-600">
-            Vous avez déjà un compte ?{' '}
-            <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Connectez-vous
+          <div className="text-center text-sm">
+            <Link
+              href="/provider/login"
+              className="text-blue-600 hover:text-blue-500"
+            >
+              Déjà inscrit ? Se connecter
             </Link>
-          </p>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   );

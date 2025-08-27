@@ -234,7 +234,7 @@ export default function Home() {
 
   return (
     <div style={{ overflow: 'hidden' }}>
-      <div className="fixed inset-0 -z-10 overflow-hidden">
+      <div className="inset-0 -z-10 overflow-hidden">
         <video
           id="background-video"
           autoPlay
@@ -250,9 +250,8 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/60"></div>
       </div>
 
-      <Header />
 
-      <main ref={heroRef} className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6">
+      <main ref={heroRef} className="bg-transparent z-10 relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6">
         <div className="relative z-10 text-center text-white w-full max-w-6xl mx-auto">
           <motion.h1 className="font-medium text-[#F16462] text-[clamp(1.5rem,5vw,3.6rem)] leading-tight mb-4 whitespace-normal sm:whitespace-nowrap">
             Planifiez votre événement{' '}

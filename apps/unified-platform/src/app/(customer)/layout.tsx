@@ -11,6 +11,7 @@ import { NotificationBell } from '@/components/notifications';
 import { MobileNavigation } from '@/components/navigation/MobileNavigation';
 import { MobileHeader } from '@/components/navigation/MobileHeader';
 import { useIsMobile } from '@/hooks/use-mobile';
+import Header from "@/components/old-marketing/Header";
 
 function CustomerHeader() {
   const { session, signOut, isLoading } = useAuth();
@@ -130,7 +131,7 @@ export default function CustomerLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      <CustomerHeader />
+      <Header />
       
       <main className={`flex-1 ${isMobile ? 'pb-16' : ''}`}>
         {children}

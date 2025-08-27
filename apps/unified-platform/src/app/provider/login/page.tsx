@@ -107,15 +107,16 @@ export default function ProviderLoginPage() {
               )}
             </Button>
           </div>
+
+          <div className="text-center text-sm">
+            <Link
+              href="/provider/register"
+              className="text-blue-600 hover:text-blue-500"
+            >
+              Créer un compte prestataire
+            </Link>
+          </div>
         </form>
-        <div className="text-center text-sm">
-          <Link 
-            href="/login" 
-            className="font-medium text-indigo-600 hover:text-indigo-500"
-          >
-            Retour à la page de connexion utilisateur
-          </Link>
-        </div>
       </div>
     </div>
   );

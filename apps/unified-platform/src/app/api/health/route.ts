@@ -10,8 +10,8 @@ async function handleGET(request: NextRequest) {
   const detailed = url.searchParams.get('detailed') === 'true';
   
   try {
-    const healthCheck = await healthCheckService.getSystemHealth();
-    const degradationStatus = await healthCheckService.getDegradationStatus();
+    // const healthCheck = await healthCheckService.getSystemHealth();
+    // const degradationStatus = await healthCheckService.getDegradationStatus();
     
     // Add additional metadata
     const enhancedHealthCheck = {
