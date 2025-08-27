@@ -69,7 +69,7 @@ interface CarteEtablissementProps {
 function CarteEtablissement({ e, reviewCounts }: CarteEtablissementProps) {
   return (
     <div className="group cursor-pointer">
-      <Link href={`/etablissement/${e.id}`}>
+      <Link href={`/recherche/etablissement/${e.id}`}>
         {/* Image container with heart icon */}
         <div className="relative mb-2">
           <div className="aspect-square overflow-hidden rounded-2xl">

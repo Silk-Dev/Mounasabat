@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import Header from "@/app/components/Header";
 
@@ -51,65 +52,67 @@ function StarRating({ rating }: { rating: number }) {
 
 const CarteService = ({ service, reviewCounts }: { service: Service; reviewCounts: Record<string, number> }) => {
   return (
-    <div className="group cursor-pointer">
-      <div className="relative mb-2">
-        <div className="aspect-square overflow-hidden rounded-2xl">
-          <Image
-            src={service.image}
-            alt={service.nom}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105 rounded-2xl"
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            priority={false}
-          />
-        </div>
-        <button 
-          className="absolute top-3 right-3 p-2 rounded-full bg-white/90 hover:bg-white transition-colors duration-200 shadow-sm"
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            // Handle save to favorites
-          }}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-        </button>
-        {!service.disponible && (
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-2xl">
-            <span className="text-white font-medium bg-red-500 px-3 py-1 rounded-full text-sm">Indisponible</span>
+    <Link href={`/recherche/service/${service.id}`} className="block">
+      <div className="group cursor-pointer">
+        <div className="relative mb-2">
+          <div className="aspect-square overflow-hidden rounded-2xl">
+            <Image
+              src={service.image}
+              alt={service.nom}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105 rounded-2xl"
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              priority={false}
+            />
           </div>
-        )}
-      </div>
-      
-      <div className="space-y-1">
-        <div className="flex justify-between items-start">
-          <h3 className="font-medium text-gray-900 line-clamp-1 text-sm">
-            {service.nom}
-          </h3>
-          <div className="flex items-center">
-            <StarRating rating={service.note} />
-            <span className="ml-1 text-xs text-gray-500">
-              ({reviewCounts[service.id] || 0})
+          <button 
+            className="absolute top-3 right-3 p-2 rounded-full bg-white/90 hover:bg-white transition-colors duration-200 shadow-sm"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              // Handle save to favorites
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+          {!service.disponible && (
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-2xl">
+              <span className="text-white font-medium bg-red-500 px-3 py-1 rounded-full text-sm">Indisponible</span>
+            </div>
+          )}
+        </div>
+        
+        <div className="space-y-1">
+          <div className="flex justify-between items-start">
+            <h3 className="font-medium text-gray-900 line-clamp-1 text-sm">
+              {service.nom}
+            </h3>
+            <div className="flex items-center">
+              <StarRating rating={service.note} />
+              <span className="ml-1 text-xs text-gray-500">
+                ({reviewCounts[service.id] || 0})
+              </span>
+            </div>
+          </div>
+          
+          <p className="text-xs text-gray-500 line-clamp-1">
+            {service.ville} • {service.type}
+          </p>
+          
+          <p className="text-xs text-gray-500 line-clamp-2 h-8">
+            {service.description}
+          </p>
+          
+          <div className="flex justify-between items-center pt-1">
+            <span className="text-[#F16462] font-semibold text-sm">
+              {service.prix} TND
             </span>
           </div>
         </div>
-        
-        <p className="text-xs text-gray-500 line-clamp-1">
-          {service.ville} • {service.type}
-        </p>
-        
-        <p className="text-xs text-gray-500 line-clamp-2 h-8">
-          {service.description}
-        </p>
-        
-        <div className="flex justify-between items-center pt-1">
-          <span className="text-[#F16462] font-semibold text-sm">
-            {service.prix} TND
-          </span>
-        </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

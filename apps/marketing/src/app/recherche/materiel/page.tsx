@@ -57,7 +57,7 @@ function StarRating({ rating }: { rating: number }) {
 function CarteMateriel({ m, reviewCounts }: { m: Materiel; reviewCounts: ReviewCounts }) {
   return (
     <div className="group">
-      <Link href={`/materiel/${m.id}`}>
+      <Link href={`/recherche/materiel/${m.id}`}>
         {/* Image container with heart icon */}
         <div className="relative mb-2">
           <div className="aspect-square overflow-hidden rounded-2xl">
