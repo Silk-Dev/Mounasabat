@@ -1,4 +1,4 @@
-import { logger } from './production-logger';
+import { logger } from './logger';
 import { performHealthCheck, ServiceHealthStatus, HealthCheck } from './monitoring';
 import { prisma } from './prisma';
 

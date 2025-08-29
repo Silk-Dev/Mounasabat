@@ -1,19 +1,6 @@
-// Authentication utilities for the unified platform
-import { betterAuth } from 'better-auth';
-import { logger } from './production-logger';
-
-export const auth = betterAuth({
-  secret: process.env.AUTH_SECRET || 'your-secret-key-change-in-production',
-  baseURL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-  emailAndPassword: {
-    enabled: true,
-    requireEmailVerification: false,
-  },
-  session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
-    updateAge: 60 * 60 * 24, // 1 day
-  },
-});
+import { getServerSession } from 'next-auth';
+import { authOptions } from './auth.config';
+import { logger } from './logger';
 
 export type Session = {
   user: {
@@ -24,44 +11,23 @@ export type Session = {
     phoneNumber?: string;
     address?: string;
   };
-  session: {
-    id: string;
-    expiresAt: Date;
-  };
 };
 
 // Server-side session management (for server components and API routes)
 export async function getSession(request?: Request): Promise<Session | null> {
   try {
-    const cookie = request?.headers?.get('cookie') || '';
-    
-    if (!cookie) {
-      return null;
-    }
-
-    const session = await auth.api.getSession({
-      headers: new Headers({
-        cookie,
-      }),
-    });
-
-    if (!session) {
-      return null;
-    }
+    const session = await getServerSession(authOptions);
+    if (!session?.user) return null;
 
     return {
       user: {
-        id: session.user.id,
-        email: session.user.email,
-        name: session.user.name,
-        role: ((session.user as any).role as 'customer' | 'provider' | 'admin') || 'customer',
-        phoneNumber: (session.user as any).phoneNumber || undefined,
-        address: (session.user as any).address || undefined,
-      },
-      session: {
-        id: session.session.id,
-        expiresAt: new Date(session.session.expiresAt),
-      },
+        id: session.user.id as string,
+        email: session.user.email as string,
+        name: session.user.name as string,
+        role: (session.user.role as 'customer' | 'provider' | 'admin') || 'customer',
+        phoneNumber: session.user.phoneNumber as string | undefined,
+        address: session.user.address as string | undefined,
+      }
     };
   } catch (error) {
     logger.error('Error getting session:', error);
@@ -93,10 +59,3 @@ export function hasRole(session: Session | null, role: 'customer' | 'provider' |
 export function hasAnyRole(session: Session | null, roles: ('customer' | 'provider' | 'admin')[]): boolean {
   return session ? roles.includes(session.user.role) : false;
 }
-
-// Client-side auth utilities (to be used in client components)
-import { createAuthClient } from 'better-auth/react';
-
-export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-});

@@ -1,4 +1,4 @@
-import { logger } from './production-logger';
+import { logger } from './logger';
 'use client';
 
 export interface PushNotificationOptions {

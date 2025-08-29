@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
-import { logger } from './production-logger';
+import { logger } from './logger';
 import { ApiResponseBuilder, type ErrorResponse } from './api-response';
 
 export interface ErrorContext {

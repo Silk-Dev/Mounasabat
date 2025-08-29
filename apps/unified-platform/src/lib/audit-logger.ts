@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { DataEncryption } from './encryption';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 // Audit log levels
 export enum AuditLogLevel {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 export interface RequestLoggerOptions {
   logRequests?: boolean;

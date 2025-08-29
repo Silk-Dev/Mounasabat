@@ -132,21 +132,19 @@ const APropos = () => {
     <div className="min-h-screen relative overflow-hidden">
       {/* Modern Hero Section */}
       <section className="relative pt-32 pb-1 overflow-hidden min-h-[100vh] flex items-center">
-        <div className="absolute inset-0 -z-10">
-          <div 
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: 'url(/expertise.jpg)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-              filter: 'brightness(0.7) contrast(1.1)'
-            }}
-          />
-          {/* Dégradé noir pour assombrir l'image */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
-          
-        </div>
+        <div className="absolute inset-0 z-0">
+  <div 
+    className="absolute inset-0 bg-cover bg-center"
+    style={{
+      backgroundImage: 'url(/expertise-2.jpg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      filter: 'brightness(0.7) contrast(1.1)'
+    }}
+  />
+  <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40"></div>
+</div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-4">
           <motion.div
@@ -320,7 +318,7 @@ const APropos = () => {
 
       {/* CTA Section */}
       <section className="relative py-24 overflow-hidden">
-        <div className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 z-10">
           <Image
             src="/souvenir.jpg"
             alt="Souvenirs de mariage"

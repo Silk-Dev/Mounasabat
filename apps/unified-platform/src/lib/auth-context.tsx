@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { authClient } from '@/lib/auth';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 export interface User {
   id: string;

@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/nextjs';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 export interface SentryAlertConfig {
   errorThreshold: number;

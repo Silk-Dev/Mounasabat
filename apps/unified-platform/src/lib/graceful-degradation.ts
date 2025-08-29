@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { healthCheckService } from './health-check-service';
-import { logger } from './production-logger';
+import { logger } from './logger';
 import { ApiResponseBuilder } from './api-response';
 
 /**

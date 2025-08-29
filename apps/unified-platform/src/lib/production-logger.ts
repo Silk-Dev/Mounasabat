@@ -52,11 +52,20 @@ class ProductionLogger {
     }
   }
 
-  static getInstance(): ProductionLogger {
+  public static getInstance(): ProductionLogger {
     if (!ProductionLogger.instance) {
       ProductionLogger.instance = new ProductionLogger();
     }
     return ProductionLogger.instance;
+  }
+
+  // Simple implementation for development environment
+  private devLog(level: LogLevel, message: string, context?: LogContext, error?: unknown): void {
+    const timestamp = new Date().toISOString();
+    const contextStr = context ? JSON.stringify(context) : '';
+    const errorStr = error ? JSON.stringify(error) : '';
+    
+    console[level](`[${timestamp}] ${level.toUpperCase()}: ${message}`, contextStr, errorStr);
   }
 
   private generateRequestId(): string {
@@ -475,15 +484,17 @@ class ProductionLogger {
 }
 
 // Export singleton instance
-export const logger = ProductionLogger.getInstance();
+const loggerInstance = ProductionLogger.getInstance();
+
+export { loggerInstance as logger };
 
 // Export class for testing
 export { ProductionLogger };
 
 // Convenience functions for backward compatibility
 export const log = {
-  debug: (message: string, context?: LogContext) => logger.debug(message, context),
-  info: (message: string, context?: LogContext) => logger.info(message, context),
-  warn: (message: string, context?: LogContext, error?: unknown) => logger.warn(message, context, error),
-  error: (message: string, error?: unknown, context?: LogContext) => logger.error(message, error, context),
+  debug: (message: string, context?: LogContext) => loggerInstance.debug(message, context),
+  info: (message: string, context?: LogContext) => loggerInstance.info(message, context),
+  warn: (message: string, context?: LogContext, error?: unknown) => loggerInstance.warn(message, context, error),
+  error: (message: string, error?: unknown, context?: LogContext) => loggerInstance.error(message, error, context),
 };

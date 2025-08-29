@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import Redis from 'ioredis';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 // Rate limiter configuration
 interface RateLimitConfig {

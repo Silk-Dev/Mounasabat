@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { errorHandler } from './production-error-handler';
-import { logger } from './production-logger';
+import { logger } from './logger';
 import { ApiResponseBuilder, type ApiResponse, type ErrorResponse, sanitizeInput } from './api-response';
 
 export interface ApiRouteContext {

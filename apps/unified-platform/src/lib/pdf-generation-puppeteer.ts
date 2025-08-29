@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 // Define interfaces for invoice data
 export interface InvoiceData {

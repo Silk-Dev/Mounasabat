@@ -5,7 +5,7 @@ import { memoryCache } from './cache';
 import { prisma } from './prisma';
 import { SearchAnalytics } from './search-analytics';
 import { CategoryService } from './categories';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 export interface SearchOptions {
   page?: number;

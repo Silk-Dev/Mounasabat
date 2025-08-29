@@ -1,6 +1,6 @@
 import { prisma, queryOptimizations } from './prisma';
 import { memoryCache } from './cache';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 // Optimized search queries with proper indexing
 export const optimizedQueries = {

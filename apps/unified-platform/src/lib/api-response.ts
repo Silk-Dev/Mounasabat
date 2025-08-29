@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 export interface ApiResponse<T = any> {
   success: boolean;

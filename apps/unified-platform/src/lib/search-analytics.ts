@@ -1,6 +1,6 @@
 import { prisma } from './prisma';
 import type { SearchFilters } from '@/types';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 export interface SearchPerformanceMetrics {
   averageResponseTime: number;

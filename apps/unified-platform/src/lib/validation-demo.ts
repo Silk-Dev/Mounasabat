@@ -4,7 +4,7 @@
 
 import { SecurityValidator } from './input-validation';
 import { ValidationSchemas } from './validation-schemas';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 /**
  * Demo function to show validation capabilities

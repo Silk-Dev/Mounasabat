@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { rateLimiter, RateLimitError } from './rate-limiter';
 import { CSRFProtection, RequestValidator, InputSanitizer } from './security';
 import { auditLogger, AuditEventType, AuditLogLevel } from './audit-logger';
-import { logger } from './production-logger';
+import { logger } from './logger';
 import { z } from 'zod';
 
 // Security configuration for different endpoint types

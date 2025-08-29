@@ -10,7 +10,7 @@ const venues = [
     title: 'Salle de Réception Luxueuse',
     location: 'Tunis',
     capacity: '200-300 personnes',
-    image: 'https://images.unsplash.com/photo-1519671482749-5ca0001326a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80',
+    image: '/Salle de Réception Luxueuse.jpg',
     price: 'À partir de 3000 DT'
   },
   {
@@ -18,7 +18,7 @@ const venues = [
     title: 'Jardin d\'Événements',
     location: 'Sousse',
     capacity: '150-250 personnes',
-    image: 'https://images.unsplash.com/photo-1511578314323-379afb476865?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80',
+    image: '/Jardin d\'Événements.jpg',
     price: 'À partir de 2500 DT'
   },
   {
@@ -26,7 +26,7 @@ const venues = [
     title: 'Palais des Fêtes',
     location: 'Hammamet',
     capacity: '300-500 personnes',
-    image: 'https://images.unsplash.com/photo-1567593810071-7bde4e1c7a7c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80',
+    image: '/Palais des Fêtes 2(2).jpg',
     price: 'À partir de 4000 DT'
   },
   {
@@ -34,7 +34,7 @@ const venues = [
     title: 'Salle de Bal Moderne',
     location: 'La Marsa',
     capacity: '100-200 personnes',
-    image: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80',
+    image: '/Salle de Bal Moderne.jpg',
     price: 'À partir de 3500 DT'
   },
   {
@@ -42,15 +42,15 @@ const venues = [
     title: 'Villa Événementielle',
     location: 'Djerba',
     capacity: '50-100 personnes',
-    image: 'https://images.unsplash.com/photo-1566073053323-8b8b3e6c1b2e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80',
+    image: '/Villa Événementielle.jpg',
     price: 'À partir de 2000 DT'
   },
   {
     id: 6,
-    title: 'Hôtel 5 Étoiles',
+    title: 'Hôtel de Luxe',
     location: 'Yasmine Hammamet',
     capacity: '500+ personnes',
-    image: 'https://images.unsplash.com/photo-1564501049412-61a2d30885a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80',
+    image: '/Hotel-746-20220930-120435.jpg',
     price: 'À partir de 5000 DT'
   },
 ];
@@ -87,7 +87,7 @@ const VenueCard = ({ venue, index }: { venue: any, index: number }) => (
           transition={{ delay: 0.2 + index * 0.05 }}
           className="mb-2"
         >
-          <span className="inline-block bg-[#1CCFC9] text-xs px-3 py-1 rounded-full mb-2">{venue.location}</span>
+          <span className="inline-block bg-coral-500 text-white text-xs px-3 py-1 rounded-full mb-2">{venue.location}</span>
         </motion.div>
         
         <motion.h3 
@@ -116,7 +116,7 @@ const VenueCard = ({ venue, index }: { venue: any, index: number }) => (
         className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         initial={{ opacity: 0 }}
       >
-        <button className="bg-[#1CCFC9] hover:bg-[#19b8b3] text-white px-6 py-2 rounded-full font-medium transform -translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+        <button className="bg-coral-500 hover:bg-coral-600 text-white px-6 py-2 rounded-full font-medium transform -translate-y-4 group-hover:translate-y-0 transition-all duration-300">
           Voir les détails
         </button>
       </motion.div>
@@ -160,6 +160,15 @@ export default function LieuxPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="relative h-96 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/Lieux de Réception.jpg"
+            alt="Lieux de Réception"
+            layout="fill"
+            objectFit="cover"
+            className="object-cover"
+          />
+        </div>
         <div className="absolute inset-0 bg-black/40 z-10 flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -180,10 +189,10 @@ export default function LieuxPage() {
             <button
               key={category.name}
               onClick={() => setActiveCategory(category.name)}
-              className={`px-6 py-2 rounded-full transition-colors ${
+              className={`px-6 py-2 rounded-full transition-colors font-medium ${
                 activeCategory === category.name
-                  ? 'bg-[#1CCFC9] text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+                  ? 'bg-[#F16462] text-white'
+                  : 'bg-white text-black hover:bg-gray-100 border border-gray-200'
               }`}
             >
               {category.name} ({category.count})
@@ -219,11 +228,11 @@ export default function LieuxPage() {
                   <div className="text-gray-600">
                     <span className="block">Capacité: {venue.capacity}</span>
                   </div>
-                  <span className="bg-[#1CCFC9]/10 text-[#1CCFC9] px-3 py-1 rounded-full text-sm font-medium">
+                  <span className="bg-[#F16462]/10 text-[#F16462] px-3 py-1 rounded-full text-sm font-medium">
                     {venue.price}
                   </span>
                 </div>
-                <button className="w-full bg-[#1CCFC9] hover:bg-[#19b8b3] text-white py-3 rounded-lg font-medium transition-colors">
+                <button className="w-full bg-[#F16462] hover:bg-[#e05a58] text-white py-3 rounded-lg font-medium transition-colors">
                   Voir les détails
                 </button>
               </div>
@@ -233,11 +242,11 @@ export default function LieuxPage() {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-[#1CCFC9] py-16 mt-16">
+      <div className="py-16" style={{ background: 'linear-gradient(135deg, #F16462 0%, #FFF1E8 100%)' }}>
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-white mb-6">Vous ne trouvez pas votre bonheur ?</h2>
           <p className="text-white/90 mb-8 max-w-2xl mx-auto">Contactez-nous pour des options personnalisées et des recommandations sur mesure.</p>
-          <button className="bg-white text-[#1CCFC9] hover:bg-gray-100 px-8 py-3 rounded-full font-semibold transition-colors">
+          <button className="bg-white text-[#F16462] hover:bg-gray-100 px-8 py-3 rounded-full font-semibold transition-colors">
             Contactez-nous
           </button>
         </div>

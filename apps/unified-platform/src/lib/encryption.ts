@@ -1,6 +1,6 @@
 import { createCipher, createDecipher, randomBytes, scrypt, createHash } from 'crypto';
 import { promisify } from 'util';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 const scryptAsync = promisify(scrypt);
 

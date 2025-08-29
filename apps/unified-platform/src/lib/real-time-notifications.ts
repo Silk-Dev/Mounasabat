@@ -1,6 +1,6 @@
 import { websocketService } from './websocket';
 import { toast } from 'sonner';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 export interface RealTimeNotification {
   id: string;

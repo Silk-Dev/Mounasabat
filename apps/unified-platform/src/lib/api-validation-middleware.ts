@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { validateRequestBody, validateQueryParams, SecurityValidator } from './input-validation';
 import { CSRFProtection, RequestValidator } from './security';
-import { logger } from './production-logger';
+import { logger } from './logger';
 import { auditLogger, AuditEventType, AuditLogLevel } from './audit-logger';
 
 /**

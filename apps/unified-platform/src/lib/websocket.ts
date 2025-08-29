@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 export interface WebSocketMessage {
   type: 'availability_update' | 'booking_notification' | 'chat_message' | 'dashboard_update' | 'notification';

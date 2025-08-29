@@ -1,5 +1,5 @@
 import { prisma } from './prisma';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 export interface Category {
   id: string;

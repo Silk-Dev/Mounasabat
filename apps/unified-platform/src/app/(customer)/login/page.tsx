@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/toast';
+import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/lib/auth-context';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,7 +16,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { showToast } = useToast();
+  const { signIn } = useAuth();
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -24,23 +24,18 @@ export default function LoginPage() {
     setIsLoading(true);
     
     try {
-      const result = await signIn('credentials', {
-        redirect: false,
-        email,
-        password,
-        callbackUrl
-      });
+      const result = await signIn(email, password);
       
-      if (result?.error) {
-        throw new Error(result.error);
+      if (!result.success) {
+        throw new Error(result.error || 'Une erreur est survenue lors de la connexion');
       }
       
-      // Redirection gérée par NextAuth
+      // Redirection after successful login
       router.push(callbackUrl);
       router.refresh();
     } catch (error: any) {
       console.error('Login error:', error);
-      showToast({
+      toast({
         title: 'Erreur de connexion',
         description: error.message || 'Email ou mot de passe incorrect',
         variant: 'destructive',
@@ -53,11 +48,15 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      // The Google provider will handle the redirection
-      window.location.href = '/api/auth/signin/google';
+      // Implement Google sign-in logic using your custom auth implementation
+      // This is just a placeholder - replace with your actual Google sign-in logic
+      toast({
+        title: 'Google Sign In',
+        description: 'Cette fonctionnalité n\'est pas encore disponible',
+      });
     } catch (error) {
       console.error('Google sign in error:', error);
-      showToast({
+      toast({
         title: 'Erreur de connexion',
         description: 'Une erreur est survenue lors de la connexion avec Google',
         variant: 'destructive',

@@ -1,7 +1,7 @@
 // Booking utilities for the unified platform
 import type { Booking, BookingStatus, SelectedService } from '@/types';
 import { z } from 'zod';
-import { logger } from './production-logger';
+import { logger } from './logger';
 
 // Validation schema for booking data
 const bookingDataSchema = z.object({
