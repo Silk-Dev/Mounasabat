@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { PrismaClient } from '@/generated/client';
+import { PrismaClient } from '@prisma/client';
 import { logger } from '@/lib/production-logger';
 import { withApiMiddleware, withAuth } from '@/lib/api-middleware';
 import { ApiResponseBuilder } from '@/lib/api-response';

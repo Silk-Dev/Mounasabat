@@ -1,6 +1,7 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { authClient } from '@/lib/auth/client';
+import { createAuthClient } from 'better-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -9,17 +10,24 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session, status } = useSession();
+  const { useSession } = createAuthClient();
+
+  const { data: session, isPending } = useSession();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (isPending) {
+      // Show loading state
+      return;
+    }
+    if (!session || !session.user) {
       router.push('/login');
       return;
     }
+    
 
-    if (status === 'authenticated' && session?.user) {
+    if (session?.user) {
       // Redirect based on user role
       if (session.user.role === 'ADMIN' && !pathname.startsWith('/dashboard/admin')) {
         router.push('/dashboard/admin');

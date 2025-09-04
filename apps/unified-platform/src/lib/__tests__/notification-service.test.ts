@@ -1,5 +1,5 @@
 import { NotificationService } from '../notification-service';
-import { NotificationType } from '@/generated/client';
+import { NotificationType } from '@prisma/client';
 
 // Mock Prisma
 const mockPrisma = {

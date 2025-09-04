@@ -2,7 +2,7 @@
 
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '@/lib/auth/context';
 import { Button } from '@/components/ui';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui';

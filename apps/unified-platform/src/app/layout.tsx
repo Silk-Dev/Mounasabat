@@ -1,11 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { AuthProvider } from '@/lib/auth-context';
-import ErrorBoundary from '@/components/error/ErrorBoundary';
 import PerformanceProvider from '@/components/providers/PerformanceProvider';
 import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
-import { logger } from '@/lib/production-logger';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -64,19 +61,12 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <ErrorBoundary
-          section="root"
-          showDetails={process.env.NODE_ENV === 'development'}
-        >
           <PerformanceProvider>
-            <AuthProvider>
               <div id="root">
                 {children}
               </div>
               <Toaster />
-            </AuthProvider>
           </PerformanceProvider>
-        </ErrorBoundary>
       </body>
     </html>
   );

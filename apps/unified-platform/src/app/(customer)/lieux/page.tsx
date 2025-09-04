@@ -63,66 +63,94 @@ const categories = [
   { name: 'Villas', count: 7 },
 ];
 
-const VenueCard = ({ venue, index }: { venue: any, index: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5, delay: index * 0.08 }}
-    className="relative group overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 h-[400px]"
-  >
-    <div className="relative h-full w-full">
-      <Image
-        src={venue.image}
-        alt={venue.title}
-        layout="fill"
-        objectFit="cover"
-        className="group-hover:scale-110 transition-transform duration-700"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-      
-      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-        <motion.div 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 + index * 0.05 }}
-          className="mb-2"
-        >
-          <span className="inline-block bg-coral-500 text-white text-xs px-3 py-1 rounded-full mb-2">{venue.location}</span>
-        </motion.div>
-        
-        <motion.h3 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3 + index * 0.05 }}
-          className="text-2xl font-bold mb-2"
-        >
-          {venue.title}
-        </motion.h3>
-        
-        <motion.div 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4 + index * 0.05 }}
-          className="flex items-center justify-between"
-        >
-          <span className="text-sm">👥 {venue.capacity}</span>
-          <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm">
-            {venue.price}
-          </span>
-        </motion.div>
+function StarRating({ rating }: { rating: number }) {
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
+  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+  return (
+    <div className="flex items-center">
+      {[...Array(fullStars)].map((_, i) => (
+        <svg key={`full-${i}`} className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      ))}
+      {hasHalfStar && (
+        <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+          <defs>
+            <linearGradient id="half-star">
+              <stop offset="50%" stopColor="currentColor" />
+              <stop offset="50%" stopColor="#e5e7eb" />
+            </linearGradient>
+          </defs>
+          <path fill="url(#half-star)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      )}
+      {[...Array(emptyStars)].map((_, i) => (
+        <svg key={`empty-${i}`} className="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      ))}
+      <span className="text-xs text-gray-500 ml-1">{rating.toFixed(1)}</span>
+    </div>
+  );
+}
+
+const VenueCard = ({ venue, index }: { venue: any, index: number }) => {
+  // Mock rating for now
+  const rating = 4.5 + (index % 5 * 0.1);
+  const reviewCount = Math.floor(Math.random() * 50) + 5;
+  const isAvailable = Math.random() > 0.1; // 90% chance of being available
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
+      className="group"
+    >
+      <div className="relative mb-2">
+        <div className="aspect-square overflow-hidden rounded-2xl relative w-full min-h-[200px]">
+          <Image
+            src={venue.image}
+            alt={venue.title}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105 rounded-2xl"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          />
+          <button 
+            className="absolute top-3 right-3 p-2 rounded-full bg-white/80 hover:bg-white"
+            onClick={(e) => e.preventDefault()}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+          {!isAvailable && (
+            <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center rounded-2xl">
+              <span className="text-white font-medium bg-red-500 px-3 py-1 rounded-full text-sm">Indisponible</span>
+            </div>
+          )}
+        </div>
       </div>
       
-      <motion.div 
-        className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        initial={{ opacity: 0 }}
-      >
-        <button className="bg-coral-500 hover:bg-coral-600 text-white px-6 py-2 rounded-full font-medium transform -translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-          Voir les détails
-        </button>
-      </motion.div>
-    </div>
-  </motion.div>
-);
+      <div className="space-y-1">
+        <h3 className="font-medium text-gray-900 line-clamp-1">{venue.title}</h3>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <StarRating rating={rating} />
+            <span className="text-xs text-gray-500 ml-1">({reviewCount})</span>
+          </div>
+          <span className="text-xs text-gray-500">{venue.location}</span>
+        </div>
+        <div className="flex items-center justify-between mt-1">
+          <span className="text-gray-900 font-medium">{venue.price}</span>
+          <span className="text-xs text-gray-500">Capacité: {venue.capacity}</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 export default function LieuxPage() {
   const [activeCategory, setActiveCategory] = useState('Tous');
@@ -176,8 +204,8 @@ export default function LieuxPage() {
             transition={{ duration: 0.8 }}
             className="text-center text-white px-4"
           >
-            <h1 className="text-5xl font-bold mb-4">Lieux de Réception</h1>
-            <p className="text-xl max-w-2xl mx-auto">Découvrez les plus beaux endroits pour organiser votre événement</p>
+            <h1 className="text-5xl font-bold mb-4">Luxe Occasion</h1>
+            <p className="text-xl max-w-2xl mx-auto">Découvrez nos prestations haut de gamme pour des événements d'exception</p>
           </motion.div>
         </div>
       </div>
@@ -201,42 +229,9 @@ export default function LieuxPage() {
         </div>
 
         {/* Venues Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {venues.map((venue, index) => (
-            <motion.div
-              key={venue.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
-            >
-              <div className="relative h-64">
-                <Image
-                  src={venue.image}
-                  alt={venue.title}
-                  layout="fill"
-                  objectFit="cover"
-                  className="hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                  <div className="text-white font-bold text-xl">{venue.title}</div>
-                  <div className="text-white/90">{venue.location}</div>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <div className="text-gray-600">
-                    <span className="block">Capacité: {venue.capacity}</span>
-                  </div>
-                  <span className="bg-[#F16462]/10 text-[#F16462] px-3 py-1 rounded-full text-sm font-medium">
-                    {venue.price}
-                  </span>
-                </div>
-                <button className="w-full bg-[#F16462] hover:bg-[#e05a58] text-white py-3 rounded-lg font-medium transition-colors">
-                  Voir les détails
-                </button>
-              </div>
-            </motion.div>
+            <VenueCard venue={venue} index={index} key={venue.id} />
           ))}
         </div>
       </div>

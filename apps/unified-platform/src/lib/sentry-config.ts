@@ -65,7 +65,7 @@ export class SentryEnhancedConfig {
       replaysOnErrorSampleRate: 1.0,
 
       // Debug mode for development
-      debug: !isProduction,
+      debug: false,
 
       // Enhanced beforeSend with custom filtering
       beforeSend: (event: Sentry.ErrorEvent, hint: Sentry.EventHint) => {

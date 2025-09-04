@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { authClient } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { ProvidersTable } from './_components/providers-table';
 import { ServicesTable } from './_components/services-table';
 import { StatsCards } from './_components/stats-cards';
+import { createAuthClient } from 'better-auth/react';
 
 interface Provider {
   id: string;
@@ -44,7 +45,8 @@ interface Service {
 }
 
 export default function AdminDashboard() {
-  const { data: session, status } = useSession();
+  const {useSession} = createAuthClient();
+  const { data: session } = useSession();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
   const [providers, setProviders] = useState<Provider[]>([]);
@@ -80,7 +82,7 @@ export default function AdminDashboard() {
       };
       checkAdmin();
     }
-  }, [status, session, router]);
+  }, [session, router]);
 
   const fetchData = async () => {
     try {

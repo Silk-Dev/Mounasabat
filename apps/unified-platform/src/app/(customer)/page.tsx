@@ -6,8 +6,6 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { FiSearch } from "react-icons/fi";
-import Header from "@/components/Header";
 import { DateRange } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
@@ -18,64 +16,6 @@ import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 
 gsap.registerPlugin(ScrollTrigger);
-
-function CreativeSearchBar({ value, onChange, onSubmit, placeholder }) {
-  return (
-    <form
-      onSubmit={onSubmit}
-      className="relative w-full max-w-md mx-auto flex items-center group"
-      style={{
-        background: "linear-gradient(90deg, #f8fafc 60%, #e0f7fa 100%)",
-        borderRadius: "2rem",
-        boxShadow: "0 4px 24px 0 rgba(30, 180, 170, 0.10)",
-      }}
-    >
-      <input
-        type="text"
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        className="w-full py-3 pl-5 pr-12 rounded-3xl bg-transparent text-[#222] placeholder-[#F16462] font-medium outline-none border-2 border-transparent focus:border-[#F16462] transition"
-        style={{
-          boxShadow: "none",
-        }}
-      />
-      <button
-        type="submit"
-        className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#F16462] hover:bg-[#e04e4c] text-white p-2 rounded-full shadow transition"
-        style={{
-          boxShadow: "0 2px 8px 0 rgba(30, 180, 170, 0.15)",
-        }}
-        aria-label="Rechercher"
-      >
-        <FiSearch size={22} />
-      </button>
-    </form>
-  );
-}
-
-type SimpleDateRangePickerProps = {
-  open: boolean;
-  onClose: () => void;
-  onSelect: (start: string, end: string) => void;
-  startDate: string | null;
-  endDate: string | null;
-};
-function SimpleDateRangePicker({ open, onClose, onSelect, startDate, endDate }: SimpleDateRangePickerProps) {
-  const [mood, setMood] = useState('elegant');
-
-  return open ? (
-    <div className="absolute z-50 bg-white p-4 rounded shadow border flex flex-col gap-2" style={{ top: '60px', left: 0, minWidth: 250 }}>
-      <label className="text-sm text-gray-700">Début
-        <input type="date" className="block border rounded p-1 mt-1" value={startDate || ''} onChange={e => onSelect(e.target.value, endDate || '')} />
-      </label>
-      <label className="text-sm text-gray-700">Fin
-        <input type="date" className="block border rounded p-1 mt-1" value={endDate || ''} onChange={e => onSelect(startDate || '', e.target.value)} />
-      </label>
-      <button className="mt-2 px-3 py-1 bg-[#1BA3A9] text-white rounded" onClick={onClose}>OK</button>
-    </div>
-  ) : null;
-}
 
 export default function Home() {
   const scrollContainerRef = useRef<HTMLElement | null>(null);

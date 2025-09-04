@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/auth/auth';
 import { rateLimiter } from '@/lib/rate-limiter';
 import { applySecurityHeaders, CSRFProtection, RequestValidator } from '@/lib/security';
 import { auditLogger, AuditEventType, AuditLogLevel } from '@/lib/audit-logger';
@@ -74,7 +74,7 @@ export async function middleware(request: NextRequest) {
       if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) {
         // Validate origin
         const allowedOrigins = [
-          process.env.NEXTAUTH_URL || 'http://localhost:3000',
+          process.env.BETTER_AUTH_URL || 'http://localhost:3000',
           process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '',
         ].filter(Boolean);
 
@@ -248,7 +248,6 @@ export async function middleware(request: NextRequest) {
       description: `Middleware error for ${pathname}: ${error}`,
       success: false,
       errorMessage: error instanceof Error ? error.message : String(error),
-      ipAddress: request.ip || request.headers.get('x-forwarded-for') || 'unknown',
       userAgent: request.headers.get('user-agent') || 'unknown',
     });
     

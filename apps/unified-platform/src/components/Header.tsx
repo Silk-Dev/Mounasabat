@@ -134,7 +134,7 @@ export default function Header() {
                 showEventMenu ? 'opacity-100 visible' : 'opacity-0 invisible'
               }`}
             >
-              <a href="/lieux" className="block px-4 py-2 text-[#3A3A3A] hover:bg-[#1CCFC9] hover:text-white" onClick={() => setShowEventMenu(false)}>Lieux de réception</a>
+              <a href="/lieux" className="block px-4 py-2 text-[#3A3A3A] hover:bg-[#1CCFC9] hover:text-white" onClick={() => setShowEventMenu(false)}>Luxe Occasion</a>
               <a href="/prestataires" className="block px-4 py-2 text-[#3A3A3A] hover:bg-[#1CCFC9] hover:text-white" onClick={() => setShowEventMenu(false)}>Prestataires de services</a>
               <a href="/idees-conseils" className="block px-4 py-2 text-[#3A3A3A] hover:bg-[#1CCFC9] hover:text-white" onClick={() => setShowEventMenu(false)}>Idées & Conseils</a>
             </div>

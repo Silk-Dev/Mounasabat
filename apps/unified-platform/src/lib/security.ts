@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { randomBytes, createHash, timingSafeEqual } from 'crypto';
+import { hash, compare, genSalt } from 'bcryptjs';
 
 // CSRF Token Management
 export class CSRFProtection {
@@ -8,35 +8,43 @@ export class CSRFProtection {
   private static readonly TOKEN_COOKIE = 'csrf-token';
   private static readonly SECRET_HEADER = 'x-csrf-secret';
 
-  static generateToken(): { token: string; secret: string } {
-    const secret = randomBytes(this.TOKEN_LENGTH).toString('hex');
-    const token = randomBytes(this.TOKEN_LENGTH).toString('hex');
+  static async generateToken(): Promise<{ token: string; secret: string }> {
+    const generateRandomHex = async (length: number): Promise<string> => {
+      const buffer = new Uint8Array(length);
+      crypto.getRandomValues(buffer);
+      return Array.from(buffer)
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+    };
+    
+    const secret = await generateRandomHex(this.TOKEN_LENGTH);
+    const token = await generateRandomHex(this.TOKEN_LENGTH);
     
     return { token, secret };
   }
 
-  static generateTokenHash(token: string, secret: string): string {
-    return createHash('sha256').update(`${token}:${secret}`).digest('hex');
+  static async generateTokenHash(token: string, secret: string): Promise<string> {
+    return await hash(`${token}:${secret}`, 10);
   }
 
-  static validateToken(
+  static async validateToken(
     providedToken: string,
     providedSecret: string,
     storedHash: string
-  ): boolean {
+  ): Promise<boolean> {
     if (!providedToken || !providedSecret || !storedHash) {
       return false;
     }
 
-    const expectedHash = this.generateTokenHash(providedToken, providedSecret);
-    const expectedBuffer = Buffer.from(expectedHash, 'hex');
-    const providedBuffer = Buffer.from(storedHash, 'hex');
-
-    if (expectedBuffer.length !== providedBuffer.length) {
+    try {
+      const expectedHash = await this.generateTokenHash(providedToken, providedSecret);
+      // Instead of byte-by-byte comparison, we'll use bcryptjs's compare function
+      // which is already timing-safe
+      return await compare(expectedHash, storedHash);
+    } catch (error) {
+      console.error('Token validation error:', error);
       return false;
     }
-
-    return timingSafeEqual(expectedBuffer, providedBuffer);
   }
 
   static async validateRequest(req: NextRequest): Promise<boolean> {
@@ -272,7 +280,9 @@ export class RequestValidator {
     // If no content-length header, we'll need to read the body
     try {
       const body = await req.text();
-      return Buffer.byteLength(body, 'utf8') <= maxSize;
+      const encoder = new TextEncoder();
+      const byteLength = encoder.encode(body).length;
+      return byteLength <= maxSize;
     } catch {
       return false;
     }

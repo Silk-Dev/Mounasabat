@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth/context';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -32,7 +32,7 @@ export interface ProviderStats {
 }
 
 export default function ProviderDashboard() {
-  const { data: session, status } = useSession();
+  const { session, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
   const [services, setServices] = useState<Service[]>([]);
@@ -47,12 +47,12 @@ export default function ProviderDashboard() {
   });
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
+    if (!authLoading && !session) {
+      router.push('/auth/signin');
       return;
     }
 
-    if (status === 'authenticated' && session?.user) {
+    if (session) {
       // Check if user is a provider
       const checkProvider = async () => {
         try {
@@ -69,7 +69,7 @@ export default function ProviderDashboard() {
       };
       checkProvider();
     }
-  }, [status, session, router]);
+  }, [authLoading, session, router]);
 
   const fetchServices = async () => {
     try {
