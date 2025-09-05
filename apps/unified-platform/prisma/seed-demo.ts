@@ -1,4 +1,4 @@
-import { PrismaClient } from "../src/generated/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -310,7 +310,20 @@ async function seedDemo() {
       await prisma.service.upsert({
         where: { id: service.id },
         update: {},
-        create: service,
+        create: {
+          id: service.id,
+          providerId: service.providerId,
+          name: service.name,
+          description: service.description,
+          category: service.category,
+          images: service.images,
+          pricingType: service.pricingType as any,
+          basePrice: service.basePrice,
+          priceUnit: service.priceUnit,
+          location: service.location,
+          coverageArea: service.coverageArea,
+          isActive: service.isActive,
+        },
       });
     }
 

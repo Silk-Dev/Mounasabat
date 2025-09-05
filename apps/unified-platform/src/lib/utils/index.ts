@@ -13,4 +13,4 @@ export function formatDate(date: Date): string {
   }).format(date);
 }
 
-export * from "./src/i18n"
+export * from "./i18n"

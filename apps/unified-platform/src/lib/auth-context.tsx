@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { authClient } from '@/lib/auth';
+import { authClient } from '@/lib/auth-client';
 import { logger } from './logger';
 
 export interface User {
@@ -35,45 +35,26 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<AuthSession | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Initialize session on mount
-  useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const sessionData = await authClient.getSession();
-        if (sessionData?.data) {
-          const user = sessionData.data.user as any;
-          setSession({
-            user: {
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              role: (user.role as 'customer' | 'provider' | 'admin') || 'customer',
-              phoneNumber: user.phoneNumber || undefined,
-              address: user.address || undefined,
-              image: user.image || undefined,
-            },
-            session: {
-              id: sessionData.data.session.id,
-              expiresAt: new Date(sessionData.data.session.expiresAt),
-            },
-          });
-        }
-      } catch (error) {
-        logger.error('Failed to initialize auth:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    initializeAuth();
-  }, []);
+  const { data: sessionData, isPending: isLoading, error } = authClient.useSession();
+  
+  const session = sessionData ? {
+    user: {
+      id: sessionData.user.id,
+      email: sessionData.user.email,
+      name: sessionData.user.name,
+      role: (sessionData.user.role as 'customer' | 'provider' | 'admin') || 'customer',
+      phoneNumber: (sessionData.user as any).phoneNumber || undefined,
+      address: (sessionData.user as any).address || undefined,
+      image: sessionData.user.image || undefined,
+    },
+    session: {
+      id: sessionData.session.id,
+      expiresAt: new Date(sessionData.session.expiresAt),
+    },
+  } : null;
 
   const signIn = async (email: string, password: string) => {
     try {
-      setIsLoading(true);
       const result = await authClient.signIn.email({
         email,
         password,
@@ -83,24 +64,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { success: false, error: result.error.message };
       }
 
-      if (result.data) {
-        // After successful sign in, refresh the session to get full session data
-        await refreshSession();
-        return { success: true };
-      }
-
-      return { success: false, error: 'Sign in failed' };
+      return { success: true };
     } catch (error) {
       logger.error('Sign in error:', error);
       return { success: false, error: 'An unexpected error occurred' };
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const signUp = async (email: string, password: string, name: string) => {
     try {
-      setIsLoading(true);
       const result = await authClient.signUp.email({
         email,
         password,
@@ -111,32 +83,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { success: false, error: result.error.message };
       }
 
-      if (result.data) {
-        // After successful sign up, refresh the session to get full session data
-        await refreshSession();
-        return { success: true };
-      }
-
-      return { success: false, error: 'Sign up failed' };
+      return { success: true };
     } catch (error) {
       logger.error('Sign up error:', error);
       return { success: false, error: 'An unexpected error occurred' };
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const signOut = async () => {
     try {
-      setIsLoading(true);
       await authClient.signOut();
-      setSession(null);
       // Redirect to home page
       window.location.href = '/';
     } catch (error) {
       logger.error('Sign out error:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -148,18 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { success: false, error: result.error.message };
       }
 
-      if (result.data && session) {
-        setSession({
-          ...session,
-          user: {
-            ...session.user,
-            ...data,
-          },
-        });
-        return { success: true };
-      }
-
-      return { success: false, error: 'Profile update failed' };
+      return { success: true };
     } catch (error) {
       logger.error('Profile update error:', error);
       return { success: false, error: 'An unexpected error occurred' };
@@ -167,32 +116,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const refreshSession = async () => {
-    try {
-      const sessionData = await authClient.getSession();
-      if (sessionData?.data) {
-        const user = sessionData.data.user as any;
-        setSession({
-          user: {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: (user.role as 'customer' | 'provider' | 'admin') || 'customer',
-            phoneNumber: user.phoneNumber || undefined,
-            address: user.address || undefined,
-            image: user.image || undefined,
-          },
-          session: {
-            id: sessionData.data.session.id,
-            expiresAt: new Date(sessionData.data.session.expiresAt),
-          },
-        });
-      } else {
-        setSession(null);
-      }
-    } catch (error) {
-      logger.error('Failed to refresh session:', error);
-      setSession(null);
-    }
+    // With better-auth, this is handled automatically by the useSession hook
+    window.location.reload();
   };
 
   const value: AuthContextType = {

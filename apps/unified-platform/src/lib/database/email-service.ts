@@ -1,5 +1,5 @@
-import { type Language } from '@/lib/utils';
 import { logger } from '../production-logger';
+import { Language } from '../utils/i18n';
 
 /**
  * Enhanced email data interface with multi-language support
@@ -32,11 +32,11 @@ export async function sendEmail(emailData: EmailData): Promise<void> {
   // In production, this would integrate with a real email service like SendGrid, AWS SES, etc.
   
   logger.info('=== EMAIL SERVICE ===');
-  logger.info('To:', emailData.to);
-  logger.info('Subject:', emailData.subject);
-  logger.info('Template:', emailData.template);
-  logger.info('Language:', emailData.data.language);
-  logger.info('Data:', JSON.stringify(emailData.data, null, 2));
+  logger.info('To:', { to: emailData.to });
+  logger.info('Subject:', { subject: emailData.subject });
+  logger.info('Template:', { template: emailData.template });
+  logger.info('Language:', { language: emailData.data.language });
+  logger.info('Data:', { data: JSON.stringify(emailData.data, null, 2) });
   
   // Get localized greeting based on language
   const greeting = emailData.data.language === 'ar' 
@@ -131,10 +131,18 @@ export interface EmailServiceConfig {
   };
 }
 
+export type EmailService = {
+  sendEmail: (emailData: EmailData) => Promise<void>;
+  getTemplates: () => string[];
+  getTemplateLanguages: (templateName: string) => Language[];
+  sendBookingConfirmation: (emailData: EmailData) => Promise<void>;
+  sendBookingCancellation: (emailData: EmailData) => Promise<void>;
+};
+
 /**
  * Enhanced email service factory with multi-language support
  */
-export function createEmailService(config: EmailServiceConfig) {
+export function createEmailService(config: EmailServiceConfig): EmailService {
   // Validate configuration
   if (!config.provider) {
     throw new Error('Email service provider is required');
@@ -203,5 +211,51 @@ export function createEmailService(config: EmailServiceConfig) {
       
       return Object.keys(template) as Language[];
     },
+    sendBookingConfirmation: async (emailData: EmailData): Promise<void> => {
+      // Validate email data
+      if (!emailData.to || !emailData.template) {
+        throw new Error('Email recipient and template are required');
+      }
+      
+      // Check if template exists for the specified language
+      const template = config.templates[emailData.template];
+      if (!template) {
+        throw new Error(`Template "${emailData.template}" not found`);
+      }
+      
+      const languageTemplate = template[emailData.data.language];
+      if (!languageTemplate) {
+        // Fall back to French if the requested language is not available
+        logger.warn(`Template "${emailData.template}" not available in language "${emailData.data.language}", falling back to French`);
+        emailData.data.language = 'fr';
+      }
+      
+      // In a real implementation, this would use the appropriate email service
+      // For now, use the mock implementation
+      return sendEmail(emailData);
+    },
+    sendBookingCancellation: async (emailData: EmailData): Promise<void> => {
+      // Validate email data
+      if (!emailData.to || !emailData.template) {
+        throw new Error('Email recipient and template are required');
+      }
+      
+      // Check if template exists for the specified language
+      const template = config.templates[emailData.template];
+      if (!template) {
+        throw new Error(`Template "${emailData.template}" not found`);
+      }
+      
+      const languageTemplate = template[emailData.data.language];
+      if (!languageTemplate) {
+        // Fall back to French if the requested language is not available
+        logger.warn(`Template "${emailData.template}" not available in language "${emailData.data.language}", falling back to French`);
+        emailData.data.language = 'fr';
+      }
+      
+      // In a real implementation, this would use the appropriate email service
+      // For now, use the mock implementation
+      return sendEmail(emailData);
+    }
   };
 }

@@ -275,7 +275,7 @@ export function validateSecurityEnvironment(): {
   const requiredVars = [
     'ENCRYPTION_MASTER_KEY',
     'ENCRYPTION_SALT',
-    'NEXTAUTH_SECRET',
+    'AUTH_SECRET',
   ];
 
   const missingVars = requiredVars.filter(varName => !process.env[varName]);

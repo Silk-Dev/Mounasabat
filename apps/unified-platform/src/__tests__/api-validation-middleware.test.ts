@@ -46,7 +46,7 @@ describe('withApiValidation', () => {
         'content-type': 'application/json',
         'user-agent': 'test-agent',
       }),
-      json: jest.fn().mockResolvedValue({}),
+      json: jest.fn().mockResolvedValue({}) as () => Promise<any>,
     };
   });
 

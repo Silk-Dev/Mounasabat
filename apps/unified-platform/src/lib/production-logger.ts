@@ -30,7 +30,7 @@ export interface LogEntry {
   level: LogLevel;
   message: string;
   timestamp: Date;
-  context: LogContext;
+  context: LogContext;  
   error?: {
     name: string;
     message: string;
@@ -432,10 +432,11 @@ class ProductionLogger {
   }
 
   performanceWarning(metric: string, value: number, threshold: number, context?: LogContext): void {
-    this.warn(`Performance warning: ${metric} (${value}ms > ${threshold}ms)`, context, new Error({
+    this.warn(`Performance warning: ${metric} (${value}ms > ${threshold}ms)`, {
+      ...context,
       component: 'performance',
       metadata: { metric, value, threshold },
-    }));
+    });
   }
 
   securityEvent(event: string, severity: 'low' | 'medium' | 'high' | 'critical', context?: LogContext): void {

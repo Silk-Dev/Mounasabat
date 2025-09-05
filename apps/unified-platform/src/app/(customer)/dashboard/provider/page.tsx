@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,7 +32,7 @@ export interface ProviderStats {
 }
 
 export default function ProviderDashboard() {
-  const { data: session, status } = useSession();
+  const { session, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
   const [services, setServices] = useState<Service[]>([]);
@@ -47,12 +47,12 @@ export default function ProviderDashboard() {
   });
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (!authLoading && !session) {
       router.push('/login');
       return;
     }
 
-    if (status === 'authenticated' && session?.user) {
+    if (!authLoading && session?.user) {
       // Check if user is a provider
       const checkProvider = async () => {
         try {
@@ -69,7 +69,7 @@ export default function ProviderDashboard() {
       };
       checkProvider();
     }
-  }, [status, session, router]);
+  }, [authLoading, session, router]);
 
   const fetchServices = async () => {
     try {
@@ -157,7 +157,7 @@ export default function ProviderDashboard() {
     }
   };
 
-  if (status === 'loading' || isLoading) {
+  if (authLoading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>

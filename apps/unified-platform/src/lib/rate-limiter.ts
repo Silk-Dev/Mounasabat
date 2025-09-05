@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import Redis from 'ioredis';
-import { logger } from './logger';
+import { logger } from './production-logger';
 
 // Rate limiter configuration
 interface RateLimitConfig {
@@ -63,7 +63,7 @@ class RateLimiter {
 
   private getDefaultKeyGenerator(req: NextRequest): string {
     // Use IP address and user agent for anonymous users
-    const ip = req.ip || req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
     const userAgent = req.headers.get('user-agent') || 'unknown';
     
     // If user is authenticated, use user ID

@@ -27,7 +27,7 @@ async function handleGET(request: NextRequest) {
     activeOnly: activeOnly === 'true',
   };
 
-  const categories = await CategoryService.getAllCategories(options);
+  const categories = await CategoryService.getAllCategories();
 
   // Validate categories data
   if (!Array.isArray(categories)) {

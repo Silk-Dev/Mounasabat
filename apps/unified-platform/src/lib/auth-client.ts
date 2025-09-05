@@ -1,2 +1,6 @@
-// Re-export next-auth/react for client components
-export { useSession, signIn, signOut } from 'next-auth/react';
+// Re-export from the database auth client for consistency
+export { authClient } from '@/lib/database/auth-client';
+
+// Export the hooks for easier usage  
+import { authClient } from '@/lib/database/auth-client';
+export const { useSession, $Infer } = authClient;

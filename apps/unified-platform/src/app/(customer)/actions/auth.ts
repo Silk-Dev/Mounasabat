@@ -13,7 +13,7 @@ export async function authenticate(
       return { error: 'Email et mot de passe requis' };
     }
     
-    // La validation réelle sera gérée par NextAuth
+    // La validation réelle sera gérée par better-auth
     return { success: true };
   } catch (error) {
     console.error('Authentication error:', error);

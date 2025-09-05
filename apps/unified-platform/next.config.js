@@ -100,7 +100,7 @@ const nextConfig = {
           {
             key: 'Access-Control-Allow-Origin',
             value: process.env.NODE_ENV === 'production'
-              ? (process.env.NEXTAUTH_URL || 'https://mounasabet.com')
+              ? (process.env.NEXT_PUBLIC_APP_URL || 'https://mounasabet.com')
               : 'http://localhost:3000',
           },
           {

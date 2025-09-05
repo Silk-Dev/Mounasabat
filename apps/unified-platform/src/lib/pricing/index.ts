@@ -1,4 +1,4 @@
-import { prisma } from '@mounasabet/database/src/prisma';
+import { prisma } from '../prisma';
 import { logger } from '../production-logger';
 
 export async function createBooking(data: any) {

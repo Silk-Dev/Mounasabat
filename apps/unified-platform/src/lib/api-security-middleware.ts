@@ -153,7 +153,7 @@ export function withSecurity<T extends any[]>(
       // Validate origin for state-changing requests
       if (config.validateOrigin && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) {
         const allowedOrigins = [
-          process.env.NEXTAUTH_URL || 'http://localhost:3000',
+          process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
           process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '',
           'http://localhost:3000',
           'http://localhost:3001',

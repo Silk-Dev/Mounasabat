@@ -74,7 +74,7 @@ export async function middleware(request: NextRequest) {
       if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) {
         // Validate origin
         const allowedOrigins = [
-          process.env.NEXTAUTH_URL || 'http://localhost:3000',
+          process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
           process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '',
         ].filter(Boolean);
 
@@ -248,7 +248,7 @@ export async function middleware(request: NextRequest) {
       description: `Middleware error for ${pathname}: ${error}`,
       success: false,
       errorMessage: error instanceof Error ? error.message : String(error),
-      ipAddress: request.ip || request.headers.get('x-forwarded-for') || 'unknown',
+      ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
       userAgent: request.headers.get('user-agent') || 'unknown',
     });
     

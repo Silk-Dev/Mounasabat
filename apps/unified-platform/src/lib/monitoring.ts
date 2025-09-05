@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/nextjs';
-import { logger } from './logger';
+import { logger } from './production-logger';
 import { prisma } from './prisma';
 
 // Initialize Sentry for error monitoring
@@ -19,8 +19,9 @@ export function initializeMonitoring() {
         return event;
       },
       integrations: [
-        new Sentry.Integrations.Http({ tracing: true }),
-        new Sentry.Integrations.Express({ app: undefined }),
+        // Note: Updated integrations for newer Sentry versions
+        // new Sentry.Integrations.Http({ tracing: true }),
+        // new Sentry.Integrations.Express({ app: undefined }),
       ],
     });
   }
@@ -138,11 +139,13 @@ export async function performHealthCheck(): Promise<HealthCheck> {
     // Log health check results for monitoring
     if (overallStatus !== 'healthy') {
       logger.warn('System health check shows issues', {
-        status: overallStatus,
-        services: Object.entries(services).reduce((acc, [key, service]) => {
-          acc[key] = service.status;
-          return acc;
-        }, {} as Record<string, string>),
+        metadata: {
+          status: overallStatus,
+          services: Object.entries(services).reduce((acc, [key, service]) => {
+            acc[key] = service.status;
+            return acc;
+          }, {} as Record<string, string>)
+        }
       });
     }
     
@@ -451,7 +454,7 @@ async function checkGenericHealthEndpoint(url: string, serviceName: string): Pro
     });
     return response.ok;
   } catch (error) {
-    logger.warn(`External service ${serviceName} health check failed:`, error);
+    logger.warn(`External service ${serviceName} health check failed:`, { metadata: { error: String(error) } });
     return false;
   }
 }
@@ -485,7 +488,7 @@ async function getSystemMetrics() {
       ` as any[];
       databaseConnections = parseInt(connectionInfo[0]?.count || '0');
     } catch (error) {
-      logger.warn('Failed to get database connection count:', error);
+      logger.warn('Failed to get database connection count:', { metadata: { error: String(error) } });
     }
     
     // Calculate error rate from recent error logs
@@ -501,7 +504,7 @@ async function getSystemMetrics() {
       });
       errorRate = recentErrors / 5; // Errors per minute
     } catch (error) {
-      logger.warn('Failed to calculate error rate:', error);
+      logger.warn('Failed to calculate error rate:', { metadata: { error: String(error) } });
     }
     
     return {

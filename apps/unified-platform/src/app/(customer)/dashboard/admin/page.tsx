@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -44,7 +44,7 @@ interface Service {
 }
 
 export default function AdminDashboard() {
-  const { data: session, status } = useSession();
+  const { session, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
   const [providers, setProviders] = useState<Provider[]>([]);
@@ -58,12 +58,12 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (!authLoading && !session) {
       router.push('/login');
       return;
     }
 
-    if (status === 'authenticated' && session?.user) {
+    if (!authLoading && session?.user) {
       // Check if user is admin
       const checkAdmin = async () => {
         try {
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
       };
       checkAdmin();
     }
-  }, [status, session, router]);
+  }, [authLoading, session, router]);
 
   const fetchData = async () => {
     try {
@@ -164,7 +164,7 @@ export default function AdminDashboard() {
     }
   };
 
-  if (status === 'loading' || isLoading) {
+  if (authLoading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>

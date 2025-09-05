@@ -1,6 +1,7 @@
 #!/usr/bin/env tsx
 
-import { PrismaClient } from "../src/generated/client";
+import { PrismaClient } from "@prisma/client";
+
 import { SeedManager } from "../src/seed-manager";
 
 const prisma = new PrismaClient();

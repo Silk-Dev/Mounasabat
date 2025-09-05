@@ -5,7 +5,6 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/client"
 }
 
 enum EventStatus {
@@ -69,6 +68,11 @@ enum MessageType {
 enum PricingType {
   FIXED
   QUOTE
+}
+enum PricingUnit {
+  PER_HOUR
+  PER_DAY
+  FIXED
 }
 
 enum IssueStatus {
@@ -323,7 +327,9 @@ model Service {
   images       String[]
   pricingType  PricingType @default(FIXED)
   basePrice    Float?
-  priceUnit    String? // "per_hour", "per_day", "fixed"
+  currencyCode String      @default("TND") @db.Char(3)
+  currency     Currency    @relation(fields: [currencyCode], references: [code])
+  priceUnit    PricingUnit @default(FIXED)
   location     String?
   coverageArea String[]
   isActive     Boolean     @default(true)
@@ -344,7 +350,26 @@ model Service {
   @@index([isActive])
   @@index([providerId])
 }
+model Currency {
+  code String @id @db.Char(3) // e.g., "USD", "EUR", "TND"
+  name String
+  symbol String @db.Char(5) // e.g., "$", "€", "DT"
+  
+  // Relationships
+  services Service[]
+}
 
+model CurrencyHistoricalRate {
+  id          String   @id @default(uuid())
+  fromCurrency String   @db.Char(3)
+  toCurrency   String   @db.Char(3)
+  rate        Float
+  date        DateTime
+
+  @@unique([fromCurrency, toCurrency, date])
+  @@index([fromCurrency])
+  @@index([toCurrency])
+}
 model Product {
   id             String   @id @default(uuid())
   name           String

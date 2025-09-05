@@ -121,7 +121,6 @@ export default function Header() {
 
         <ul className={`
           flex gap-8 text-base font-semibold transition-colors duration-300`}>
-          <li><a href="/" className="hover:text-[#1CCFC9] transition">Accueil</a></li>
           <li className="relative">
             <button 
               onClick={toggleEventMenu}

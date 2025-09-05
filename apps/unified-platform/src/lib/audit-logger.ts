@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { DataEncryption } from './encryption';
-import { logger } from './logger';
+import { logger } from './production-logger';
 
 // Audit log levels
 export enum AuditLogLevel {
@@ -61,6 +61,7 @@ export enum AuditEventType {
   SYSTEM_CONFIG_CHANGED = 'system_config_changed',
   DATA_EXPORT = 'data_export',
   DATA_IMPORT = 'data_import',
+  API_REQUEST = 'api_request',
 }
 
 // Audit log entry interface
@@ -139,8 +140,7 @@ export class AuditLogger {
     req: NextRequest,
     entry: Omit<AuditLogEntry, 'id' | 'timestamp' | 'ipAddress' | 'userAgent' | 'requestId'>
   ): Promise<void> {
-    const ipAddress = req.ip || 
-      req.headers.get('x-forwarded-for') || 
+    const ipAddress = req.headers.get('x-forwarded-for') || 
       req.headers.get('x-real-ip') || 
       'unknown';
     
@@ -304,20 +304,20 @@ export class AuditLogger {
         timestamp: log.timestamp,
         level: log.level as AuditLogLevel,
         eventType: log.eventType as AuditEventType,
-        userId: log.userId,
-        userRole: log.userRole,
-        targetUserId: log.targetUserId,
-        targetResourceId: log.targetResourceId,
-        targetResourceType: log.targetResourceType,
+        userId: log.userId || undefined,
+        userRole: log.userRole || undefined,
+        targetUserId: log.targetUserId || undefined,
+        targetResourceId: log.targetResourceId || undefined,
+        targetResourceType: log.targetResourceType || undefined,
         action: log.action,
         description: log.description,
         metadata: log.metadata as Record<string, any>,
-        ipAddress: log.ipAddress,
-        userAgent: log.userAgent,
-        sessionId: log.sessionId,
+        ipAddress: log.ipAddress || undefined,
+        userAgent: log.userAgent || undefined,
+        sessionId: log.sessionId || undefined,
         success: log.success,
-        errorMessage: log.errorMessage,
-        requestId: log.requestId,
+        errorMessage: log.errorMessage || undefined,
+        requestId: log.requestId || undefined,
       }));
     } catch (error) {
       logger.error('Failed to retrieve audit logs from database:', error);
@@ -521,20 +521,20 @@ export class AuditLogger {
 
       // Also log to console in development for debugging
       if (process.env.NODE_ENV === 'development') {
-        logger.info('AUDIT LOG:', JSON.stringify(entry, null, 2));
+        logger.info('AUDIT LOG: ' + JSON.stringify(entry, null, 2));
       }
     } catch (error) {
       // Fallback to console logging if database fails
       logger.error('Failed to persist audit log to database:', error);
-      logger.info('AUDIT LOG (fallback):', JSON.stringify(entry, null, 2));
+      logger.info('AUDIT LOG (fallback): ' + JSON.stringify(entry, null, 2));
     }
   }
 
   // Private method to send critical alerts
   private async sendCriticalAlert(entry: AuditLogEntry): Promise<void> {
     // In production, implement alerting (email, Slack, PagerDuty, etc.)
-    logger.error('CRITICAL AUDIT EVENT:', JSON.stringify(entry, null, 2));
-    
+    logger.error('CRITICAL AUDIT EVENT: ' + JSON.stringify(entry, null, 2));
+
     // TODO: Implement alerting system
     // await sendSlackAlert(entry);
     // await sendEmailAlert(entry);
@@ -557,7 +557,7 @@ export const auditHelpers = {
       success: true,
       metadata: { email, role },
       ...(req && {
-        ipAddress: req.ip || req.headers.get('x-forwarded-for') || 'unknown',
+        ipAddress:  req.headers.get('x-forwarded-for') || 'unknown',
         userAgent: req.headers.get('user-agent') || 'unknown',
       }),
     }),
@@ -575,7 +575,7 @@ export const auditHelpers = {
       success: true,
       metadata: { serviceId, amount },
       ...(req && {
-        ipAddress: req.ip || req.headers.get('x-forwarded-for') || 'unknown',
+        ipAddress:  req.headers.get('x-forwarded-for') || 'unknown',
         userAgent: req.headers.get('user-agent') || 'unknown',
       }),
     }),
@@ -593,7 +593,7 @@ export const auditHelpers = {
       success,
       metadata: { amount, paymentId },
       ...(req && {
-        ipAddress: req.ip || req.headers.get('x-forwarded-for') || 'unknown',
+        ipAddress:  req.headers.get('x-forwarded-for') || 'unknown',
         userAgent: req.headers.get('user-agent') || 'unknown',
       }),
     }),

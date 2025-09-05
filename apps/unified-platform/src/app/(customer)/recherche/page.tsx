@@ -1,8 +1,8 @@
 "use client";
+import TabsWithStar from "@/components/TabsWithStar";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import TabsWithStar from "@/app/components/TabsWithStar";
 
 interface Service {
   id: string;
