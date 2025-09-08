@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { PrismaClient } from '@/generated/client';
+import { prisma } from "@/lib/database/prisma";
 import { logger } from '@/lib/production-logger';
 import { withApiMiddleware, withAuth } from '@/lib/api-middleware';
 import { ApiResponseBuilder } from '@/lib/api-response';
 import { validateRequiredFields } from '@/lib/api-response';
 
-const prisma = new PrismaClient();
 
 // Validation schemas
 const reviewsQuerySchema = z.object({

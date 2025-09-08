@@ -127,10 +127,6 @@ export async function GET() {
     // Filter out null locations
     const validLocations = transformedLocations.filter(Boolean);
 
-    logger.info('Homepage data fetched successfully', {
-      servicesCount: transformedServices.length,
-      locationsCount: validLocations.length,
-    });
 
     return NextResponse.json({
       success: true,

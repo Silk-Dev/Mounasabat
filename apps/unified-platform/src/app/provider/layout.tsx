@@ -118,7 +118,8 @@ export default function ProviderLayout({
   children: React.ReactNode;
 }) {
   const { session, isLoading } = useAuth();
-  const { isProvider } = useRole();
+  const { role, isProvider } = useRole();
+  console.log(role)
 
   if (isLoading) {
     return (

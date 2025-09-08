@@ -54,25 +54,6 @@ export default function RootLayout({
         {/* Resource hints */}
         <link rel="prefetch" href="/api/categories" />
         <link rel="prefetch" href="/api/locations" />
-
-        {/* Service Worker Registration */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js')
-                    .then(function(registration) {
-                      logger.info('SW registered: ', registration);
-                    })
-                    .catch(function(registrationError) {
-                      logger.info('SW registration failed: ', registrationError);
-                    });
-                });
-              }
-            `,
-          }}
-        />
       </head>
       <body className={fontBirthstone.variable + " " + inter.className}>
         <PerformanceProvider>

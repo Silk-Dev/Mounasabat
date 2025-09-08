@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/generated/client';
+import { prisma } from "@/lib/database/prisma";
 import { logger } from '@/lib/production-logger';
 
-const prisma = new PrismaClient();
 
 // GET /api/reviews/[id] - Get a specific review
 export async function GET(

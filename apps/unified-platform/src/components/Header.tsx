@@ -9,6 +9,7 @@ import {
   WrenchScrewdriverIcon,
   UserGroupIcon} from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { useAuth } from "@/lib/auth-context";
 
 export default function Header() {
   const pathname = usePathname();
@@ -24,7 +25,7 @@ export default function Header() {
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [searchCategory, setSearchCategory] = useState('etablissement');
   const searchRef = useRef<HTMLDivElement>(null);
-
+  const { session, signOut } = useAuth();
   // Toggle dropdown menu
   const toggleEventMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -107,13 +108,7 @@ export default function Header() {
   return (
     <header
       className={`
-        fixed top-0 left-0 w-full z-50 transition-all duration-300
-        ${scrolled 
-          ? "bg-white/30 backdrop-blur-sm shadow-sm text-[#222]" 
-          : isSearchPage 
-            ? "bg-transparent text-[#222]"
-            : "bg-transparent text-white"
-        }
+        fixed top-0 left-0 w-full z-50 transition-all duration-300bg-white/30 backdrop-blur-sm shadow-sm text-[#222]" 
       `}
     >
       <nav className="relative z-10 max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
@@ -173,14 +168,31 @@ export default function Header() {
           
         </ul>
 
-        <div className="flex items-center gap-4">
-          <a
-            href="/connexion"
-            className="inline-flex items-center justify-center bg-[#F45B5B] text-white px-7 py-3 rounded-full font-medium hover:bg-[#d63d3d] transition-colors text-[15px] tracking-wide"
-          >
-            Connexion
-          </a>
-        </div>
+        {session ? (
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/provider/dashboard"
+              className="inline-flex items-center justify-center bg-[#1BA3A9] text-white px-7 py-3 rounded-full font-medium hover:bg-[#16837A] transition-colors text-[15px] tracking-wide"
+            >
+              Tableau de bord
+            </Link>
+            <button
+              onClick={() => signOut()}
+              className="inline-flex items-center justify-center bg-[#F45B5B] text-white px-7 py-3 rounded-full font-medium hover:bg-[#d63d3d] transition-colors text-[15px] tracking-wide"
+            >
+              Déconnexion
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/auth/signin"
+              className="inline-flex items-center justify-center bg-[#F45B5B] text-white px-7 py-3 rounded-full font-medium hover:bg-[#d63d3d] transition-colors text-[15px] tracking-wide"
+            >
+              Connexion
+            </Link>
+          </div>
+        )}
       </nav>
     </header>
   );

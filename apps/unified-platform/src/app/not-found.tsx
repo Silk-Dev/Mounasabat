@@ -38,14 +38,15 @@ export default function NotFoundPage() {
               </Button>
             </Link>
             <div className="grid grid-cols-2 gap-3">
+            <Link href="/" className="w-full">
               <Button 
                 variant="outline" 
-                onClick={() => window.history.back()}
                 className="w-full"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Go Back
               </Button>
+              </Link>
               <Link href="/search" className="w-full">
                 <Button variant="outline" className="w-full">
                   <Search className="w-4 h-4 mr-2" />

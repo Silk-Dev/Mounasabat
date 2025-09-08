@@ -1,3 +1,4 @@
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -69,6 +70,7 @@ enum PricingType {
   FIXED
   QUOTE
 }
+
 enum PricingUnit {
   PER_HOUR
   PER_DAY
@@ -350,26 +352,27 @@ model Service {
   @@index([isActive])
   @@index([providerId])
 }
+
 model Currency {
-  code String @id @db.Char(3) // e.g., "USD", "EUR", "TND"
-  name String
-  symbol String @db.Char(5) // e.g., "$", "€", "DT"
-  
+  code     String    @id @db.Char(3) // e.g., "USD", "EUR", "TND"
+  name     String
+  symbol   String    @db.Char(5) // e.g., "$", "€", "DT"
   // Relationships
   services Service[]
 }
 
 model CurrencyHistoricalRate {
-  id          String   @id @default(uuid())
+  id           String   @id @default(uuid())
   fromCurrency String   @db.Char(3)
   toCurrency   String   @db.Char(3)
-  rate        Float
-  date        DateTime
+  rate         Float
+  date         DateTime
 
   @@unique([fromCurrency, toCurrency, date])
   @@index([fromCurrency])
   @@index([toCurrency])
 }
+
 model Product {
   id             String   @id @default(uuid())
   name           String
@@ -699,6 +702,7 @@ model Notification {
 }
 
 // Real-time chat messages
+
 model ChatMessage {
   id             String    @id @default(uuid())
   conversationId String
@@ -719,6 +723,7 @@ model ChatMessage {
 }
 
 // Provider availability slots
+
 model AvailabilitySlot {
   id          String   @id @default(uuid())
   providerId  String
@@ -739,6 +744,7 @@ model AvailabilitySlot {
 }
 
 // Junction table for booking services (many-to-many)
+
 model BookingService {
   id             String   @id @default(uuid())
   bookingId      String
@@ -756,6 +762,7 @@ model BookingService {
 }
 
 // Error logging model
+
 model ErrorLog {
   id          String   @id @default(uuid())
   message     String
@@ -775,6 +782,7 @@ model ErrorLog {
 }
 
 // Performance metrics model
+
 model PerformanceMetric {
   id        String   @id @default(uuid())
   type      String // 'LCP', 'FID', 'CLS', 'Navigation', 'APIRequest', etc.
@@ -793,6 +801,7 @@ model PerformanceMetric {
 }
 
 // Categories model for service/product categorization
+
 model Category {
   id          String   @id @default(uuid())
   name        String   @db.VarChar(100)
@@ -810,6 +819,7 @@ model Category {
 }
 
 // Search analytics model for tracking search queries
+
 model SearchAnalytics {
   id          String   @id @default(uuid())
   query       String   @db.VarChar(255)
@@ -825,6 +835,7 @@ model SearchAnalytics {
 }
 
 // System settings model for platform configuration
+
 model SystemSettings {
   key         String   @id @db.VarChar(100)
   value       Json
@@ -836,18 +847,19 @@ model SystemSettings {
 }
 
 // System alerts for monitoring and alerting
+
 model SystemAlert {
-  id          String   @id @default(cuid())
-  type        String   @db.VarChar(100)
-  severity    String   @db.VarChar(20) // ERROR, WARNING, INFO
+  id          String    @id @default(cuid())
+  type        String    @db.VarChar(100)
+  severity    String    @db.VarChar(20) // ERROR, WARNING, INFO
   message     String
   metadata    Json?
-  environment String   @db.VarChar(50)
-  resolved    Boolean  @default(false)
+  environment String    @db.VarChar(50)
+  resolved    Boolean   @default(false)
   resolvedAt  DateTime?
   resolvedBy  String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
 
   @@index([type, severity])
   @@index([environment, createdAt])
@@ -856,6 +868,7 @@ model SystemAlert {
 }
 
 // Audit log levels enum
+
 enum AuditLogLevel {
   info
   warning
@@ -864,6 +877,7 @@ enum AuditLogLevel {
 }
 
 // Audit event types enum
+
 enum AuditEventType {
   // Authentication events
   user_login
@@ -871,44 +885,37 @@ enum AuditEventType {
   user_login_failed
   password_reset
   password_changed
-  
   // User management
   user_created
   user_updated
   user_deleted
   user_suspended
   user_activated
-  
   // Provider management
   provider_approved
   provider_rejected
   provider_suspended
   provider_verified
-  
   // Service management
   service_created
   service_updated
   service_deleted
   service_approved
   service_rejected
-  
   // Booking events
   booking_created
   booking_updated
   booking_cancelled
   booking_completed
-  
   // Payment events
   payment_processed
   payment_failed
   refund_processed
-  
   // Security events
   security_violation
   rate_limit_exceeded
   unauthorized_access
   suspicious_activity
-  
   // Admin actions
   admin_action
   system_config_changed
@@ -917,6 +924,7 @@ enum AuditEventType {
 }
 
 // Audit logs model for tracking administrative actions and security events
+
 model AuditLog {
   id                 String         @id @default(uuid())
   timestamp          DateTime       @default(now())

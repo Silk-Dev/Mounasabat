@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { auth } from "@/lib/auth";
+import { PricingUnit, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -76,12 +77,12 @@ async function seedDemo() {
       },
     ];
 
+    const customerIds: Record<string, string> = {};
     for (const customer of customers) {
-      await prisma.user.upsert({
-        where: { id: customer.id },
-        update: {},
-        create: customer,
+      const created = await auth.api.createUser({
+        body: { email: customer.email, password: "password", name: customer.name, role: "customer" },
       });
+      customerIds[customer.id] = created.user.id;
     }
 
     console.log(`✅ Created ${customers.length} sample customers`);
@@ -99,6 +100,7 @@ async function seedDemo() {
         address: "Rue Mongi Slim, Tunis 1002, Tunisia",
         createdAt: new Date("2023-06-15T08:00:00Z"),
         updatedAt: new Date("2023-06-15T08:00:00Z"),
+        
       },
       {
         id: "provider-user-karim",
@@ -123,13 +125,14 @@ async function seedDemo() {
         updatedAt: new Date("2023-09-10T16:45:00Z"),
       },
     ];
+    const providerUserIds: Record<string, string> = {};
 
     for (const providerUser of providerUsers) {
-      await prisma.user.upsert({
-        where: { id: providerUser.id },
-        update: {},
-        create: providerUser,
-      });
+      
+      const user = await auth.api.createUser({
+        body: {email: providerUser.email, password: "password", name: providerUser.name, role: "provider"},
+      }); 
+      providerUserIds[providerUser.id] = user.user.id;
     }
 
     console.log(`✅ Created ${providerUsers.length} provider users`);
@@ -139,7 +142,7 @@ async function seedDemo() {
     const providers = [
       {
         id: "provider-fatima-photo",
-        userId: "provider-user-fatima",
+        userId: providerUserIds["provider-user-fatima"],
         name: "Fatima's Wedding Photography",
         description: "Professional wedding and event photography services across Tunisia. Specializing in traditional and modern wedding styles with over 8 years of experience.",
         contactEmail: "fatima.mansouri@example.com",
@@ -157,7 +160,7 @@ async function seedDemo() {
       },
       {
         id: "provider-karim-catering",
-        userId: "provider-user-karim",
+        userId: providerUserIds["provider-user-karim"],
         name: "Karim's Gourmet Catering",
         description: "Premium catering services featuring authentic Tunisian cuisine and international dishes. Perfect for weddings, corporate events, and private celebrations.",
         contactEmail: "karim.bouazizi@example.com",
@@ -175,7 +178,7 @@ async function seedDemo() {
       },
       {
         id: "provider-amina-decoration",
-        userId: "provider-user-amina",
+        userId: providerUserIds["provider-user-amina"],
         name: "Amina's Event Decoration",
         description: "Creative event decoration and floral arrangements. Transforming venues into magical spaces for weddings, birthdays, and special occasions.",
         contactEmail: "amina.gharbi@example.com",
@@ -319,7 +322,7 @@ async function seedDemo() {
           images: service.images,
           pricingType: service.pricingType as any,
           basePrice: service.basePrice,
-          priceUnit: service.priceUnit,
+          priceUnit: PricingUnit.FIXED,
           location: service.location,
           coverageArea: service.coverageArea,
           isActive: service.isActive,
@@ -380,7 +383,7 @@ async function seedDemo() {
       {
         id: "booking-ahmed-photography",
         eventId: "event-ahmed-leila-wedding",
-        userId: "customer-ahmed",
+        userId: customerIds["customer-ahmed"],
         providerId: "provider-fatima-photo",
         serviceId: "service-wedding-photo-premium",
         startTime: new Date("2025-09-15T14:00:00Z"),
@@ -397,7 +400,7 @@ async function seedDemo() {
       {
         id: "booking-ahmed-catering",
         eventId: "event-ahmed-leila-wedding",
-        userId: "customer-ahmed",
+        userId: customerIds["customer-ahmed"],
         providerId: "provider-karim-catering",
         serviceId: "service-wedding-catering-deluxe",
         startTime: new Date("2025-09-15T18:00:00Z"),
@@ -414,7 +417,7 @@ async function seedDemo() {
       {
         id: "booking-mohamed-decoration",
         eventId: "event-mohamed-birthday",
-        userId: "customer-mohamed",
+        userId: customerIds["customer-mohamed"],
         providerId: "provider-amina-decoration",
         serviceId: "service-birthday-decoration",
         startTime: new Date("2025-08-25T17:00:00Z"),
@@ -443,7 +446,7 @@ async function seedDemo() {
     console.log("⭐ Creating sample reviews...");
     const reviews = [
       {
-        userId: "customer-ahmed",
+        userId: customerIds["customer-ahmed"],
         providerId: "provider-fatima-photo",
         serviceId: "service-wedding-photo-premium",
         rating: 5,
@@ -452,7 +455,7 @@ async function seedDemo() {
         createdAt: new Date("2024-09-20T10:30:00Z"),
       },
       {
-        userId: "customer-leila",
+        userId: customerIds["customer-leila"],
         providerId: "provider-karim-catering",
         serviceId: "service-wedding-catering-deluxe",
         rating: 4,
@@ -461,7 +464,7 @@ async function seedDemo() {
         createdAt: new Date("2024-10-05T14:15:00Z"),
       },
       {
-        userId: "customer-mohamed",
+        userId: customerIds["customer-mohamed"],
         providerId: "provider-amina-decoration",
         serviceId: "service-wedding-decoration-romantic",
         rating: 5,
@@ -470,7 +473,7 @@ async function seedDemo() {
         createdAt: new Date("2024-07-12T16:45:00Z"),
       },
       {
-        userId: "customer-ahmed",
+        userId: customerIds["customer-ahmed"],
         providerId: "provider-amina-decoration",
         serviceId: "service-birthday-decoration",
         rating: 4,
@@ -496,7 +499,7 @@ async function seedDemo() {
     const conversations = [
       {
         id: "conv-ahmed-fatima",
-        userId: "customer-ahmed",
+        userId: customerIds["customer-ahmed"],
         providerId: "provider-fatima-photo",
         serviceId: "service-wedding-photo-premium",
         status: "ACTIVE" as const,
@@ -504,7 +507,7 @@ async function seedDemo() {
       },
       {
         id: "conv-mohamed-amina",
-        userId: "customer-mohamed",
+        userId: customerIds["customer-mohamed"],
         providerId: "provider-amina-decoration",
         serviceId: "service-birthday-decoration",
         status: "ACTIVE" as const,
@@ -524,28 +527,28 @@ async function seedDemo() {
     const messages = [
       {
         conversationId: "conv-ahmed-fatima",
-        senderId: "customer-ahmed",
+        senderId: customerIds["customer-ahmed"],
         content: "Hello Fatima, I'm interested in your premium wedding photography package for my wedding in September. Could you tell me more about what's included?",
         messageType: "TEXT" as const,
         createdAt: new Date("2025-07-15T09:35:00Z"),
       },
       {
         conversationId: "conv-ahmed-fatima",
-        senderId: "provider-user-fatima",
+        senderId: providerUserIds["provider-user-fatima"],
         content: "Hello Ahmed! Congratulations on your upcoming wedding! The premium package includes 8 hours of coverage, pre-wedding session, ceremony and reception photography, plus 200+ professionally edited photos delivered digitally. Would you like to schedule a consultation?",
         messageType: "TEXT" as const,
         createdAt: new Date("2025-07-15T10:15:00Z"),
       },
       {
         conversationId: "conv-mohamed-amina",
-        senderId: "customer-mohamed",
+        senderId: customerIds["customer-mohamed"],
         content: "Hi Amina, I'm planning a 30th birthday party and would love to discuss decoration options. The theme is modern minimalist with blue and gold colors.",
         messageType: "TEXT" as const,
         createdAt: new Date("2025-08-10T14:25:00Z"),
       },
       {
         conversationId: "conv-mohamed-amina",
-        senderId: "provider-user-amina",
+        senderId: providerUserIds["provider-user-amina"],
         content: "Hello Mohamed! I'd love to help create a beautiful setup for your birthday celebration. Blue and gold is a stunning combination! Let me prepare some ideas and send you a quote. How many guests are you expecting?",
         messageType: "TEXT" as const,
         createdAt: new Date("2025-08-10T15:10:00Z"),
@@ -567,19 +570,19 @@ async function seedDemo() {
     console.log("❤️ Creating sample favorites...");
     const favorites = [
       {
-        userId: "customer-ahmed",
+        userId: customerIds["customer-ahmed"],
         providerId: "provider-fatima-photo",
       },
       {
-        userId: "customer-leila",
+        userId: customerIds["customer-leila"],
         providerId: "provider-karim-catering",
       },
       {
-        userId: "customer-mohamed",
+        userId: customerIds["customer-mohamed"],
         providerId: "provider-amina-decoration",
       },
       {
-        userId: "customer-ahmed",
+        userId: customerIds["customer-ahmed"],
         productId: "product-invitation-basic",
       },
     ];
@@ -599,7 +602,7 @@ async function seedDemo() {
     console.log("🔔 Creating sample notifications...");
     const notifications = [
       {
-        userId: "customer-ahmed",
+        userId: customerIds["customer-ahmed"],
         type: "EMAIL" as const,
         title: "Booking Confirmed",
         message: "Your wedding photography booking has been confirmed for September 15, 2025!",
@@ -612,7 +615,7 @@ async function seedDemo() {
         createdAt: new Date("2025-07-20T11:30:00Z"),
       },
       {
-        userId: "provider-user-fatima",
+        userId: providerUserIds["provider-user-fatima"],
         type: "IN_APP" as const,
         title: "New Booking Request",
         message: "You have received a new booking request for wedding photography.",
@@ -624,7 +627,7 @@ async function seedDemo() {
         createdAt: new Date("2025-07-18T16:45:00Z"),
       },
       {
-        userId: "customer-mohamed",
+        userId: customerIds["customer-mohamed"],
         type: "PUSH" as const,
         title: "Quote Received",
         message: "Amina's Event Decoration has sent you a quote for birthday decoration.",

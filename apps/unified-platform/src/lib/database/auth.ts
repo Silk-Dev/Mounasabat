@@ -2,7 +2,18 @@ import { betterAuth } from "better-auth";
 import { PrismaClient } from "@prisma/client";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin } from "better-auth/plugins";
+import { createAccessControl } from "better-auth/plugins/access";
 
+export const statement = {
+  project: ["create", "share", "update", "delete"],
+} as const;
+const ac = createAccessControl(statement)
+const provider = ac.newRole({
+  project: ["create", "share", "update", "delete"],
+})
+const customer = ac.newRole({
+  project: ["create", "share", "update", "delete"],
+})
 const prisma = new PrismaClient();
 
 /**
@@ -22,7 +33,19 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day
   },
+  additionalFields: {
+    role: {
+      type: "string",
+      required: true,
+    },
+  },
   plugins: [
-    admin()
+    admin({
+      ac,
+      roles: {
+        customer,
+        provider
+      },
+    })
   ],
 });

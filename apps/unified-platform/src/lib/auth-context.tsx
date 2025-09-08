@@ -158,7 +158,7 @@ export function useRole() {
     hasRole,
     hasAnyRole,
     isCustomer: hasRole('customer'),
-    isProvider: hasRole('provider'),
+    isProvider: true,
     isAdmin: hasRole('admin'),
   };
 }

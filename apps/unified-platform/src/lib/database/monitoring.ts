@@ -3,7 +3,7 @@
  * Monitors empty states, missing data, and data integrity
  */
 
-import { PrismaClient } from '@/generated/client';
+import { PrismaClient } from "@prisma/client";
 import { logger } from '../production-logger';
 
 export interface MonitoringMetrics {

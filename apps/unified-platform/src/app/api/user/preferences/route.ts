@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/generated/client';
+import { prisma } from "@/lib/database/prisma";
 import { logger } from '@/lib/production-logger';
 import { withPublicSecurity, withAuthSecurity, createAPIResponse, sanitizeRequestBody } from '@/lib/api-security-middleware';
 import { z } from 'zod';
 import { InputSanitizer } from '@/lib/security';
 
-const prisma = new PrismaClient();
 
 // Validation schema for user preferences
 const preferencesSchema = z.object({

@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/generated/client';
+import { prisma } from "@/lib/database/prisma";
 import { logger } from '@/lib/production-logger';
 import { getSession } from '@/lib/auth';
 import { auditLogger, AuditEventType, AuditLogLevel } from '@/lib/audit-logger';
 import { id } from 'date-fns/locale';
 
-const prisma = new PrismaClient();
 
 // PUT /api/admin/reviews/[id] - Admin update review
 export async function PUT(

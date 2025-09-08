@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from '@/components/ui';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { authClient } from '@/lib/auth-client';
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -70,13 +71,17 @@ export default function SignUpPage() {
     setIsLoading(true);
 
     try {
-      const result = await signUp(formData.email, formData.password, formData.name);
+      const result = await authClient.signUp.email({
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+          role: formData.role,
+      });
       
-      if (result.success) {
+      if (result.data) {
         // Update user role if not customer
         if (formData.role !== 'customer') {
-          // This would typically be handled by an API call to update the user role
-          // For now, we'll redirect to the appropriate dashboard
+          
         }
         router.push('/');
       } else {

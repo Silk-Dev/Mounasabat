@@ -1,3 +1,4 @@
+import { auth } from "@/lib/auth";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -8,6 +9,7 @@ const prisma = new PrismaClient();
  * 
  * Creates:
  * - System admin accounts
+ * - Essential currencies
  * - Essential service categories
  * - System configuration settings
  * - Default templates for common event types
@@ -18,22 +20,36 @@ async function seedBase() {
   try {
     // Create system admin user
     console.log("👤 Creating system admin user...");
-    const adminUser = await prisma.user.upsert({
-      where: { email: "admin@mounasabet.com" },
-      update: {},
-      create: {
-        id: "admin-system",
-        name: "System Administrator",
-        email: "admin@mounasabet.com",
-        emailVerified: true,
-        role: "admin",
-        language: "fr",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
+    const adminUser = await auth.api.createUser({
+        body: {
+          name: "System Administrator",
+          email: "admin@mounasabet.com",
+          role: "admin",
+          password: "admin",
+        }
     });
 
     console.log(`✅ Admin user created: ${adminUser.email}`);
+
+    // Create essential currencies
+    console.log("💱 Creating essential currencies...");
+    const currencies = [
+      { code: "TND", name: "Tunisian Dinar", symbol: "DT" },
+      { code: "USD", name: "US Dollar", symbol: "$" },
+      { code: "EUR", name: "Euro", symbol: "€" },
+    ];
+
+    for (const currency of currencies) {
+      await prisma.currency.upsert({
+        where: { code: currency.code },
+        update: {
+          name: currency.name,
+          symbol: currency.symbol,
+        },
+        create: currency,
+      });
+    }
+    console.log(`✅ Created ${currencies.length} currencies (including default TND)`);
 
     // Create essential service categories
     console.log("📂 Creating essential service categories...");

@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/generated/client';
+import { prisma } from "@/lib/database/prisma";
 import { logger } from '@/lib/production-logger';
 import { getSession } from '@/lib/auth';
 import { auditLogger, AuditEventType, AuditLogLevel } from '@/lib/audit-logger';
 
-const prisma = new PrismaClient();
 
 // GET /api/admin/reviews - Get all reviews for admin moderation
 export async function GET(request: NextRequest) {
