@@ -1,3 +1,4 @@
+'use client';
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { X, Upload } from 'lucide-react';
 import { Service } from '../page';
 
-'use client';
 
 
 interface ServiceFormProps {
