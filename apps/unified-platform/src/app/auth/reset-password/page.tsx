@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { authClient } from '@/lib/auth';
+import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui';
 import { Input } from '@/components/ui';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui';
