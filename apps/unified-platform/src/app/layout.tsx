@@ -4,7 +4,6 @@ import { AuthProvider } from "@/lib/auth-context";
 import PerformanceProvider from "@/components/providers/PerformanceProvider";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
-import { logger } from "@/lib/production-logger";
 
 const inter = Inter({
   subsets: ["latin"],

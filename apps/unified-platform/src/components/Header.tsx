@@ -112,7 +112,10 @@ export default function Header() {
       `}
     >
       <nav className="relative z-10 max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-        <Image src="/logoo.png" alt="Monasabet Logo" width={140} height={140} />
+
+        <Link href="/" tabIndex={0} aria-label="Mounasabet - Accueil">
+          <Image src="/logoo.png" alt="Monasabet Logo" width={140} height={140} />
+        </Link>
 
         <ul className={`
           flex gap-8 text-base font-semibold transition-colors duration-300`}>

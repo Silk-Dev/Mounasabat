@@ -376,21 +376,21 @@ class ProductionLogger {
   }
 
   debug(message: string, context?: LogContext): void {
-    this.log('debug', message, context);
+    // this.log('debug', message, context);
   }
 
   info(message: string, context?: LogContext): void {
-    this.log('info', message, context);
+    // this.log('info', message, context);
   }
 
   warn(message: string, context?: LogContext, error?: unknown): void {
     const errorObj = error instanceof Error ? error : error ? new Error(String(error)) : undefined;
-    this.log('warn', message, context, errorObj);
+    // this.log('warn', message, context, errorObj);
   }
 
   error(message: string, error?: unknown, context?: LogContext): void {
     const errorObj = error instanceof Error ? error : new Error(String(error));
-    this.log('error', message, context, errorObj);
+    // this.log('error', message, context, errorObj);
   }
 
   // Specialized logging methods
@@ -441,11 +441,11 @@ class ProductionLogger {
 
   securityEvent(event: string, severity: 'low' | 'medium' | 'high' | 'critical', context?: LogContext): void {
     const level = severity === 'critical' || severity === 'high' ? 'error' : 'warn';
-    this.log(level, `Security event: ${event}`, {
-      ...context,
-      component: 'security',
-      metadata: { severity },
-    });
+    // this.log(level, `Security event: ${event}`, {
+    //   ...context,
+    //   component: 'security',
+    //   metadata: { severity },
+    // });
   }
 
   databaseQuery(query: string, duration: number, context?: LogContext): void {
