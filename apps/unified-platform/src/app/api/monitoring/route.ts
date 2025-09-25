@@ -6,7 +6,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import { createDatabaseMonitor, runMonitoringCheck } from '@/lib/database/monitoring';
-import { isMonitoringEnabled } from '../../../../../../deployment.config';
 import { logger } from '@/lib/production-logger';
 
 export async function GET(request: NextRequest) {
@@ -14,15 +13,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const action = searchParams.get('action') || 'metrics';
     const environment = process.env.NODE_ENV || 'development';
-
-    // Check if monitoring is enabled
-    if (!isMonitoringEnabled('enableEmptyStateTracking', environment) && 
-        !isMonitoringEnabled('enableErrorTracking', environment)) {
-      return NextResponse.json({
-        success: false,
-        message: 'Monitoring is disabled for this environment',
-      }, { status: 403 });
-    }
 
     const monitor = createDatabaseMonitor(prisma, environment);
 
@@ -90,15 +80,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { action } = body;
     const environment = process.env.NODE_ENV || 'development';
-
-    // Check if monitoring is enabled
-    if (!isMonitoringEnabled('enableEmptyStateTracking', environment) && 
-        !isMonitoringEnabled('enableErrorTracking', environment)) {
-      return NextResponse.json({
-        success: false,
-        message: 'Monitoring is disabled for this environment',
-      }, { status: 403 });
-    }
 
     const monitor = createDatabaseMonitor(prisma, environment);
 

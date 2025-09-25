@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { createEmailService, EmailService } from '@/lib/database/email-service';
-import { NotificationType } from '@/generated/client';
+import { NotificationType } from '@prisma/client';
 import { logger } from './logger';
 
 export interface CreateNotificationData {
